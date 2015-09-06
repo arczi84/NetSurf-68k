@@ -224,6 +224,10 @@ struct Node *GetPred(struct Node *node);
 struct Node *GetSucc(struct Node *node);
 
 /* Intuition */
+struct Requester *r;
+struct Gadget *g;
+struct Window *w;
+struct TagItem *tags;
 uint32 GetAttrs(Object *obj, Tag tag1, ...);
 ULONG RefreshSetGadgetAttrs(struct Gadget *g, struct Window *w, struct Requester *r, Tag tag1, ...);
 ULONG RefreshSetGadgetAttrsA(struct Gadget *g, struct Window *w, struct Requester *r, struct TagItem *tags);

@@ -39,7 +39,7 @@
 
 #include "widget.h"
 
-//#define TEXT_WIDGET_BORDER 3 /**< The pixel border round a text widget. */
+#define TEXT_WIDGET_BORDER 3 /**< The pixel border round a text widget. */
 
 /* Lighten a colour by taking seven eights of each channel's intensity
  * and adding a full eighth

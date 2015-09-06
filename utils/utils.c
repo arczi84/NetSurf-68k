@@ -40,6 +40,10 @@
 #include "utils/time.h"
 #include "utils/utils.h"
 
+//#ifdef __clib2__
+//#undef HAVE_SCANDIR
+//#endif
+
 /* exported interface documented in utils/utils.h */
 char *remove_underscores(const char *s, bool replacespace)
 {

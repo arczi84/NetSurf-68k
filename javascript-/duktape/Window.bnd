@@ -1,0 +1,78 @@
+/* Window binding for browser using duktape and libdom
+ *
+ * Copyright 2015 Vincent Sanders <vince@netsurf-browser.org>
+ *
+ * This file is part of NetSurf, http://www.netsurf-browser.org/
+ *
+ * Released under the terms of the MIT License,
+ *         http://www.opensource.org/licenses/mit-license
+ */
+
+class Window {
+	private "struct browser_window *" win;
+	private "struct html_content *" htmlc;
+	prologue %{
+#include "utils/nsurl.h"
+#include "desktop/browser.h"
+#include "render/html.h"
+#include "render/html_internal.h"
+%};
+}
+
+init Window("struct browser_window *" win, "struct html_content *" htmlc)
+%{
+	/* element window */
+	priv->win = win;
+	priv->htmlc = htmlc;
+	LOG("win=%p htmlc=%p", priv->win, priv->htmlc);
+
+	LOG("URL is %s", nsurl_access(browser_window_get_url(priv->win)));
+%}
+
+prototype Window()
+%{
+#define EXPOSE(v) \
+	duk_get_global_string(ctx, #v); \
+	duk_put_prop_string(ctx, 0, #v)
+	/* steal undefined */
+	EXPOSE(undefined);
+	EXPOSE(eval);
+	EXPOSE(Object);
+	EXPOSE(parseInt);
+	EXPOSE(parseFloat);
+	EXPOSE(Array);
+	EXPOSE(Date);
+	EXPOSE(RegExp);
+	EXPOSE(Math);
+#undef EXPOSE
+%}
+
+getter Window::document()
+%{
+	LOG("priv=%p", priv);
+	dom_document *doc = priv->htmlc->document;
+	dukky_push_node(ctx, (struct dom_node *)doc);
+	return 1;
+%}
+
+getter Window::window()
+%{
+	duk_push_this(ctx);
+	return 1;
+%}
+
+getter Window::console()
+%{
+	duk_push_this(ctx);
+	duk_get_prop_string(ctx, -1, MAGIC(Console));
+	if (duk_is_undefined(ctx, -1)) {
+		duk_pop(ctx);
+		if (dukky_create_object(ctx, PROTO_NAME(CONSOLE), 0) != DUK_EXEC_SUCCESS) {
+			duk_error(ctx, DUK_ERR_ERROR, "Unable to create console object");
+			return 0;
+		}
+		duk_dup(ctx, -1);
+		duk_put_prop_string(ctx, -3, MAGIC(Console));
+	}
+	return 1;
+%}

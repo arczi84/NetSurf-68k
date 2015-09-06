@@ -31,7 +31,11 @@
 #define FB_COLOUR_WHITE 0xFFFFFFFF
 
 #define FBTK_WIDGET_PADDING 30 /**< percentage of widget size used for padding */ 
+#ifdef RTG
 #define FBTK_DPI 90 /**< screen DPI */
+#else
+#define FBTK_DPI 105 /**< screen DPI */
+#endif
 
 typedef struct fbtk_widget_s fbtk_widget_t;
 

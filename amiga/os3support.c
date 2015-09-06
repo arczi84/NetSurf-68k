@@ -41,7 +41,7 @@
 #define SUCCESS (TRUE)
 #define FAILURE (FALSE)
 #define NO      !
-
+#if 0
 /* Diskfont */
 struct OutlineFont *OpenOutlineFont(STRPTR fileName, struct List *list, ULONG flags)
 {
@@ -173,7 +173,7 @@ void CloseOutlineFont(struct OutlineFont *of, struct List *list)
 	FreeVec(of->olf_OTagList);
 	FreeVec(of);
 }
-
+#endif
 
 /* DOS */
 int64 GetFileSize(BPTR fh)
@@ -281,7 +281,8 @@ struct FormatContext
 	BOOL	Overflow;
 };
 
-STATIC VOID ASM
+//STATIC VOID ASM
+static void __asm
 StuffChar(
 	REG(a3, struct FormatContext *	Context),
 	REG(d0, UBYTE Char))

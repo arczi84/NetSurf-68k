@@ -311,11 +311,12 @@ else
 endif
 
 # compiler versioning to adjust warning flags
-CC_VERSION := $(shell $(CC) -dumpversion)
+#CC_VERSION := $(shell $(CC) -dumpversion)
+CC_VERSION := 4.5.0
 CC_MAJOR := $(word 1,$(subst ., ,$(CC_VERSION)))
 CC_MINOR := $(word 2,$(subst ., ,$(CC_VERSION)))
 define cc_ver_ge
-$(shell expr $(CC_MAJOR) \>= $(1) \& $(CC_MINOR) \>= $(2))
+#$(shell expr $(CC_MAJOR) \>= $(1) \& $(CC_MINOR) \>= $(2))
 endef
 
 # CCACHE
@@ -501,10 +502,10 @@ $(eval $(call feature_switch,LIBICONV_PLUG,glibc internal iconv,-DLIBICONV_PLUG,
 $(eval $(call feature_switch,DUKTAPE,Javascript (Duktape),,,,,))
 
 # Common libraries with pkgconfig
-$(eval $(call pkg_config_find_and_add,libcss,CSS))
-$(eval $(call pkg_config_find_and_add,libdom,DOM))
-$(eval $(call pkg_config_find_and_add,libnsutils,nsutils))
-$(eval $(call pkg_config_find_and_add,libutf8proc,utf8proc))
+#$(eval $(call pkg_config_find_and_add,libcss,CSS))
+#$(eval $(call pkg_config_find_and_add,libdom,DOM))
+#$(eval $(call pkg_config_find_and_add,libnsutils,nsutils))
+#$(eval $(call pkg_config_find_and_add,libutf8proc,utf8proc))
 
 # Common libraries without pkg-config support
 LDFLAGS += -lz

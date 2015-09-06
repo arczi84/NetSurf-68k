@@ -1,0 +1,68 @@
+[SDL_AddThread]: Threads already allocated(0) - max threads(0)
+[SDL_AddThread]: Expanding the list of threads
+[SDL_AddThread]: Threads allocated(1) - max threads(32)
+[SDL_CreateThread]: Starting thread with args 8c05c08...
+[SDL_SYS_CreateThread]: Sending 8c05c08 to the new thread...
+[SDL_CreateMutex]: START
+CGX video device AVAILABLE
+VideoInit...
+Library intialized, locking screen...
+Checking if we are using a CGX native display...
+Before GetVideoModes....
+CGX video mode list: (24)
+	320 x 200
+	320 x 240
+	320 x 256
+	640 x 400
+	640 x 480
+	640 x 512
+	720 x 480
+	720 x 576
+	800 x 600
+	1024 x 768
+	1152 x 864
+	1280 x 720
+	1280 x 768
+	1280 x 800
+	1280 x 960
+	1280 x 1024
+	1360 x 768
+	1366 x 768
+	1440 x 900
+	1600 x 900
+	1600 x 1024
+	1600 x 1200
+	1680 x 1050
+	1920 x 1080
+CGX visuals list: (5)
+	50031303 - depth: 32 bpp: 4
+	50031201 - depth: 24 bpp: 3
+	50031100 - depth: 16 bpp: 2
+	50031201 - depth: 15 bpp: 3
+	50031000 - depth: 8 bpp: 1
+Init: Setting screen depth to: 32
+BGRA32
+End of CGX_VideoInit
+[SDL_CreateMutex]: START
+CGX_SetVideoMode current:8c06d88
+Opening screen...
+Screen opened.
+Setting screen depth to: 8
+CGX_CreateWindow
+BEFORE screen allocation: bpp:8 (real:8)
+AFTER screen allocation: bpp:8 (real:8)
+XPixels palette allocation...
+Opening backdrop window 640x512 on display 86e0b10!
+Calling ResizeImage(8c06508,8c06d88)
+[SDL_Quit] : Enter! Calling QuitSubSystem()
+CGX_VideoQuit
+Destroying image...
+Destroying window...
+Destroy Window...
+Destroying screen...
+Closing libraries...
+End of CGX_VideoQuit.
+[SDL_WaitThread]: Deleting Thread
+[SDL_DelThread]: Deleting thread, threads left(0) - max threads(32)
+[SDL_Quit] : SDL_UninstallParachute()
+[SDL_Quit] : Returning!

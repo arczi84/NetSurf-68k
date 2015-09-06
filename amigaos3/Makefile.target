@@ -1,0 +1,230 @@
+# ----------------------------------------------------------------------------
+# Amigaos3 target setup
+# ----------------------------------------------------------------------------
+
+override  TARGET = amigaos3
+override  NETSURF_FB_FONTPATH="PROGDIR:Fonts"
+CFLAGS += '-DNETSURF_FB_RESPATH="$(NETSURF_FB_RESPATH)"'
+
+SDL_NOVA := NO
+OLD_FETCH := NO
+LIBNIX_VER := 3
+DEBUG_BUILD:=YES
+
+ifeq ($(OLD_FETCH),YES)
+CFLAGS += -DUSE_OLD_FETCH
+endif
+
+$(eval $(call feature_enabled,PNG,-DWITH_PNG,,PNG (libpng)  ))
+$(eval $(call feature_enabled,GIF,-DWITH_GIF,,GIF (libnsgif)  ))
+$(eval $(call feature_enabled,BMP,-DWITH_BMP,,BMP (libnsbmp)  ))
+
+ifeq ($(NETSURF_FB_FONTLIB),freetype)
+  CFLAGS += -DFB_USE_FREETYPE 
+  LDFLAGS += -lft2
+endif
+
+ifeq ($(LIBNIX),YES)
+	ifeq ($(LIBNIX_VER),3)
+		  CFLAGS += -DHAVE_STRNDUP
+	endif
+endif	
+
+CFLAGS += -std=c99 -I. -Dnsamigaos3 -D__BIG_ENDIAN_BGRA__ \
+			-U__STRICT_ANSI__ -D__m68k__
+#CFLAGS += -D__USE_BASETYPE__ -D__USE_INLINE__  -DSTMATH 
+
+ifeq ($(HOST),clib2)
+CFLAGS += -I/home/adminuser/host/opt/netsurf/share/include -Dsmall \
+		-I/home/adminuser/host/usr/local/amiga/clib/m68k-unknown-amigaos/env/include
+else
+CFLAGS += -I/opt/netsurf/share/include -Dsmall \
+		-I/usr/local/amiga/m68k-amigaos/include
+endif		
+
+CFLAGS += -D_BSD_SOURCE \
+		-D_XOPEN_SOURCE=600 \
+		-D_POSIX_C_SOURCE=200112L \
+		-DPATH_MAX=1024 
+		
+#		-D__M68040 \
+#		-D__NO_FPU_TRAPS__	
+
+		
+ifeq ($(HOST),clib2)		
+	LDFLAGS += -L/home/adminuser/host/usr/local/amiga/clib/m68k-unknown-amigaos/env/lib 
+	LDFLAGS += -L/home/adminuser/host/opt/netsurf/share/lib 
+else
+	ifeq ($(LIBNIX),YES)
+		LDFLAGS += -L/usr/local/amiga/m68k-amigaos/lib 
+		LDFLAGS += -L/opt/netsurf/share/lib-nix
+	else
+		LDFLAGS += -L/usr/local/amiga/m68k-amigaos/lib 
+		LDFLAGS += -L/opt/netsurf/share/lib
+	endif
+endif
+
+LDFLAGS += -liconv  -lutf8proc 
+LDFLAGS += -Wl,--whole-archive -ldom -Wl,--no-whole-archive -lcss -lexpat -lhubbub
+
+ifeq ($(LIBNIX),YES)
+	#LDFLAGS += -lcurl -lcurl-libnix  -lssl-libnix -lcrypto-libnix -lsocket  -lsocket881
+	LDFLAGS += -lcurl.new-libnix -lssl.new-libnix -lcrypto.ok \
+	-lcrypto.new-libnix  -lsocket  -lsocket881 #open.o  
+else
+	LDFLAGS += -lcurl -lssl -lcrypto
+endif
+LDFLAGS += -lwapcaplet -lparserutils 
+LDFLAGS += -lnsgif -lnsbmp -lpng- -lz 
+
+ifeq ($(HOST),clib2)
+LDFLAGS += -ltre -lpbl
+endif
+
+CFLAGS += 	-DENABLE_DOWNLOAD
+
+ifeq ($(RTG),YES)
+	ifeq ($(SDL_NOVA),YES)
+		CFLAGS += -DNOVA_SDL
+		LDFLAGS +=  SDL_systimer.go -lSDL_nova3
+	else  ## NOVA_SDL
+		ifeq ($(LIBNIX),YES) 
+			LDFLAGS +=  -lSDL_libnix -lgl_dummy 
+		else
+			LDFLAGS +=  -lSDL -lgl_dummy
+		endif
+	endif 
+else
+	LDFLAGS += SDL_systimer.go -lSDL-AGA c2p8_040_asm.o c2p8_040_dbl_asm.o  
+#	LDFLAGS += 	SDL_systimer.go -lSDL_nova3
+endif  ## RTG
+
+LDFLAGS += -L. -ltheme -lauto -lnsutils 
+
+ifeq ($(HOST),clib2)
+LDFLAGS += -lm -lc -lamiga2 -lclib0 -lnet -leprintf
+else
+ifeq ($(LIBNIX),YES)
+	ifeq ($(LIBNIX_VER),2)
+		LDFLAGS += -Wl,--wrap=poll -Wl,--wrap=gmtime -Wl,--wrap=signal 
+	endif
+	LDFLAGS +=  -lregex -lc2-nix 
+endif
+
+endif
+LDFLAGS += -Wl,--allow-multiple-definition 
+LDFLAGS += #-Wl,--wrap=gettimeofday
+		
+ifeq ($(NETSURF_USE_MOZJS), YES)
+LDFLAGS += -ljs
+CFLAGS += -DXP_AMIGA -DWITH_MOZJS -DJS_VERSION=170 -DJSVERSION_LATEST=170 -DJSOPTION_JIT=0 -DJSCLASS_GLOBAL_FLAGS=0
+endif
+
+ifeq ($(LIBNIX),YES)
+	ifeq ($(LIBNIX_VER),2)
+		LDFLAGS += -lnix2.2
+	else
+		LDFLAGS += -lnix3-fpu 
+	endif
+LDFLAGS += -ldebug -lm2.2 
+LDFLAGS += #-Wl,--wrap=free
+endif
+
+ifeq ($(DEBUG_BUILD),YES)
+	LDFLAGS +=  -ltheme-o  -lthrobber 
+endif
+# ----------------------------------------------------------------------------
+# Source file setup
+# ----------------------------------------------------------------------------
+
+# Amiga sources 
+ifeq ($(DEBUG_BUILD),YES)
+S_AMIGAOS3 :=  gui-fb.c
+else
+S_AMIGAOS3 :=  gui.c
+endif
+S_AMIGAOS3 +=  framebuffer.c misc.c  utf8.c  loadpng.c 
+S_AMIGAOS3 +=  ami_clipboard.c clipboard.c version.c useragent.c
+#S_AMIGAOS3 += loadpng-lode.c lodepng.c  os3patches.c loadbitmap.c
+ifeq ($(LIBNIX),YES)
+S_AMIGAOS3 +=  libnix.c
+	ifeq ($(LIBNIX_VER),2)
+		 S_AMIGAOS3 += poll.c gmtime.c signal.c ftruncate.c
+		#fchdir.c currentdir.c  ftoa3.c  wrap.c
+	endif		
+endif
+
+# FRAMEBUFFER sources 
+S_FRAMEBUFFER :=   localhistory.c bitmap.c schedule.c
+
+ifeq ($(OLD_FETCH),YES)
+S_FRAMEBUFFER +=    #findfile.c
+S_AMIGAOS3 += fetch.c
+else
+S_AMIGAOS3 += fetch_os4.c misc_os4.c
+endif	
+
+S_FRAMEBUFFER_FBTK +=  fbtk.c fill.c  user.c window.c
+
+ifeq ($(DEBUG_BUILD),YES)
+	S_FRAMEBUFFER_FBTK += event.c  text.c bitmap.c scroll.c ../../amigaos3/getopt.c
+else
+	S_AMIGAOS3_FBTK := event.c  text.c bitmap.c scroll.c 
+endif
+
+S_LIBNSFB_PLOT := api.c util.c generic.c 32bpp-xrgb8888.c 32bpp-xbgr8888.c 24bpp.c 16bpp.c 8bpp.c
+S_LIBNSFB_SURFACE := surface.c able.c ram.c sdl.c
+S_LIBNSFB := libnsfb.c dump.c cursor.c palette.c
+
+S_AMIGAOS3  += font_$(NETSURF_FB_FONTLIB).c
+
+S_FRAMEBUFFER := $(addprefix framebuffer/,$(S_FRAMEBUFFER)) $(addprefix framebuffer/fbtk/,$(S_FRAMEBUFFER_FBTK)) 
+S_AMIGAOS3 :=	$(addprefix amigaos3/,$(S_AMIGAOS3)) $(addprefix amigaos3/fbtk/,$(S_AMIGAOS3_FBTK))
+S_LIBNSFB :=  $(addprefix amigaos3/libnsfb/,$(S_LIBNSFB))  $(addprefix amigaos3/libnsfb/plot/,$(S_LIBNSFB_PLOT))  \
+							$(addprefix amigaos3/libnsfb/surface/,$(S_LIBNSFB_SURFACE))  
+
+S_AMIGA_FB :=  $(S_FRAMEBUFFER) $(S_AMIGAOS3)  $(S_LIBNSFB)
+
+# This is the final source build list
+# Note this is deliberately *not* expanded here as common and image
+#   are not yet available
+SOURCES = $(S_COMMON) $(S_IMAGE) $(S_BROWSER) $(S_AMIGA_FB) $(S_IMAGES) $(S_FONTS)
+
+
+ifeq ($(RTG),NO)
+	ifeq ($(AGA),685)
+		PARAM1="-AGA"
+	else
+		PARAM1="-AGAlq"
+	endif
+endif
+
+ifeq ($(LIBNIX),NO)
+	ifneq ($(HOST),clib2)
+	PARAM2="-ix"
+	else
+	PARAM2="-clib2"
+	endif
+endif
+
+ifneq ($(NETSURF_FB_FONTLIB),freetype)
+	PARAM3="-nottf"
+endif
+
+ifeq ($(NETSURF_USE_MOZJS),NO)
+	PARAM4="-nojs"
+endif
+
+ifeq ($(DEBUG),NO)
+	PARAM5="-nodebug"
+endif
+
+PARAMS:=$(PARAM1)$(PARAM2)$(PARAM3)$(PARAM4)$(PARAM5)
+EXETARGET:=NetSurf$(PARAMS)
+
+CFLAGS+= -DPARAMS='$(PARAMS)'
+
+
+NETSURF_FRAMEBUFFER_RESOURCE_LIST := adblock.css credits.html	\
+ 	default.css internal.css licence.html netsurf.png quirks.css \
+	 welcome.html maps.html Messages

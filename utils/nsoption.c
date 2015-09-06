@@ -67,6 +67,8 @@ static struct nsoption_s defaults[] = {
 #include "beos/options.h"
 #elif defined(nsamiga)
 #include "amiga/options.h"
+#elif defined(nsamigaos3)
+#include "amigaos3/options.h"
 #elif defined(nsframebuffer)
 #include "framebuffer/options.h"
 #elif defined(nsatari)

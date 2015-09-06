@@ -49,6 +49,9 @@
 
 #include "utils/errors.h"
 
+#undef WT_MODIFICATIONS 
+#define WT_MODIFICATIONS  {"amigaos3"}
+
 /* allow targets to include any necessary headers of their own */
 #define NSOPTION_BOOL(NAME, DEFAULT)
 #define NSOPTION_STRING(NAME, DEFAULT)
@@ -65,6 +68,8 @@
 #include "beos/options.h"
 #elif defined(nsamiga)
 #include "amiga/options.h"
+#elif defined(nsamigaos3)
+#include "amigaos3/options.h"
 #elif defined(nsframebuffer)
 #include "framebuffer/options.h"
 #elif defined(nsatari)
@@ -136,6 +141,8 @@ enum nsoption_e {
 #include "beos/options.h"
 #elif defined(nsamiga)
 #include "amiga/options.h"
+#elif defined(nsamigaos3)
+#include "amigaos3/options.h"
 #elif defined(nsframebuffer)
 #include "framebuffer/options.h"
 #elif defined(nsatari)

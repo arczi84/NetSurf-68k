@@ -11,18 +11,18 @@
 S_JSAPI_BINDING:=
 D_JSAPI_BINDING:=
 
-JSAPI_BINDING_htmldocument := javascript/jsapi/htmldocument.bnd
-JSAPI_BINDING_htmlelement := javascript/jsapi/htmlelement.bnd
-JSAPI_BINDING_window := javascript/jsapi/window.bnd
-JSAPI_BINDING_navigator := javascript/jsapi/navigator.bnd
-JSAPI_BINDING_console := javascript/jsapi/console.bnd
-JSAPI_BINDING_location := javascript/jsapi/location.bnd
-JSAPI_BINDING_htmlcollection := javascript/jsapi/htmlcollection.bnd
-JSAPI_BINDING_nodelist := javascript/jsapi/nodelist.bnd
-JSAPI_BINDING_text := javascript/jsapi/text.bnd
-JSAPI_BINDING_comment := javascript/jsapi/comment.bnd
-JSAPI_BINDING_node := javascript/jsapi/node.bnd
-JSAPI_BINDING_event := javascript/jsapi/event.bnd
+JSAPI_BINDING_htmldocument := ./javascript/jsapi/htmldocument.bnd
+JSAPI_BINDING_htmlelement := ./javascript/jsapi/htmlelement.bnd
+JSAPI_BINDING_window := ./javascript/jsapi/window.bnd
+JSAPI_BINDING_navigator := ./javascript/jsapi/navigator.bnd
+JSAPI_BINDING_console := ./javascript/jsapi/console.bnd
+JSAPI_BINDING_location := ./javascript/jsapi/location.bnd
+JSAPI_BINDING_htmlcollection := ./javascript/jsapi/htmlcollection.bnd
+JSAPI_BINDING_nodelist := ./javascript/jsapi/nodelist.bnd
+JSAPI_BINDING_text := ./javascript/jsapi/text.bnd
+JSAPI_BINDING_comment := ./javascript/jsapi/comment.bnd
+JSAPI_BINDING_node := ./javascript/jsapi/node.bnd
+JSAPI_BINDING_event := ./javascript/jsapi/event.bnd
 
 # 1: input binding file
 # 2: source output file
@@ -35,7 +35,7 @@ D_JSAPI_BINDING += $(patsubst %.c,%.d,$(2))
 
 $(2): $(1) $(OBJROOT)/created
 	$$(VQ)echo " GENBIND: $(1)"
-	$(Q)nsgenbind -g -I javascript/WebIDL -d $(patsubst %.c,%.d,$(2)) -h $(3) -o $(2) $(1)
+	$(Q)nsgenbind -g -I .  ./javascript/WebIDL -d $(patsubst %.c,%.d,$(2)) -h $(3) -o $(2) $(1)
 
 $(3): $(2)
 
@@ -69,10 +69,10 @@ javascript/dukky.c: $(OBJROOT)/duktape/binding.h
 
 BINDINGS := $(wildcard javascript/duktape/*.bnd)
 
-$(OBJROOT)/duktape/binding.h $(OBJROOT)/duktape/Makefile: javascript/duktape/netsurf.bnd $(BINDINGS)
+$(OBJROOT)/duktape/binding.h $(OBJROOT)/duktape/Makefile: ./javascript/duktape/netsurf.bnd $(BINDINGS)
 	$(Q)mkdir -p $(OBJROOT)/duktape
 	$(VQ)echo " GENBIND: $<"
-	$(Q)nsgenbind -I javascript/WebIDL $< $(OBJROOT)/duktape
+	$(Q)sudo ./nsgenbind -I . ./javascript/WebIDL $< $(OBJROOT)/duktape
 
 ifeq ($(filter $(MAKECMDGOALS),clean test coverage),)
 -include $(OBJROOT)/duktape/Makefile

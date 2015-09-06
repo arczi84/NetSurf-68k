@@ -210,8 +210,9 @@ bool content_can_reformat(hlcache_handle *h)
 
 	return (c->handler->reformat != NULL);
 }
-
-
+#if defined __libnix__	
+void ftoa(float n, char *res, int afterpoint);
+#endif
 static void content_update_status(struct content *c)
 {
 	if (c->status == CONTENT_STATUS_LOADING ||
@@ -223,12 +224,23 @@ static void content_update_status(struct content *c)
 				c->sub_status);
 	} else {
 		unsigned int time = c->time;
+		#if defined __libnix__		
+		//char res[6];
+	//	float n = time/100;
+	//	ftoa(n,res,1);		
+	//	unsigned short t1 = (time/1000);
+		//addpoint(time,res);
+		snprintf(c->status_message, sizeof (c->status_message),
+				//"%s (%u%ss)", messages_get("Done"),t1, res,time);
+				"%s (%dms)", messages_get("Done"), time);
+				//"%s (%ss)", messages_get("Done"), res);
+		#else	
 		snprintf(c->status_message, sizeof (c->status_message),
 				"%s (%.1fs)", messages_get("Done"),
 				(float) time / 100);
+		#endif
 	}
 }
-
 
 /**
  * Updates content with new status.
@@ -414,8 +426,8 @@ void content_destroy(struct content *c)
 	if (c->fallback_charset != NULL) {
 		free(c->fallback_charset);
 	}
-
-	free(c);
+	if (c != NULL)
+		free(c);
 }
 
 

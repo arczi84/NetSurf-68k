@@ -61,6 +61,22 @@
 
 #define NSFB_TOOLBAR_DEFAULT_LAYOUT "blfsrutc"
 
+#define osk_image pointer_image
+#define move_image hand_image
+
+const char *
+add_theme_path(const char *icon) 
+{
+	static char path[128];
+
+	strcpy(path, "PROGDIR:Resources/theme/");
+	strcat(path, nsoption_char(theme));
+	strcat(path,"/");
+	strcat(path, icon);
+
+	return path;
+}
+
 fbtk_widget_t *fbtk;
 
 static bool fb_complete = false;
@@ -1626,7 +1642,7 @@ create_normal_browser_window(struct gui_window *gw, int furniture_width)
 
 	/* fill bottom right area */
 
-	if (nsoption_bool(fb_osk) == true) {
+	/*if (nsoption_bool(fb_osk) == true) {
 		widget = fbtk_create_text_button(gw->window,
 						 fbtk_get_width(gw->window) - furniture_width,
 						 fbtk_get_height(gw->window) - furniture_width,
@@ -1644,7 +1660,7 @@ create_normal_browser_window(struct gui_window *gw, int furniture_width)
 				&osk_image,
 				fb_osk_click,
 				NULL);
-	} else {
+	} else {*/
 		widget = fbtk_create_fill(gw->window,
 					  fbtk_get_width(gw->window) - furniture_width,
 					  fbtk_get_height(gw->window) - furniture_width,
@@ -1653,7 +1669,7 @@ create_normal_browser_window(struct gui_window *gw, int furniture_width)
 					  FB_FRAME_COLOUR);
 
 		fbtk_set_handler(widget, FBTK_CBT_POINTERENTER, set_ptr_default_move, NULL);
-	}
+	//}
 
 	gw->bottom_right = widget;
 
@@ -2090,7 +2106,7 @@ main(int argc, char** argv)
 		die("NetSurf operation table failed registration");
         }
 
-	respaths = fb_init_resource(NETSURF_FB_RESPATH":"NETSURF_FB_FONTPATH);
+	respaths = fb_init_resource(NETSURF_FB_RESPATH);
 
 	/* initialise logging. Not fatal if it fails but not much we
 	 * can do about it either.
@@ -2102,13 +2118,13 @@ main(int argc, char** argv)
 	if (ret != NSERROR_OK) {
 		die("Options failed to initialise");
 	}
-	options = filepath_find(respaths, "Choices");
+	options = filepath_find(respaths, "Options");
 	nsoption_read(options, nsoptions);
 	free(options);
 	nsoption_commandline(&argc, argv, nsoptions);
 
 	/* message init */
-	messages = filepath_find(respaths, "Messages");
+	messages = filepath_find(respaths, "en/Messages");
         ret = messages_add_from_file(messages);
 	free(messages);
 	if (ret != NSERROR_OK) {

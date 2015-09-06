@@ -1,0 +1,10 @@
+cd /opt/libdom &&  make TARGET=amigaos3 HOST=windows clean &&  make TARGET=amigaos3 HOST=windows install &&
+cd /opt/libcss &&  make TARGET=amigaos3 HOST=windows clean &&  make TARGET=amigaos3 HOST=windows install &&
+cd /opt/libnsutils &&  make TARGET=amigaos3 HOST=windows clean &&  make TARGET=amigaos3 HOST=windows install &&
+cd /opt/libparserutils &&  make TARGET=amigaos3 HOST=windows clean &&  make TARGET=amigaos3 HOST=windows install &&
+cd /opt/libhubbub &&  make TARGET=amigaos3 HOST=windows clean &&  make TARGET=amigaos3 HOST=windows install &&
+cd /opt/libwapcaplet &&  make TARGET=amigaos3 HOST=windows clean &&  make TARGET=amigaos3 HOST=windows install &&
+cd /opt/libnsgif &&  make TARGET=amigaos3 HOST=windows clean &&  make TARGET=amigaos3 HOST=windows install &&
+cd /opt/libnsbmp &&  make TARGET=amigaos3 HOST=windows clean &&  make TARGET=amigaos3 HOST=windows install &&
+cd /opt/libutf8proc &&  make TARGET=amigaos3 HOST=windows clean &&  make TARGET=amigaos3 HOST=windows install &&
+cd /projects/netsurf &&  make TARGET=amigaos3 HOST=windows

@@ -1,0 +1,114 @@
+# ----------------------------------------------------------------------------
+# amigaos3 target setup
+# ----------------------------------------------------------------------------
+
+override  TARGET = amigaos3
+override  HOST := windows
+override  NETSURF_FB_FONTPATH=/"NetSurf:Fonts"/
+
+$(eval $(call feature_enabled,PNG,-DWITH_PNG,-lpng,PNG (libpng)  ))
+$(eval $(call feature_enabled,GIF,-DWITH_GIF,-lnsgif,GIF (libnsgif)  ))
+$(eval $(call feature_enabled,BMP,-DWITH_BMP,-lnsbmp,BMP (libnsbmp)  ))
+
+ifeq ($(NETSURF_FB_FONTLIB),freetype)
+  CFLAGS += -DFB_USE_FREETYPE 
+  LDFLAGS += -lft2
+endif
+
+CFLAGS += -Dnsamigaos3 -D__BIG_ENDIAN_BGRA__ -DSTMATH \
+			-D__AMIGA__ -D__USE_INLINE__ -DUSE_OLD_FETCH -DPARAMS
+
+#resource path
+CFLAGS += '-DNETSURF_FB_RESPATH="NetSurf:Resources"'
+
+CFLAGS += -std=c99 -I.  -I/opt/netsurf/share/include -Dsmall \
+		-D_BSD_SOURCE \
+		-D_XOPEN_SOURCE=600 \
+		-D_POSIX_C_SOURCE=200112L \
+		-DPATH_MAX=1024 \
+		-D__M68040 -D__M68881  -D__NO_FPU_TRAPS__		
+
+LDFLAGS += -L/opt/netsurf/share/lib -liconv  -lutf8proc -lnsutils
+LDFLAGS += -Wl,--whole-archive -ldom -Wl,--no-whole-archive  -lexpat
+LDFLAGS += -lhubbub  -lcurl-ix -lssl.jo -lcrypto-ix
+LDFLAGS += -lpng -lz -lcss -lwapcaplet -lparserutils
+
+ifeq ($(RTG),YES)
+LDFLAGS +=  -lSDL -lgl_dummy 
+else
+LDFLAGS += -lSDL_AGA c2p8_040_asm.o c2p8_040_dbl_asm.o
+endif
+
+LDFLAGS +=   -ltheme -ldebug -lc2 -lauto
+
+ifeq ($(NETSURF_USE_MOZJS), YES)
+LDFLAGS += -ljs
+CFLAGS += -DXP_UNIX
+endif
+
+# ----------------------------------------------------------------------------
+# Source file setup
+# ----------------------------------------------------------------------------
+
+# Amiga sources 
+
+S_AMIGAOS3 :=  gui.c  misc.c  utf8.c loadpng.c
+#S_AMIGAOS3 += loadpng-lode.c lodepng.c  caret.c loadbitmap.c
+S_AMIGAOS3 +=  ami_clipboard.c ami_version.c useragent.c
+
+# FRAMEBUFFER sources 
+S_FRAMEBUFFER :=   framebuffer.c schedule.c	clipboard.c\
+	  fetch.c localhistory.c bitmap.c findfile.c
+	
+S_FRAMEBUFFER_FBTK +=  fbtk.c fill.c bitmap.c user.c window.c
+S_AMIGAOS3_FBTK := event.c scroll.c text.c
+
+S_LIBNSFB_PLOT := api.c util.c generic.c 32bpp-xrgb8888.c 32bpp-xbgr8888.c 24bpp.c 16bpp.c 8bpp.c
+S_LIBNSFB_SURFACE := surface.c able.c ram.c sdl.c
+S_LIBNSFB := libnsfb.c fb_dump.c cursor.c palette.c
+
+S_AMIGAOS3  += font_$(NETSURF_FB_FONTLIB).c
+
+S_FRAMEBUFFER := $(addprefix framebuffer/,$(S_FRAMEBUFFER)) $(addprefix framebuffer/fbtk/,$(S_FRAMEBUFFER_FBTK)) 
+S_AMIGAOS3 :=	$(addprefix amigaos3/,$(S_AMIGAOS3)) $(addprefix amigaos3/fbtk/,$(S_AMIGAOS3_FBTK))
+S_LIBNSFB :=  $(addprefix amigaos3/libnsfb/,$(S_LIBNSFB))  $(addprefix amigaos3/libnsfb/plot/,$(S_LIBNSFB_PLOT))  \
+							$(addprefix amigaos3/libnsfb/surface/,$(S_LIBNSFB_SURFACE))
+
+S_AMIGA_FB := $(S_AMIGAOS3) $(S_FRAMEBUFFER)  $(S_LIBNSFB)
+
+# This is the final source build list
+# Note this is deliberately *not* expanded here as common and image
+#   are not yet available
+SOURCES = $(S_COMMON) $(S_IMAGE) $(S_BROWSER) $(S_AMIGA_FB) $(S_IMAGES)$(S_FONTS)
+
+ifeq ($(NETSURF_USE_MOZJS),YES)
+EXETARGET := NetSurfJS
+else
+
+ifeq ($(RTG),YES)
+ifeq ($(NETSURF_FB_FONTLIB),freetype)
+	EXETARGET := NetSurf
+else
+	EXETARGET := NetSurf-nottf
+endif
+else
+
+ifeq ($(AGA),685)
+ifeq ($(NETSURF_FB_FONTLIB),freetype)
+	EXETARGET := NetSurfAGA
+else
+	EXETARGET := NetSurfAGA-nottf
+endif
+else
+ifeq ($(NETSURF_FB_FONTLIB),freetype)
+	EXETARGET := NetSurfAGAlow
+else
+	EXETARGET := NetSurfAGAlow-nottf
+endif
+endif
+endif
+endif
+
+NETSURF_FRAMEBUFFER_RESOURCE_LIST := adblock.css credits.html	\
+ 	default.css internal.css licence.html			\
+	netsurf.png quirks.css welcome.html maps.html Messages

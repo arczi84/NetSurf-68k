@@ -1,0 +1,25 @@
+short zliczanie(char *text)
+{
+  char znak;
+  unsigned int i;
+  int j=0;
+  i=0;
+  while((znak=text[i++])!='\0')
+  {
+    if ((znak=='l') || (znak=='i') || (znak=='.') )
+		j++;
+  }
+  return j;
+}
+
+short szerokosc(char *text)
+{
+  unsigned short szer, dl; 
+  dl = strlen(text);
+  if (dl > 10)
+	text = strndup(text, 10)
+  
+  szer = (8 * dl) - (zlicznie * 7)
+  
+  return szer;
+}

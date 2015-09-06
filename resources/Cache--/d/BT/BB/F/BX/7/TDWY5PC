@@ -1,0 +1,456 @@
+/* /_s/css/widgetSearchInput.css */
+/* nowe style Platformy Szukaj */
+/* 20.03.2013 , Piotr Nykun */
+/* Plik resetujące style w głównym kontenerze platformy szukaj */
+
+#searchPlatformContainer a, #searchPlatformContainer abbr, #searchPlatformContainer address, #searchPlatformContainer article, #searchPlatformContainer aside, #searchPlatformContainer audio, #searchPlatformContainer b, #searchPlatformContainer blockquote, #searchPlatformContainer body, #searchPlatformContainer canvas, 
+#searchPlatformContainer caption, #searchPlatformContainer cite, #searchPlatformContainer code, #searchPlatformContainer dd, #searchPlatformContainer del, #searchPlatformContainer details, #searchPlatformContainer dfn, #searchPlatformContainer div, #searchPlatformContainer dl, #searchPlatformContainer dt, #searchPlatformContainer em, #searchPlatformContainer embed, #searchPlatformContainer fieldset,
+#searchPlatformContainer figcaption, #searchPlatformContainer figure, #searchPlatformContainer footer, #searchPlatformContainer form, #searchPlatformContainer h1, #searchPlatformContainer h2, #searchPlatformContainer h3, #searchPlatformContainer h4, #searchPlatformContainer h5, #searchPlatformContainer h6, #searchPlatformContainer header, #searchPlatformContainer hgroup,
+#searchPlatformContainer html, #searchPlatformContainer i, #searchPlatformContainer iframe, #searchPlatformContainer img, #searchPlatformContainer ins, #searchPlatformContainer kbd, #searchPlatformContainer label, #searchPlatformContainer legend, #searchPlatformContainer li, #searchPlatformContainer mark, #searchPlatformContainer menu, #searchPlatformContainer nav, 
+#searchPlatformContainer object, #searchPlatformContainer ol, #searchPlatformContainer p, #searchPlatformContainer pre, #searchPlatformContainer q, #searchPlatformContainer samp, #searchPlatformContainer section, #searchPlatformContainer small, #searchPlatformContainer span, #searchPlatformContainer strong, #searchPlatformContainer sub, #searchPlatformContainer summary, 
+#searchPlatformContainer sup, #searchPlatformContainer table, #searchPlatformContainer tbody, #searchPlatformContainer td, #searchPlatformContainer tfoot, #searchPlatformContainer th, #searchPlatformContainer thead, #searchPlatformContainer time, #searchPlatformContainer tr, #searchPlatformContainer ul, #searchPlatformContainer var, #searchPlatformContainer video {
+  margin: 0;
+  padding: 0;
+  border: 0;
+  font: normal/1.2 arial,sans-serif;
+  vertical-align: baseline;
+  color:#000000;
+  background:transparent;
+}
+
+#searchPlatformContainer.proxy a, #searchPlatformContainer.proxy abbr, #searchPlatformContainer.proxy address, #searchPlatformContainer.proxy article, #searchPlatformContainer.proxy aside, #searchPlatformContainer.proxy audio, #searchPlatformContainer.proxy b, #searchPlatformContainer.proxy blockquote, #searchPlatformContainer.proxy body, #searchPlatformContainer.proxy canvas, 
+#searchPlatformContainer.proxy caption, #searchPlatformContainer.proxy cite, #searchPlatformContainer.proxy code, #searchPlatformContainer.proxy dd, #searchPlatformContainer.proxy del, #searchPlatformContainer.proxy details, #searchPlatformContainer.proxy dfn, #searchPlatformContainer.proxy div, #searchPlatformContainer.proxy dl, #searchPlatformContainer.proxy dt, #searchPlatformContainer.proxy em, #searchPlatformContainer.proxy embed, #searchPlatformContainer.proxy fieldset,
+#searchPlatformContainer.proxy figcaption, #searchPlatformContainer.proxy figure, #searchPlatformContainer.proxy footer, #searchPlatformContainer.proxy form, #searchPlatformContainer.proxy h1, #searchPlatformContainer.proxy h2, #searchPlatformContainer.proxy h3, #searchPlatformContainer.proxy h4, #searchPlatformContainer.proxy h5, #searchPlatformContainer.proxy h6, #searchPlatformContainer.proxy header, #searchPlatformContainer.proxy hgroup,
+#searchPlatformContainer.proxy html, #searchPlatformContainer.proxy i, #searchPlatformContainer.proxy iframe, #searchPlatformContainer.proxy img, #searchPlatformContainer.proxy ins, #searchPlatformContainer.proxy kbd, #searchPlatformContainer.proxy label, #searchPlatformContainer.proxy legend, #searchPlatformContainer.proxy li, #searchPlatformContainer.proxy mark, #searchPlatformContainer.proxy menu, #searchPlatformContainer.proxy nav, 
+#searchPlatformContainer.proxy object, #searchPlatformContainer.proxy ol, #searchPlatformContainer.proxy p, #searchPlatformContainer.proxy pre, #searchPlatformContainer.proxy q, #searchPlatformContainer.proxy samp, #searchPlatformContainer.proxy section, #searchPlatformContainer.proxy small, #searchPlatformContainer.proxy span, #searchPlatformContainer.proxy strong, #searchPlatformContainer.proxy sub, #searchPlatformContainer.proxy summary, 
+#searchPlatformContainer.proxy sup, #searchPlatformContainer.proxy table, #searchPlatformContainer.proxy tbody, #searchPlatformContainer.proxy td, #searchPlatformContainer.proxy tfoot, #searchPlatformContainer.proxy th, #searchPlatformContainer.proxy thead, #searchPlatformContainer.proxy time, #searchPlatformContainer.proxy tr, #searchPlatformContainer.proxy ul, #searchPlatformContainer.proxy var, #searchPlatformContainer.proxy video {
+  font-size:12px;
+}
+
+#searchPlatformContainer h1, #searchPlatformContainer h2, #searchPlatformContainer h3, #searchPlatformContainer h4, #searchPlatformContainer h5, #searchPlatformContainer h6 {
+    font-weight: bold;
+    text-align: left;
+    font-size:100%;
+}
+#searchPlatformContainer article, #searchPlatformContainer aside, #searchPlatformContainer canvas, #searchPlatformContainer details, #searchPlatformContainer figcaption, #searchPlatformContainer figure, #searchPlatformContainer footer, #searchPlatformContainer header, 
+#searchPlatformContainer hgroup, #searchPlatformContainer menu, #searchPlatformContainer nav, #searchPlatformContainer section, #searchPlatformContainer summary {
+  display: block;
+}
+
+#searchPlatformContainer mark {
+  background-color: transparent;
+}
+
+#searchPlatformContainer a  {
+  text-decoration: none;
+  color: #1111CC;
+}
+
+#searchPlatformContainer #akordeon a:visited,
+#searchPlatformContainer #akordeon a:active {
+    outline:none;
+}
+
+#searchPlatformContainer ins, #searchPlatformContainer del  {
+    text-decoration: none;
+}
+
+#searchPlatformContainer ul, #searchPlatformContainer ol {
+  list-style: none;
+}
+
+#searchPlatformContainer a:hover {
+    color: #1111CC;
+    text-decoration: underline;
+}
+
+#searchPlatformContainer table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}
+
+#searchPlatformContainer caption, #searchPlatformContainer th {
+  text-align: left;
+}
+
+#searchPlatformContainer q:after, #searchPlatformContainer q:before {
+  content: "";
+}
+
+#searchPlatformContainer  input {
+    outline:none;
+}
+
+#searchPlatformContainer .pszWidgetSearch,
+#searchPlatformContainer .pszWidgetSearch {
+	margin-bottom: 20px;
+}
+#searchPlatformContainer .pszWidgetSearch .ui-autocomplete {
+	z-index: 100 !important;
+}
+#searchPlatformContainer .pszWidgetSearch .searchBar {
+  height: 32px;
+/*  margin-bottom: 20px;*/
+}
+#searchPlatformContainer .pszWidgetSearch .searchBar .searchInfo {
+  background: none;
+  width: 198px;
+  color: #858282;
+  float: left;
+  height: 22px;
+  padding: 3px 10px;
+  border-radius: 2px;
+  line-height: 22px;
+  font-size: 14px;
+  background: white;
+  border: 1px solid #c8c8c8;
+  box-shadow: inset 0px 0px 0px 2px #EAEAEA;
+  margin-right: 10px;
+}
+#searchPlatformContainer .pszWidgetSearch .searchBar .searchInfo:focus {
+  outline: none;
+}
+#searchPlatformContainer .pszWidgetSearch .searchBar .searchButton {
+/*  background: #555;*/
+  font-size: 14px;
+  border: none;
+  margin: 0;
+  float: left;
+  border-radius: 2px;
+  height: 30px;
+  width: 65px;
+  padding: 0;
+  outline: none;
+  cursor: pointer;
+  color: #fff;
+  letter-spacing: 0.5px;
+  filter: chroma(color=#000000);
+}
+#searchPlatformContainer .pszWidgetSearch .searchBar .searchButton:hover {
+  background: #888;
+}
+#searchPlatformContainer .pszWidgetSearch ul{ 
+	-moz-transition: none;
+    -webkit-transition: none;
+    -o-transition: color 0 ease-in;
+    transition: none;
+	font-size:14px;
+	border: 1px solid #C8C8C8;
+    border-radius: 2px;
+    box-shadow: 0 0 0 2px #EAEAEA inset;
+	background-color:#fff;
+}
+#searchPlatformContainer .pszWidgetSearch ul li{ font-size:14px}
+#searchPlatformContainer .pszWidgetSearch ul li .ui-state-hover, 
+#searchPlatformContainer .pszWidgetSearch ul li:hover,
+#searchPlatformContainer .pszWidgetSearch ul li .ui-state-focus{
+    background:#eee;
+    outline:none;
+}
+#searchPlatformContainer .pszWidgetSearch ul li a{ color: #999;text-decoration:none; cursor:pointer;padding:2px 0px 1px 5px;}
+#searchPlatformContainer .pszWidgetSearch ul li a:hover{ color: #000; text-decoration: none;}
+
+/* /_s/css/cupertino/jquery-ui-widgetsuggest.css */
+/*! jQuery UI - v1.9.2 - 2013-01-31
+* http://jqueryui.com
+* Includes: jquery.ui.core.css, jquery.ui.autocomplete.css, jquery.ui.menu.css
+* To view and modify this theme, visit http://jqueryui.com/themeroller/?ffDefault=Lucida%20Grande%2CLucida%20Sans%2CArial%2Csans-serif&fwDefault=bold&fsDefault=1.1em&cornerRadius=6px&bgColorHeader=deedf7&bgTextureHeader=03_highlight_soft.png&bgImgOpacityHeader=100&borderColorHeader=aed0ea&fcHeader=222222&iconColorHeader=72a7cf&bgColorContent=f2f5f7&bgTextureContent=04_highlight_hard.png&bgImgOpacityContent=100&borderColorContent=dddddd&fcContent=362b36&iconColorContent=72a7cf&bgColorDefault=d7ebf9&bgTextureDefault=02_glass.png&bgImgOpacityDefault=80&borderColorDefault=aed0ea&fcDefault=2779aa&iconColorDefault=3d80b3&bgColorHover=e4f1fb&bgTextureHover=02_glass.png&bgImgOpacityHover=100&borderColorHover=74b2e2&fcHover=0070a3&iconColorHover=2694e8&bgColorActive=3baae3&bgTextureActive=02_glass.png&bgImgOpacityActive=50&borderColorActive=2694e8&fcActive=ffffff&iconColorActive=ffffff&bgColorHighlight=ffef8f&bgTextureHighlight=03_highlight_soft.png&bgImgOpacityHighlight=25&borderColorHighlight=f9dd34&fcHighlight=363636&iconColorHighlight=2e83ff&bgColorError=cd0a0a&bgTextureError=01_flat.png&bgImgOpacityError=15&borderColorError=cd0a0a&fcError=ffffff&iconColorError=ffffff&bgColorOverlay=eeeeee&bgTextureOverlay=08_diagonals_thick.png&bgImgOpacityOverlay=90&opacityOverlay=80&bgColorShadow=000000&bgTextureShadow=04_highlight_hard.png&bgImgOpacityShadow=70&opacityShadow=30&thicknessShadow=7px&offsetTopShadow=-7px&offsetLeftShadow=-7px&cornerRadiusShadow=8px
+* Copyright (c) 2013 jQuery Foundation and other contributors Licensed MIT */
+
+/* Layout helpers
+----------------------------------*/
+.pszWidgetSearch .ui-helper-hidden { display: none; }
+.pszWidgetSearch .ui-helper-hidden-accessible { border: 0; clip: rect(0 0 0 0); height: 1px; margin: -1px; overflow: hidden; padding: 0; position: absolute; width: 1px; }
+.pszWidgetSearch .ui-helper-reset { margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.3; text-decoration: none; font-size: 100%; list-style: none; }
+.pszWidgetSearch .ui-helper-clearfix:before, .pszWidgetSearch .ui-helper-clearfix:after { content: ""; display: table; }
+.pszWidgetSearch .ui-helper-clearfix:after { clear: both; }
+.pszWidgetSearch .ui-helper-clearfix { zoom: 1; }
+.pszWidgetSearch .ui-helper-zfix { width: 100%; height: 100%; top: 0; left: 0; position: absolute; opacity: 0; filter:Alpha(Opacity=0); }
+
+
+/* Interaction Cues
+----------------------------------*/
+.pszWidgetSearch .ui-state-disabled { cursor: default !important; }
+
+
+/* Icons
+----------------------------------*/
+
+/* states and images */
+.pszWidgetSearch .ui-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
+
+
+/* Misc visuals
+----------------------------------*/
+
+/* Overlays */
+.pszWidgetSearch .ui-widget-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+.pszWidgetSearch .ui-autocomplete {
+	position: absolute;
+	top: 0;
+	left: 0;
+	cursor: default;
+	-webkit-box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.10);
+	-moz-box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.10);
+	box-shadow: 1px 2px 5px rgba(0, 0, 0, 0.10);
+}
+
+
+/* workarounds */
+* html .pszWidgetSearch .ui-autocomplete { width:1px; } /* without this, the menu expands to 100% in IE6 */
+.pszWidgetSearch .ui-menu { list-style:none; padding: 2px; margin: 0; display:block; outline: none; }
+.pszWidgetSearch .ui-menu .ui-menu { margin-top: -3px; position: absolute; }
+.pszWidgetSearch .ui-menu .ui-menu-item { margin: 0; padding: 0; zoom: 1; width: 100%; }
+.pszWidgetSearch .ui-menu .ui-menu-divider { margin: 5px -2px 5px -2px; height: 0; font-size: 0; line-height: 0; border-width: 1px 0 0 0; }
+.pszWidgetSearch .ui-menu .ui-menu-item a { text-align:left; text-decoration: none; display: block; padding: 2px .4em; line-height: 1.5; zoom: 1; font-weight: normal; }
+.pszWidgetSearch .ui-menu .ui-menu-item a.ui-state-focus,
+.pszWidgetSearch .ui-menu .ui-menu-item a.ui-state-active { font-weight: normal; margin: -1px; }
+
+.pszWidgetSearch .ui-menu .ui-state-disabled { font-weight: normal; margin: .4em 0 .2em; line-height: 1.5; }
+.pszWidgetSearch .ui-menu .ui-state-disabled a { cursor: default; }
+
+/* icon support */
+.pszWidgetSearch .ui-menu-icons { position: relative; }
+.pszWidgetSearch .ui-menu-icons .ui-menu-item a { position: relative; padding-left: 2em; }
+
+/* left-aligned */
+.pszWidgetSearch .ui-menu .ui-icon { position: absolute; top: .2em; left: .2em; }
+
+/* right-aligned */
+.pszWidgetSearch .ui-menu .ui-menu-icon { position: static; float: right; }
+
+/* Component containers
+----------------------------------*/
+.pszWidgetSearch .ui-widget { font-family: Lucida Grande,Lucida Sans,Arial,sans-serif; font-size: 1.1em; }
+.pszWidgetSearch .ui-widget .ui-widget { font-size: 1em; }
+.pszWidgetSearch .ui-widget input, .pszWidgetSearch .ui-widget select, .pszWidgetSearch .ui-widget textarea, .pszWidgetSearch .ui-widget button { font-family: Lucida Grande,Lucida Sans,Arial,sans-serif; font-size: 1em; }
+.pszWidgetSearch .ui-widget-content { border: 1px solid #DDDDDD; background: #FAFAFA; color: #6E6E6E;}
+.pszWidgetSearch .ui-widget-content a { color: #6E6E6E; }
+.pszWidgetSearch .ui-widget-header { border: 1px solid #aed0ea; background: #deedf7 url(http://ocdn.eu/files/deploy/MmY7MDA_/e1dfd54e95a50a152c448ce0f85496dd.png) 50% 50% repeat-x; color: #222222; font-weight: bold; }
+.pszWidgetSearch .ui-widget-header a { color: #222222; }
+
+/* Interaction states
+----------------------------------*/
+.pszWidgetSearch .ui-state-default, .pszWidgetSearch .ui-widget-content .ui-state-default, .pszWidgetSearch .ui-widget-header .ui-state-default { border: 1px solid #aed0ea; background: #f1f1f1; font-weight: bold; color: #2779aa; }
+.pszWidgetSearch .ui-state-default a, .pszWidgetSearch .ui-state-default a:link, .pszWidgetSearch .ui-state-default a:visited { color: #2779aa; text-decoration: none; }
+.pszWidgetSearch .ui-state-hover, .pszWidgetSearch .ui-widget-content .ui-state-hover, .pszWidgetSearch .ui-widget-header .ui-state-hover, .pszWidgetSearch .ui-state-focus, .pszWidgetSearch .ui-widget-content .ui-state-focus, .pszWidgetSearch .ui-widget-header .ui-state-focus { border: 1px solid #F7B46F; background: #fff; font-weight: bold; color: #000; }
+.pszWidgetSearch .ui-state-hover a, .pszWidgetSearch .ui-state-hover a:hover, .pszWidgetSearch .ui-state-hover a:link, .pszWidgetSearch .ui-state-hover a:visited { color: #0070a3; text-decoration: none; }
+.pszWidgetSearch .ui-state-active, .pszWidgetSearch .ui-widget-content .ui-state-active, .pszWidgetSearch .ui-widget-header .ui-state-active { border: 1px solid #2694e8; background: #3baae3 url(http://ocdn.eu/files/deploy/YjQ7MDA_/40dbd3438ae9348cff27c586eb6b142c.png) 50% 50% repeat-x; font-weight: bold; color: #ffffff; }
+.pszWidgetSearch .ui-state-active a, .pszWidgetSearch .ui-state-active a:link, .pszWidgetSearch .ui-state-active a:visited { color: #ffffff; text-decoration: none; }
+
+/* Interaction Cues
+----------------------------------*/
+.pszWidgetSearch .ui-state-highlight, .pszWidgetSearch .ui-widget-content .ui-state-highlight, .pszWidgetSearch .ui-widget-header .ui-state-highlight  {border: 1px solid #f9dd34; background: #ffef8f url(http://ocdn.eu/files/deploy/N2Y7MDA_/d3cce7d7f63d015cdb0b56941d581060.png) 50% top repeat-x; color: #363636; }
+.pszWidgetSearch .ui-state-highlight a, .pszWidgetSearch .ui-widget-content .ui-state-highlight a, .pszWidgetSearch .ui-widget-header .ui-state-highlight a { color: #363636; }
+.pszWidgetSearch .ui-state-error, .pszWidgetSearch .ui-widget-content .ui-state-error, .pszWidgetSearch .ui-widget-header .ui-state-error {border: 1px solid #cd0a0a; background: #cd0a0a url(http://ocdn.eu/files/deploy/Zjk7MDA_/09157b3a07628d31140ca21018c799f7.png) 50% 50% repeat-x; color: #ffffff; }
+.pszWidgetSearch .ui-state-error a, .pszWidgetSearch .ui-widget-content .ui-state-error a, .pszWidgetSearch .ui-widget-header .ui-state-error a { color: #ffffff; }
+.pszWidgetSearch .ui-state-error-text, .pszWidgetSearch .ui-widget-content .ui-state-error-text, .pszWidgetSearch .ui-widget-header .ui-state-error-text { color: #ffffff; }
+.pszWidgetSearch .ui-priority-primary, .pszWidgetSearch .ui-widget-content .ui-priority-primary, .pszWidgetSearch .ui-widget-header .ui-priority-primary { font-weight: bold; }
+.pszWidgetSearch .ui-priority-secondary, .pszWidgetSearch .ui-widget-content .ui-priority-secondary, .pszWidgetSearch .ui-widget-header .ui-priority-secondary { opacity: .7; filter:Alpha(Opacity=70); font-weight: normal; }
+.pszWidgetSearch .ui-state-disabled, .pszWidgetSearch .ui-widget-content .ui-state-disabled, .pszWidgetSearch .ui-widget-header .ui-state-disabled { opacity: .35; filter:Alpha(Opacity=35); background-image: none; }
+.pszWidgetSearch .ui-state-disabled .ui-icon { filter:Alpha(Opacity=35); } /* For IE8 - See #6059 */
+
+/* Icons
+----------------------------------*/
+
+/* states and images */
+.pszWidgetSearch .ui-icon { width: 16px; height: 16px; background-image: url(http://ocdn.eu/files/deploy/MzU7MDA_/26901adab4b9797711e41a6a64491449.png); }
+.pszWidgetSearch .ui-widget-content .ui-icon {background-image: url(http://ocdn.eu/files/deploy/MzU7MDA_/26901adab4b9797711e41a6a64491449.png); }
+.pszWidgetSearch .ui-widget-header .ui-icon {background-image: url(http://ocdn.eu/files/deploy/MzU7MDA_/26901adab4b9797711e41a6a64491449.png); }
+.pszWidgetSearch .ui-state-default .ui-icon { background-image: url(http://ocdn.eu/files/deploy/NWU7MDA_/205a7ce2e39007d40bdbf94825c724b0.png); }
+.pszWidgetSearch .ui-state-hover .ui-icon, .pszWidgetSearch .ui-state-focus .ui-icon {background-image: url(http://ocdn.eu/files/deploy/M2E7MDA_/6df29a38ddb3190f593e02c6d670e526.png); }
+.pszWidgetSearch .ui-state-active .ui-icon {background-image: url(http://ocdn.eu/files/deploy/NzQ7MDA_/342bc03f6264c75d3f1d7f99e34295b9.png); }
+.pszWidgetSearch .ui-state-highlight .ui-icon {background-image: url(http://ocdn.eu/files/deploy/MmE7MDA_/2b99a5e48d3c3957d03027d36a25e8bb.png); }
+.pszWidgetSearch .ui-state-error .ui-icon, .pszWidgetSearch .ui-state-error-text .ui-icon {background-image: url(http://ocdn.eu/files/deploy/NzQ7MDA_/342bc03f6264c75d3f1d7f99e34295b9.png); }
+
+/* positioning */
+.pszWidgetSearch .ui-icon-carat-1-n { background-position: 0 0; }
+.pszWidgetSearch .ui-icon-carat-1-ne { background-position: -16px 0; }
+.pszWidgetSearch .ui-icon-carat-1-e { background-position: -32px 0; }
+.pszWidgetSearch .ui-icon-carat-1-se { background-position: -48px 0; }
+.pszWidgetSearch .ui-icon-carat-1-s { background-position: -64px 0; }
+.pszWidgetSearch .ui-icon-carat-1-sw { background-position: -80px 0; }
+.pszWidgetSearch .ui-icon-carat-1-w { background-position: -96px 0; }
+.pszWidgetSearch .ui-icon-carat-1-nw { background-position: -112px 0; }
+.pszWidgetSearch .ui-icon-carat-2-n-s { background-position: -128px 0; }
+.pszWidgetSearch .ui-icon-carat-2-e-w { background-position: -144px 0; }
+.pszWidgetSearch .ui-icon-triangle-1-n { background-position: 0 -16px; }
+.pszWidgetSearch .ui-icon-triangle-1-ne { background-position: -16px -16px; }
+.pszWidgetSearch .ui-icon-triangle-1-e { background-position: -32px -16px; }
+.pszWidgetSearch .ui-icon-triangle-1-se { background-position: -48px -16px; }
+.pszWidgetSearch .ui-icon-triangle-1-s { background-position: -64px -16px; }
+.pszWidgetSearch .ui-icon-triangle-1-sw { background-position: -80px -16px; }
+.pszWidgetSearch .ui-icon-triangle-1-w { background-position: -96px -16px; }
+.pszWidgetSearch .ui-icon-triangle-1-nw { background-position: -112px -16px; }
+.pszWidgetSearch .ui-icon-triangle-2-n-s { background-position: -128px -16px; }
+.pszWidgetSearch .ui-icon-triangle-2-e-w { background-position: -144px -16px; }
+.pszWidgetSearch .ui-icon-arrow-1-n { background-position: 0 -32px; }
+.pszWidgetSearch .ui-icon-arrow-1-ne { background-position: -16px -32px; }
+.pszWidgetSearch .ui-icon-arrow-1-e { background-position: -32px -32px; }
+.pszWidgetSearch .ui-icon-arrow-1-se { background-position: -48px -32px; }
+.pszWidgetSearch .ui-icon-arrow-1-s { background-position: -64px -32px; }
+.pszWidgetSearch .ui-icon-arrow-1-sw { background-position: -80px -32px; }
+.pszWidgetSearch .ui-icon-arrow-1-w { background-position: -96px -32px; }
+.pszWidgetSearch .ui-icon-arrow-1-nw { background-position: -112px -32px; }
+.pszWidgetSearch .ui-icon-arrow-2-n-s { background-position: -128px -32px; }
+.pszWidgetSearch .ui-icon-arrow-2-ne-sw { background-position: -144px -32px; }
+.pszWidgetSearch .ui-icon-arrow-2-e-w { background-position: -160px -32px; }
+.pszWidgetSearch .ui-icon-arrow-2-se-nw { background-position: -176px -32px; }
+.pszWidgetSearch .ui-icon-arrowstop-1-n { background-position: -192px -32px; }
+.pszWidgetSearch .ui-icon-arrowstop-1-e { background-position: -208px -32px; }
+.pszWidgetSearch .ui-icon-arrowstop-1-s { background-position: -224px -32px; }
+.pszWidgetSearch .ui-icon-arrowstop-1-w { background-position: -240px -32px; }
+.pszWidgetSearch .ui-icon-arrowthick-1-n { background-position: 0 -48px; }
+.pszWidgetSearch .ui-icon-arrowthick-1-ne { background-position: -16px -48px; }
+.pszWidgetSearch .ui-icon-arrowthick-1-e { background-position: -32px -48px; }
+.pszWidgetSearch .ui-icon-arrowthick-1-se { background-position: -48px -48px; }
+.pszWidgetSearch .ui-icon-arrowthick-1-s { background-position: -64px -48px; }
+.pszWidgetSearch .ui-icon-arrowthick-1-sw { background-position: -80px -48px; }
+.pszWidgetSearch .ui-icon-arrowthick-1-w { background-position: -96px -48px; }
+.pszWidgetSearch .ui-icon-arrowthick-1-nw { background-position: -112px -48px; }
+.pszWidgetSearch .ui-icon-arrowthick-2-n-s { background-position: -128px -48px; }
+.pszWidgetSearch .ui-icon-arrowthick-2-ne-sw { background-position: -144px -48px; }
+.pszWidgetSearch .ui-icon-arrowthick-2-e-w { background-position: -160px -48px; }
+.pszWidgetSearch .ui-icon-arrowthick-2-se-nw { background-position: -176px -48px; }
+.pszWidgetSearch .ui-icon-arrowthickstop-1-n { background-position: -192px -48px; }
+.pszWidgetSearch .ui-icon-arrowthickstop-1-e { background-position: -208px -48px; }
+.pszWidgetSearch .ui-icon-arrowthickstop-1-s { background-position: -224px -48px; }
+.pszWidgetSearch .ui-icon-arrowthickstop-1-w { background-position: -240px -48px; }
+.pszWidgetSearch .ui-icon-arrowreturnthick-1-w { background-position: 0 -64px; }
+.pszWidgetSearch .ui-icon-arrowreturnthick-1-n { background-position: -16px -64px; }
+.pszWidgetSearch .ui-icon-arrowreturnthick-1-e { background-position: -32px -64px; }
+.pszWidgetSearch .ui-icon-arrowreturnthick-1-s { background-position: -48px -64px; }
+.pszWidgetSearch .ui-icon-arrowreturn-1-w { background-position: -64px -64px; }
+.pszWidgetSearch .ui-icon-arrowreturn-1-n { background-position: -80px -64px; }
+.pszWidgetSearch .ui-icon-arrowreturn-1-e { background-position: -96px -64px; }
+.pszWidgetSearch .ui-icon-arrowreturn-1-s { background-position: -112px -64px; }
+.pszWidgetSearch .ui-icon-arrowrefresh-1-w { background-position: -128px -64px; }
+.pszWidgetSearch .ui-icon-arrowrefresh-1-n { background-position: -144px -64px; }
+.pszWidgetSearch .ui-icon-arrowrefresh-1-e { background-position: -160px -64px; }
+.pszWidgetSearch .ui-icon-arrowrefresh-1-s { background-position: -176px -64px; }
+.pszWidgetSearch .ui-icon-arrow-4 { background-position: 0 -80px; }
+.pszWidgetSearch .ui-icon-arrow-4-diag { background-position: -16px -80px; }
+.pszWidgetSearch .ui-icon-extlink { background-position: -32px -80px; }
+.pszWidgetSearch .ui-icon-newwin { background-position: -48px -80px; }
+.pszWidgetSearch .ui-icon-refresh { background-position: -64px -80px; }
+.pszWidgetSearch .ui-icon-shuffle { background-position: -80px -80px; }
+.pszWidgetSearch .ui-icon-transfer-e-w { background-position: -96px -80px; }
+.pszWidgetSearch .ui-icon-transferthick-e-w { background-position: -112px -80px; }
+.pszWidgetSearch .ui-icon-folder-collapsed { background-position: 0 -96px; }
+.pszWidgetSearch .ui-icon-folder-open { background-position: -16px -96px; }
+.pszWidgetSearch .ui-icon-document { background-position: -32px -96px; }
+.pszWidgetSearch .ui-icon-document-b { background-position: -48px -96px; }
+.pszWidgetSearch .ui-icon-note { background-position: -64px -96px; }
+.pszWidgetSearch .ui-icon-mail-closed { background-position: -80px -96px; }
+.pszWidgetSearch .ui-icon-mail-open { background-position: -96px -96px; }
+.pszWidgetSearch .ui-icon-suitcase { background-position: -112px -96px; }
+.pszWidgetSearch .ui-icon-comment { background-position: -128px -96px; }
+.pszWidgetSearch .ui-icon-person { background-position: -144px -96px; }
+.pszWidgetSearch .ui-icon-print { background-position: -160px -96px; }
+.pszWidgetSearch .ui-icon-trash { background-position: -176px -96px; }
+.pszWidgetSearch .ui-icon-locked { background-position: -192px -96px; }
+.pszWidgetSearch .ui-icon-unlocked { background-position: -208px -96px; }
+.pszWidgetSearch .ui-icon-bookmark { background-position: -224px -96px; }
+.pszWidgetSearch .ui-icon-tag { background-position: -240px -96px; }
+.pszWidgetSearch .ui-icon-home { background-position: 0 -112px; }
+.pszWidgetSearch .ui-icon-flag { background-position: -16px -112px; }
+.pszWidgetSearch .ui-icon-calendar { background-position: -32px -112px; }
+.pszWidgetSearch .ui-icon-cart { background-position: -48px -112px; }
+.pszWidgetSearch .ui-icon-pencil { background-position: -64px -112px; }
+.pszWidgetSearch .ui-icon-clock { background-position: -80px -112px; }
+.pszWidgetSearch .ui-icon-disk { background-position: -96px -112px; }
+.pszWidgetSearch .ui-icon-calculator { background-position: -112px -112px; }
+.pszWidgetSearch .ui-icon-zoomin { background-position: -128px -112px; }
+.pszWidgetSearch .ui-icon-zoomout { background-position: -144px -112px; }
+.pszWidgetSearch .ui-icon-search { background-position: -160px -112px; }
+.pszWidgetSearch .ui-icon-wrench { background-position: -176px -112px; }
+.pszWidgetSearch .ui-icon-gear { background-position: -192px -112px; }
+.pszWidgetSearch .ui-icon-heart { background-position: -208px -112px; }
+.pszWidgetSearch .ui-icon-star { background-position: -224px -112px; }
+.pszWidgetSearch .ui-icon-link { background-position: -240px -112px; }
+.pszWidgetSearch .ui-icon-cancel { background-position: 0 -128px; }
+.pszWidgetSearch .ui-icon-plus { background-position: -16px -128px; }
+.pszWidgetSearch .ui-icon-plusthick { background-position: -32px -128px; }
+.pszWidgetSearch .ui-icon-minus { background-position: -48px -128px; }
+.pszWidgetSearch .ui-icon-minusthick { background-position: -64px -128px; }
+.pszWidgetSearch .ui-icon-close { background-position: -80px -128px; }
+.pszWidgetSearch .ui-icon-closethick { background-position: -96px -128px; }
+.pszWidgetSearch .ui-icon-key { background-position: -112px -128px; }
+.pszWidgetSearch .ui-icon-lightbulb { background-position: -128px -128px; }
+.pszWidgetSearch .ui-icon-scissors { background-position: -144px -128px; }
+.pszWidgetSearch .ui-icon-clipboard { background-position: -160px -128px; }
+.pszWidgetSearch .ui-icon-copy { background-position: -176px -128px; }
+.pszWidgetSearch .ui-icon-contact { background-position: -192px -128px; }
+.pszWidgetSearch .ui-icon-image { background-position: -208px -128px; }
+.pszWidgetSearch .ui-icon-video { background-position: -224px -128px; }
+.pszWidgetSearch .ui-icon-script { background-position: -240px -128px; }
+.pszWidgetSearch .ui-icon-alert { background-position: 0 -144px; }
+.pszWidgetSearch .ui-icon-info { background-position: -16px -144px; }
+.pszWidgetSearch .ui-icon-notice { background-position: -32px -144px; }
+.pszWidgetSearch .ui-icon-help { background-position: -48px -144px; }
+.pszWidgetSearch .ui-icon-check { background-position: -64px -144px; }
+.pszWidgetSearch .ui-icon-bullet { background-position: -80px -144px; }
+.pszWidgetSearch .ui-icon-radio-on { background-position: -96px -144px; }
+.pszWidgetSearch .ui-icon-radio-off { background-position: -112px -144px; }
+.pszWidgetSearch .ui-icon-pin-w { background-position: -128px -144px; }
+.pszWidgetSearch .ui-icon-pin-s { background-position: -144px -144px; }
+.pszWidgetSearch .ui-icon-play { background-position: 0 -160px; }
+.pszWidgetSearch .ui-icon-pause { background-position: -16px -160px; }
+.pszWidgetSearch .ui-icon-seek-next { background-position: -32px -160px; }
+.pszWidgetSearch .ui-icon-seek-prev { background-position: -48px -160px; }
+.pszWidgetSearch .ui-icon-seek-end { background-position: -64px -160px; }
+.pszWidgetSearch .ui-icon-seek-start { background-position: -80px -160px; }
+/* ui-icon-seek-first is deprecated, use ui-icon-seek-start instead */
+.pszWidgetSearch .ui-icon-seek-first { background-position: -80px -160px; }
+.pszWidgetSearch .ui-icon-stop { background-position: -96px -160px; }
+.pszWidgetSearch .ui-icon-eject { background-position: -112px -160px; }
+.pszWidgetSearch .ui-icon-volume-off { background-position: -128px -160px; }
+.pszWidgetSearch .ui-icon-volume-on { background-position: -144px -160px; }
+.pszWidgetSearch .ui-icon-power { background-position: 0 -176px; }
+.pszWidgetSearch .ui-icon-signal-diag { background-position: -16px -176px; }
+.pszWidgetSearch .ui-icon-signal { background-position: -32px -176px; }
+.pszWidgetSearch .ui-icon-battery-0 { background-position: -48px -176px; }
+.pszWidgetSearch .ui-icon-battery-1 { background-position: -64px -176px; }
+.pszWidgetSearch .ui-icon-battery-2 { background-position: -80px -176px; }
+.pszWidgetSearch .ui-icon-battery-3 { background-position: -96px -176px; }
+.pszWidgetSearch .ui-icon-circle-plus { background-position: 0 -192px; }
+.pszWidgetSearch .ui-icon-circle-minus { background-position: -16px -192px; }
+.pszWidgetSearch .ui-icon-circle-close { background-position: -32px -192px; }
+.pszWidgetSearch .ui-icon-circle-triangle-e { background-position: -48px -192px; }
+.pszWidgetSearch .ui-icon-circle-triangle-s { background-position: -64px -192px; }
+.pszWidgetSearch .ui-icon-circle-triangle-w { background-position: -80px -192px; }
+.pszWidgetSearch .ui-icon-circle-triangle-n { background-position: -96px -192px; }
+.pszWidgetSearch .ui-icon-circle-arrow-e { background-position: -112px -192px; }
+.pszWidgetSearch .ui-icon-circle-arrow-s { background-position: -128px -192px; }
+.pszWidgetSearch .ui-icon-circle-arrow-w { background-position: -144px -192px; }
+.pszWidgetSearch .ui-icon-circle-arrow-n { background-position: -160px -192px; }
+.pszWidgetSearch .ui-icon-circle-zoomin { background-position: -176px -192px; }
+.pszWidgetSearch .ui-icon-circle-zoomout { background-position: -192px -192px; }
+.pszWidgetSearch .ui-icon-circle-check { background-position: -208px -192px; }
+.pszWidgetSearch .ui-icon-circlesmall-plus { background-position: 0 -208px; }
+.pszWidgetSearch .ui-icon-circlesmall-minus { background-position: -16px -208px; }
+.pszWidgetSearch .ui-icon-circlesmall-close { background-position: -32px -208px; }
+.pszWidgetSearch .ui-icon-squaresmall-plus { background-position: -48px -208px; }
+.pszWidgetSearch .ui-icon-squaresmall-minus { background-position: -64px -208px; }
+.pszWidgetSearch .ui-icon-squaresmall-close { background-position: -80px -208px; }
+.pszWidgetSearch .ui-icon-grip-dotted-vertical { background-position: 0 -224px; }
+.pszWidgetSearch .ui-icon-grip-dotted-horizontal { background-position: -16px -224px; }
+.pszWidgetSearch .ui-icon-grip-solid-vertical { background-position: -32px -224px; }
+.pszWidgetSearch .ui-icon-grip-solid-horizontal { background-position: -48px -224px; }
+.pszWidgetSearch .ui-icon-gripsmall-diagonal-se { background-position: -64px -224px; }
+.pszWidgetSearch .ui-icon-grip-diagonal-se { background-position: -80px -224px; }
+
+
+/* Misc visuals
+----------------------------------*/
+
+/* Corner radius */
+.pszWidgetSearch .ui-corner-all, .pszWidgetSearch .ui-corner-top, .pszWidgetSearch .ui-corner-left, .pszWidgetSearch .ui-corner-tl { -moz-border-radius-topleft: 3px; -webkit-border-top-left-radius: 3px; -khtml-border-top-left-radius: 3px; border-top-left-radius: 3px; }
+.pszWidgetSearch .ui-corner-all, .pszWidgetSearch .ui-corner-top, .pszWidgetSearch .ui-corner-right, .pszWidgetSearch .ui-corner-tr { -moz-border-radius-topright: 3px; -webkit-border-top-right-radius: 3px; -khtml-border-top-right-radius: 3px; border-top-right-radius: 3px; }
+.pszWidgetSearch .ui-corner-all, .pszWidgetSearch .ui-corner-bottom, .pszWidgetSearch .ui-corner-left, .pszWidgetSearch .ui-corner-bl { -moz-border-radius-bottomleft: 3px; -webkit-border-bottom-left-radius: 3px; -khtml-border-bottom-left-radius: 3px; border-bottom-left-radius: 3px; }
+.pszWidgetSearch .ui-corner-all, .pszWidgetSearch .ui-corner-bottom, .pszWidgetSearch .ui-corner-right, .pszWidgetSearch .ui-corner-br { -moz-border-radius-bottomright: 3px; -webkit-border-bottom-right-radius: 3px; -khtml-border-bottom-right-radius: 3px; border-bottom-right-radius: 3px; }
+
+/* Overlays */
+.pszWidgetSearch .ui-widget-overlay { background: #eeeeee url(http://ocdn.eu/files/deploy/ODk7MDA_/d987b086c6e96fb45055361de17ac08e.png) 50% 50% repeat; opacity: .8;filter:Alpha(Opacity=80); }
+.pszWidgetSearch .ui-widget-shadow { margin: -7px 0 0 -7px; padding: 7px; background: #000000 url(http://ocdn.eu/files/deploy/YWU7MDA_/485eaacf0adca5834aa66dcbcc0b69df.png) 50% top repeat-x; opacity: .3;filter:Alpha(Opacity=30); -moz-border-radius: 8px; -khtml-border-radius: 8px; -webkit-border-radius: 8px; border-radius: 8px; }
+
