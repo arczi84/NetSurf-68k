@@ -7,3 +7,5 @@ textarea { border: medium inset #ddd; }
 select { background-color: #ddd; border: medium groove #ddd; }
 fp(0x41dbe4bc): illegal fclose
 fp(0xa748a44): illegal fclose
+fp(0xb75011c): illegal fclose
+fp(0x41943b54): illegal fclose
