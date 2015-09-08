@@ -7,6 +7,7 @@
 #
 # Version	Domain	Domain from Set-Cookie	Path	Path from Set-Cookie	Secure	HTTP-Only	Expires	Last used	No destroy	Name	Value	Value was quoted	Scheme	URL	Comment
 Version:	102
+<<<<<<< HEAD
 0	www.os4depot.net	0	/	0	0	0	1472158619	0	0	cookieid	857	0	http	http://www.os4depot.net/?function=showfile&file=development/utility/aisshelper.lha	
 0	.abime.net	1	/	1	0	0	1472325961	1440885624	0	eablastvisit	1440008473	0	unused	unused	
 0	.abime.net	1	/	1	0	0	1472325961	1440885624	0	eablastactivity	0	0	unused	unused	
@@ -64,3 +65,5 @@ Version:	102
 0	.viralka.pl	1	/	1	0	1	1472297015	1440768219	0	__cfduid	d51d70c0949e34a56f0871f91ff04c5981440761015	0	unused	unused	
 0	.sport.pl	1	/	1	0	0	1503862385	0	0	test	93A105A236A193k1440790385269	0	unused	unused	
 0	.go.usa.gov	1	/	1	0	0	1443488581	0	0	SESSde0b5f9d87dd33a2ca213012caa0f2bb	179osvk427nctfs0sfnqoaja71	0	unused	unused	
+=======
+>>>>>>> origin/NetSurf-68k
