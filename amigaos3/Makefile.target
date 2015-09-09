@@ -9,10 +9,15 @@ CFLAGS += '-DNETSURF_FB_RESPATH="$(NETSURF_FB_RESPATH)"'
 SDL_NOVA := NO
 OLD_FETCH := NO
 LIBNIX_VER := 3
-DEBUG_BUILD:=YES
+DEBUG_BUILD:=Y
+USE_TIMER:=NO
 
 ifeq ($(OLD_FETCH),YES)
 CFLAGS += -DUSE_OLD_FETCH
+endif
+
+ifeq ($(USE_TIMER),NO)
+CFLAGS += -DNO_TIMER
 endif
 
 $(eval $(call feature_enabled,PNG,-DWITH_PNG,,PNG (libpng)  ))
@@ -30,10 +35,13 @@ ifeq ($(LIBNIX),YES)
 	endif
 endif	
 
-CFLAGS += -std=c99 -I. -Dnsamigaos3 -D__BIG_ENDIAN_BGRA__ \
-			-U__STRICT_ANSI__ -D__m68k__
+#CFLAGS += -std=c99 -I. -Dnsamigaos3 -D__BIG_ENDIAN_BGRA__ \
+#			-U__STRICT_ANSI__ -D__m68k__
 #CFLAGS += -D__USE_BASETYPE__ -D__USE_INLINE__  -DSTMATH 
 
+CFLAGS +=  -Dnsamigaos3 -D__BIG_ENDIAN_BGRA__ -DSTMATH \
+			-D__AMIGA__ -D__USE_INLINE__ 
+			
 ifeq ($(HOST),clib2)
 CFLAGS += -I/home/adminuser/host/opt/netsurf/share/include -Dsmall \
 		-I/home/adminuser/host/usr/local/amiga/clib/m68k-unknown-amigaos/env/include
@@ -42,7 +50,7 @@ CFLAGS += -I/opt/netsurf/share/include -Dsmall \
 		-I/usr/local/amiga/m68k-amigaos/include
 endif		
 
-CFLAGS += -D_BSD_SOURCE \
+CFLAGS += -std=c99 -D_BSD_SOURCE \
 		-D_XOPEN_SOURCE=600 \
 		-D_POSIX_C_SOURCE=200112L \
 		-DPATH_MAX=1024 
@@ -64,7 +72,7 @@ else
 	endif
 endif
 
-LDFLAGS += -liconv  -lutf8proc 
+LDFLAGS += -liconv  -lutf8proc SDL_systimer.go -lnsutils
 LDFLAGS += -Wl,--whole-archive -ldom -Wl,--no-whole-archive -lcss -lexpat -lhubbub
 
 ifeq ($(LIBNIX),YES)
@@ -75,7 +83,7 @@ else
 	LDFLAGS += -lcurl -lssl -lcrypto
 endif
 LDFLAGS += -lwapcaplet -lparserutils 
-LDFLAGS += -lnsgif -lnsbmp -lpng- -lz 
+LDFLAGS += -lnsgif -lnsbmp -lpng1617 -lz 
 
 ifeq ($(HOST),clib2)
 LDFLAGS += -ltre -lpbl
@@ -95,11 +103,12 @@ ifeq ($(RTG),YES)
 		endif
 	endif 
 else
-	LDFLAGS += SDL_systimer.go -lSDL-AGA c2p8_040_asm.o c2p8_040_dbl_asm.o  
-#	LDFLAGS += 	SDL_systimer.go -lSDL_nova3
+	ifeq ($(NO_TIMER),NO)
+		LDFLAGS +=  -lSDL-AGA-debug c2p8_040_asm.o c2p8_040_dbl_asm.o  
+	else
+		LDFLAGS += -lSDL_AGA c2p8_040_asm.o c2p8_040_dbl_asm.o  
+	endif
 endif  ## RTG
-
-LDFLAGS += -L. -ltheme -lauto -lnsutils 
 
 ifeq ($(HOST),clib2)
 LDFLAGS += -lm -lc -lamiga2 -lclib0 -lnet -leprintf
@@ -109,11 +118,10 @@ ifeq ($(LIBNIX),YES)
 		LDFLAGS += -Wl,--wrap=poll -Wl,--wrap=gmtime -Wl,--wrap=signal 
 	endif
 	LDFLAGS +=  -lregex -lc2-nix 
-endif
-
+	
 endif
 LDFLAGS += -Wl,--allow-multiple-definition 
-LDFLAGS += #-Wl,--wrap=gettimeofday
+endif
 		
 ifeq ($(NETSURF_USE_MOZJS), YES)
 LDFLAGS += -ljs
@@ -126,13 +134,18 @@ ifeq ($(LIBNIX),YES)
 	else
 		LDFLAGS += -lnix3-fpu 
 	endif
-LDFLAGS += -ldebug -lm2.2 
+LDFLAGS += -lm2.2 
 LDFLAGS += #-Wl,--wrap=free
+else
+#LDFLAGS += -Wl,--wrap=gettimeofday
+LDFLAGS += -lc2 #timerbase.o #gettimeofday.o -lc
 endif
 
 ifeq ($(DEBUG_BUILD),YES)
 	LDFLAGS +=  -ltheme-o  -lthrobber 
 endif
+LDFLAGS += -L. -ltheme -lauto
+LDFLAGS += -ldebug 
 # ----------------------------------------------------------------------------
 # Source file setup
 # ----------------------------------------------------------------------------

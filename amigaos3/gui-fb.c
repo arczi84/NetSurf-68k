@@ -66,6 +66,23 @@
 
 #define NSFB_TOOLBAR_DEFAULT_LAYOUT "blfsrutc"
 
+#if defined AGA || NOVA_SDL 
+struct Library * KeymapBase;
+struct Library * CxBase;
+#endif
+#if defined AGA || __libnix__
+
+#if defined __ixemul__
+
+struct Device *TimerBase = NULL;
+
+#else
+struct Device* TimerBase;
+static struct IORequest timereq;
+#endif
+
+#endif
+
 #define osk_image pointer_image
 #define move_image hand_image
 extern struct fbtk_bitmap null_image;

@@ -562,7 +562,7 @@ static int sdl_initialise(nsfb_t *nsfb)
         return -1;
 
     /* initialise SDL library */
-#ifdef AGA_OLD
+#ifdef NO_TIMER
     if (SDL_Init(SDL_INIT_VIDEO) < 0 ) {
 #else
     if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0 ) {
@@ -703,7 +703,7 @@ static bool sdl_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 
     nsfb = nsfb; /* unused */
 
-#ifdef AGA_OLD
+#ifdef NO_TIMER
 	timeout = 0;
 #endif
 

@@ -21,12 +21,44 @@
 #include <inttypes.h>
 #include <sys/types.h>
 #include <dos/dos.h>
+#include <proto/dos.h>
+#include <sys/time.h>
 
 #include "utils/config.h"
 #include "utils/log.h"
 #include "utils/utils.h"
 #include <amigaos3/misc.h>
 #include "utils/nsoption.h"
+
+#include <proto/timer.h>
+ULONG __timerunit = UNIT_MICROHZ;
+
+long __gmtoffset;
+
+#if 1
+
+int __wrap_gettimeofday(struct timeval *tv, struct timezone *tzp)
+{
+  if (tv) {
+    #if 1// libnix < 3.x
+    struct DateStamp t;
+    DateStamp(&t); /* Get timestamp */
+    tv->tv_sec=((t.ds_Days+2922)*1440+t.ds_Minute+__gmtoffset)*60+
+               t.ds_Tick/TICKS_PER_SECOND;
+    tv->tv_usec=(t.ds_Tick%TICKS_PER_SECOND)*1000000/TICKS_PER_SECOND;
+    #else
+    GetSysTime(tv);
+    tv->tv_sec += (252460800 + (60*__gmtoffset));
+    #endif
+  }
+  if (tzp) {
+    tzp->tz_minuteswest = 0;
+    tzp->tz_dsttime = 0;
+  }
+
+  return 0;
+}
+#endif
 
 void warnx(void);
 void __iob(void){};

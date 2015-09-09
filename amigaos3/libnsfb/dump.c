@@ -18,14 +18,7 @@
 #include "surface.h"
 
 /* exported interface documented in libnsfb.h */
-/*
-#ifndef __libnix__
-bool
-nsfb_dump(nsfb_t *nsfb, int fd)
-{
-    return false;
-}
-#else*/
+
 bool
 nsfb_dump(nsfb_t *nsfb, int fd)
 {
@@ -55,7 +48,7 @@ nsfb_dump(nsfb_t *nsfb, int fd)
 
     return true;
 }
-//#endif
+
 /*
  * Local variables:
  *  c-basic-offset: 4

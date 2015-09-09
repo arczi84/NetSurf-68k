@@ -24,10 +24,12 @@
 #include <sys/utsname.h>
 #include <errno.h>
 
+#include <dos/dos.h>
 #include <proto/dos.h>
+#include <sys/time.h>
 #include <ncurses/ncurses.h>
 #include <libraries/bsdsocket.h>
-#include <clib/exec_protos.h>
+//#include <clib/exec_protos.h>
 
 #include "utils/log.h"
 #include "utils/utils.h"
@@ -39,6 +41,27 @@
 #include <sys/termios.h>
 
 #define NSIG     9
+
+int __wrap_gettimeofday(struct timeval *tv, struct timezone *tzp)
+{
+  if (tv) {
+    struct DateStamp t;
+    DateStamp(&t); /* Get timestamp */
+    tv->tv_sec=((t.ds_Days+2922)*1440+t.ds_Minute+__gmtoffset)*60+
+               t.ds_Tick/TICKS_PER_SECOND;
+    tv->tv_usec=(t.ds_Tick%TICKS_PER_SECOND)*1000000/TICKS_PER_SECOND;
+  }
+  if (tzp) {
+    /* since AmigaOS doesn't support timezones, we always return
+     * GMT...
+     */
+    tzp->tz_minuteswest = 0;
+    tzp->tz_dsttime = 0;
+  }
+
+  return 0;
+}
+
 
 void *old_ptr=0;
 
@@ -80,7 +103,7 @@ int uname(struct utsname *uts)
 #if 0
 long __gmtoffset=0;
 
-#include <devices/timer.h>
+//#include <devices/timer.h>
 
 int gettimeofday(struct timeval *tv, struct timezone *tzp)
 {

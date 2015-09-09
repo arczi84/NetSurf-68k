@@ -34,7 +34,7 @@
 #ifdef RTG
 #define FBTK_DPI 90 /**< screen DPI */
 #else
-#define FBTK_DPI 105 /**< screen DPI */
+#define FBTK_DPI 110 /**< screen DPI */
 #endif
 
 typedef struct fbtk_widget_s fbtk_widget_t;

@@ -21,7 +21,6 @@ max_fetchers:20
 max_fetchers_per_host:6
 max_cached_fetch_handles:5
 scale_aga:80
-window_depth:32
 mobile_mode:0
 youtube_autoplay:1
 download_path:SYS:Internet/Downloads/
@@ -38,6 +37,7 @@ fb_face_monospace:PROGDIR:Fonts/DejaVuSansMono.ttf
 fb_face_monospace_bold:PROGDIR:Fonts/DejaVuSansMono-Bold.ttf
 fb_face_cursive:PROGDIR:Fonts/DejaVuSans-Oblique.ttf
 fb_face_fantasy:PROGDIR:Fonts/DejaVuSans-Oblique.ttf
+lastpage_url:http://www.ppa.pl/
 favourite_1_url:http://forum.amiga.sk/
 favourite_2_url:www.amigans.net
 favourite_3_url:www.amigaworld.net

@@ -95,16 +95,18 @@
 #include <proto/dos.h>
 #include <dos/dostags.h>
 #include <proto/intuition.h>
+#include <sys/time.h>
 
 #if defined AGA || __libnix__
-//#include <proto/timer.h>
-//#include <sys/time.h>
 
-//#include <clib/timer_protos.h>
-//#include <clib/exec_protos.h>
+#if defined __ixemul__
 
-//struct Device* TimerBase;
-//static struct IORequest timereq;
+struct Device *TimerBase; //Nie może być NULL!
+
+#else
+struct Device* TimerBase;
+static struct IORequest timereq;
+#endif
 
 #endif
 
@@ -5066,8 +5068,10 @@ void OpenLibs()
 	CxBase = OpenLibrary("commodities.library", 37);
 #endif
 #if defined __libnix__ || AGA || NOVA_SDL
-//	OpenDevice("timer.device", 0, &timereq, 0);
-//	TimerBase = timereq.io_Device;
+#if !defined __ixemul__
+	OpenDevice("timer.device", 0, &timereq, 0);
+	TimerBase = timereq.io_Device;
+#endif
 #endif	
 #ifndef USE_OLD_FETCH
 	LocaleBase = OpenLibrary("locale.library",  38);
@@ -5081,9 +5085,12 @@ void CloseLibs()
 	if (CxBase)     CloseLibrary(CxBase);
 #endif
 #if defined __libnix__  || AGA || NOVA_SDL
-	//if(TimerBase) CloseDevice(&timereq);
+	///if(TimerBase) CloseDevice(&timereq);
 #endif	
 	if(LocaleBase) CloseLibrary(LocaleBase);
+#ifdef __ixemul__
+	//if(DOSBase) CloseLibrary(DOSBase);
+#endif
 }
 
 
