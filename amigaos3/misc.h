@@ -1,6 +1,6 @@
 /* AmigaOS 3 misc.h file */
 
-
+int TimeOut;
 char *substring(char *string, int position, int length);
 char *insert_dot(char *a);
 void append(char subject[], const char insert[], int pos);

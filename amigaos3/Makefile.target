@@ -6,11 +6,11 @@ override  TARGET = amigaos3
 override  NETSURF_FB_FONTPATH="PROGDIR:Fonts"
 CFLAGS += '-DNETSURF_FB_RESPATH="$(NETSURF_FB_RESPATH)"'
 
-SDL_NOVA := NO
-OLD_FETCH := NO
-LIBNIX_VER := 3
-DEBUG_BUILD:=Y
-USE_TIMER:=NO
+SDL_NOVA 	:= 	NO
+OLD_FETCH 	:= 	NO
+LIBNIX_VER 	:= 	3
+DEBUG_BUILD	:=	NO
+USE_TIMER	:=	YES
 
 ifeq ($(OLD_FETCH),YES)
 CFLAGS += -DUSE_OLD_FETCH
@@ -29,15 +29,17 @@ ifeq ($(NETSURF_FB_FONTLIB),freetype)
   LDFLAGS += -lft2
 endif
 
+ifeq ($(HOST),clib2)
+LIBNIX := NO
+endif
+
 ifeq ($(LIBNIX),YES)
 	ifeq ($(LIBNIX_VER),3)
 		  CFLAGS += -DHAVE_STRNDUP
 	endif
 endif	
 
-#CFLAGS += -std=c99 -I. -Dnsamigaos3 -D__BIG_ENDIAN_BGRA__ \
-#			-U__STRICT_ANSI__ -D__m68k__
-#CFLAGS += -D__USE_BASETYPE__ -D__USE_INLINE__  -DSTMATH 
+#CFLAGS += -U__STRICT_ANSI__ -D__m68k__-D__USE_BASETYPE__ 
 
 CFLAGS +=  -Dnsamigaos3 -D__BIG_ENDIAN_BGRA__ -DSTMATH \
 			-D__AMIGA__ -D__USE_INLINE__ 
@@ -47,7 +49,8 @@ CFLAGS += -I/home/adminuser/host/opt/netsurf/share/include -Dsmall \
 		-I/home/adminuser/host/usr/local/amiga/clib/m68k-unknown-amigaos/env/include
 else
 CFLAGS += -I/opt/netsurf/share/include -Dsmall \
-		-I/usr/local/amiga/m68k-amigaos/include
+		-I/usr/local/amiga/m68k-amigaos/include \
+		-I/usr/local/amiga/m68k-amigaos/env/include
 endif		
 
 CFLAGS += -std=c99 -D_BSD_SOURCE \
@@ -72,18 +75,17 @@ else
 	endif
 endif
 
-LDFLAGS += -liconv  -lutf8proc SDL_systimer.go -lnsutils
+LDFLAGS += -liconv  -lutf8proc -lnsutils #-nog
 LDFLAGS += -Wl,--whole-archive -ldom -Wl,--no-whole-archive -lcss -lexpat -lhubbub
 
 ifeq ($(LIBNIX),YES)
-	#LDFLAGS += -lcurl -lcurl-libnix  -lssl-libnix -lcrypto-libnix -lsocket  -lsocket881
 	LDFLAGS += -lcurl.new-libnix -lssl.new-libnix -lcrypto.ok \
-	-lcrypto.new-libnix  -lsocket  -lsocket881 #open.o  
+	-lcrypto.new-libnix  -lsocket  -lsocket881
 else
 	LDFLAGS += -lcurl -lssl -lcrypto
 endif
 LDFLAGS += -lwapcaplet -lparserutils 
-LDFLAGS += -lnsgif -lnsbmp -lpng1617 -lz 
+LDFLAGS += -lnsgif -lnsbmp -lpng16 -lz -ltre
 
 ifeq ($(HOST),clib2)
 LDFLAGS += -ltre -lpbl
@@ -103,12 +105,12 @@ ifeq ($(RTG),YES)
 		endif
 	endif 
 else
-	ifeq ($(NO_TIMER),NO)
-		LDFLAGS +=  -lSDL-AGA-debug c2p8_040_asm.o c2p8_040_dbl_asm.o  
+	ifeq ($(USE_TIMER),YES)
+		LDFLAGS +=   SDL_systimer.go -lSDL-AGA c2p8_040_asm.o c2p8_040_dbl_asm.o  
 	else
-		LDFLAGS += -lSDL_AGA c2p8_040_asm.o c2p8_040_dbl_asm.o  
+		LDFLAGS += SDL_systimer.go -lSDL_AGA c2p8_040_asm.o c2p8_040_dbl_asm.o  
 	endif
-endif  ## RTG
+endif  ## RTG SDL_timer.go
 
 ifeq ($(HOST),clib2)
 LDFLAGS += -lm -lc -lamiga2 -lclib0 -lnet -leprintf
@@ -135,17 +137,16 @@ ifeq ($(LIBNIX),YES)
 		LDFLAGS += -lnix3-fpu 
 	endif
 LDFLAGS += -lm2.2 
-LDFLAGS += #-Wl,--wrap=free
-else
 #LDFLAGS += -Wl,--wrap=gettimeofday
-LDFLAGS += -lc2 #timerbase.o #gettimeofday.o -lc
+else
+LDFLAGS += -lc2 -lc
 endif
 
 ifeq ($(DEBUG_BUILD),YES)
 	LDFLAGS +=  -ltheme-o  -lthrobber 
 endif
 LDFLAGS += -L. -ltheme -lauto
-LDFLAGS += -ldebug 
+LDFLAGS += -ldebug
 # ----------------------------------------------------------------------------
 # Source file setup
 # ----------------------------------------------------------------------------
@@ -224,12 +225,12 @@ ifneq ($(NETSURF_FB_FONTLIB),freetype)
 	PARAM3="-nottf"
 endif
 
-ifeq ($(NETSURF_USE_MOZJS),NO)
-	PARAM4="-nojs"
+ifeq ($(NETSURF_USE_MOZJS),YES)
+	PARAM4="-js"
 endif
 
-ifeq ($(DEBUG),NO)
-	PARAM5="-nodebug"
+ifeq ($(DEBUG),YES)
+	PARAM5="-debug"
 endif
 
 PARAMS:=$(PARAM1)$(PARAM2)$(PARAM3)$(PARAM4)$(PARAM5)

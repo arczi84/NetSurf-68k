@@ -26,10 +26,10 @@
 
 #include <dos/dos.h>
 #include <proto/dos.h>
-#include <sys/time.h>
+
 #include <ncurses/ncurses.h>
 #include <libraries/bsdsocket.h>
-//#include <clib/exec_protos.h>
+#include <clib/exec_protos.h>
 
 #include "utils/log.h"
 #include "utils/utils.h"
@@ -41,6 +41,10 @@
 #include <sys/termios.h>
 
 #define NSIG     9
+
+#if 0
+
+long __gmtoffset;
 
 int __wrap_gettimeofday(struct timeval *tv, struct timezone *tzp)
 {
@@ -62,30 +66,7 @@ int __wrap_gettimeofday(struct timeval *tv, struct timezone *tzp)
   return 0;
 }
 
-
-void *old_ptr=0;
-
-void free2(void *ptr)
-{
-	//printf("1 Pointer before:%p\n",ptr);
-	if (!ptr)
-		return;
-	//if ((ptr!=NULL) && (ptr) && (ptr!=0)){
-	//	
-if (ptr != old_ptr)
-			FreeVec(ptr);
-	old_ptr = ptr;			
-	//printf("2 Pointer after:%p\n",ptr);
-		
-	//}
-	//
-	//ptr=0;
-	
-	//FreeVec(ptr);
-	//realloc(ptr,0);
-	//printf("3 Pointer after 0:%p\n",ptr);
-	return;
-}
+#endif
 
 int uname(struct utsname *uts)
 {
@@ -99,42 +80,6 @@ int uname(struct utsname *uts)
 	strcpy(uts->nodename, "amiga");
 	strcpy(uts->machine, "m68k");
 }
-
-#if 0
-long __gmtoffset=0;
-
-//#include <devices/timer.h>
-
-int gettimeofday(struct timeval *tv, struct timezone *tzp)
-{
-  if (tv) {
-    #if 1 // libnix < 3.x
-    struct DateStamp t;
-    DateStamp(&t); /* Get timestamp */
-    tv->tv_sec=((t.ds_Days+2922)*1440+t.ds_Minute+__gmtoffset)*60+
-               t.ds_Tick/TICKS_PER_SECOND;
-    tv->tv_usec=(t.ds_Tick%TICKS_PER_SECOND)*1000000/TICKS_PER_SECOND;
-    #else
-    GetSysTime(tv);
-    tv->tv_sec += (252460800 + (60*__gmtoffset));
-    #endif
-  }
-  if (tzp) {
-    tzp->tz_minuteswest = __gmtoffset;
-    tzp->tz_dsttime = -1;
-  }
-
-  return 0;
-}
-#endif
-
-/*
-void closesocket(int s)
-{
-    CloseSocket(s);
-}
-*/
-
 
 int tcgetattr(int fd, struct termios *t)
 {

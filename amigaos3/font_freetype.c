@@ -387,7 +387,7 @@ static void fb_fill_scalar(const plot_font_style_t *fstyle, FTC_Scaler srec)
 #if defined AGA
 	srec->x_res = srec->y_res = browser_get_dpi();
 	//nsoption_int(font_size)-63;//72;//;
-	Printf("browser_get_dpi()=%d\n",browser_get_dpi());
+	//Printf("browser_get_dpi()=%d\n",browser_get_dpi());
 #else
 	srec->x_res = srec->y_res = browser_get_dpi()-10;//72;
 #endif

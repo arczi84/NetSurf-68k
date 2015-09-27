@@ -210,9 +210,14 @@ bool content_can_reformat(hlcache_handle *h)
 
 	return (c->handler->reformat != NULL);
 }
+
+#include "amigaos3/misc.h"
 #if defined __libnix__	
 void ftoa(float n, char *res, int afterpoint);
 #endif
+
+#include <clib/exec_protos.h>
+
 static void content_update_status(struct content *c)
 {
 	if (c->status == CONTENT_STATUS_LOADING ||
@@ -222,6 +227,8 @@ static void content_update_status(struct content *c)
 				"%s%s%s", messages_get("Fetching"),
 				c->sub_status[0] != '\0' ? ", " : " ",
 				c->sub_status);
+		TimeOut = 0;
+		SetTaskPri(FindTask(0), 10);				
 	} else {
 		unsigned int time = c->time;
 		#if defined __libnix__		
@@ -238,7 +245,7 @@ static void content_update_status(struct content *c)
 		snprintf(c->status_message, sizeof (c->status_message),
 				"%s (%.1fs)", messages_get("Done"),
 				(float) time / 100);
-		#endif
+		#endif	
 	}
 }
 
@@ -335,6 +342,12 @@ void content_set_done(struct content *c)
 	c->time = wallclock() - c->time;
 	content_update_status(c);
 	content_broadcast(c, CONTENT_MSG_DONE, msg_data);
+		
+	if (!nsoption_bool(warp_mode))
+	{	
+		TimeOut = 1;
+		SetTaskPri(FindTask(0), -1);
+	}
 }
 
 /**

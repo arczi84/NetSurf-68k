@@ -22,6 +22,7 @@
 #include "cursor.h"
 
 #include "utils/nsoption.h"
+#include "amigaos3/misc.h"
 
 
 enum nsfb_key_code_e sdl_nsfb_map[] = {
@@ -541,7 +542,7 @@ static int sdl_set_geometry(nsfb_t *nsfb, int width, int height,
 				nsfb_palette_new(&nsfb->palette, nsfb->width);
 #else
 				nsfb_palette_new(&nsfb->palette);		
-#endif		
+#endif
 				set_palette(nsfb);
 			}
 			nsfb->ptr = sdl_screen->pixels;
@@ -565,7 +566,7 @@ static int sdl_initialise(nsfb_t *nsfb)
 #ifdef NO_TIMER
     if (SDL_Init(SDL_INIT_VIDEO) < 0 ) {
 #else
-    if (SDL_Init(SDL_INIT_TIMER | SDL_INIT_VIDEO) < 0 ) {
+    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 ) {
 #endif
         fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
         return -1;
@@ -703,10 +704,13 @@ static bool sdl_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 
     nsfb = nsfb; /* unused */
 
-#ifdef NO_TIMER
-	timeout = 0;
-#endif
-
+	if (nsoption_bool(warp_mode)) {
+		timeout = 0;
+	} else {
+		if (timeout != 0)
+			timeout = TimeOut;
+	}
+	
     if (timeout == 0) {
         got_event = SDL_PollEvent(&sdlevent);
     }  else {

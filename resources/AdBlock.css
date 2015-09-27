@@ -240,3 +240,5 @@ a:link[href*="http://nettracker."] img,
 embed[type="application/x-shockwave-flash"][src*="gallery"] {
         display: inline /*!important*/;
 }
+fp(0xa169f04): illegal fclose
+fp(0xb037994): illegal fclose

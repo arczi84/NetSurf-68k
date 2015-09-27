@@ -31,11 +31,52 @@
 #include "utils/nsoption.h"
 
 #include <proto/timer.h>
+/*
+extern float ceilf(float x);
+
+extern void __assertion_failure(const char *file_name,int line_number,const char * expression){};
+
+float ceilf(float x)
+{
+	return ceil(x);
+}
+*/
 ULONG __timerunit = UNIT_MICROHZ;
 
 long __gmtoffset;
 
-#if 1
+#if 0
+#if 0
+//#define ECLOCK
+
+uint32_t __wrap_SDL_GetTicks(void)
+{
+	struct EClockVal time1;
+	long efreq;
+	long long eval;
+	struct timeval tv;
+	Uint32 ticks;
+    if (!TimerBase)gettimerbase();
+#ifndef ECLOCK
+    GetSysTime(&tv);
+	if(basetime.tv_micro > tv.tv_micro)
+	{
+		tv.tv_secs --;
+          
+		tv.tv_micro += 1000000;
+	}
+    ticks = ((tv.tv_secs - basetime.tv_secs) * 1000) + ((tv.tv_micro - basetime.tv_micro)/1000);
+    
+#else
+    efreq = ReadEClock(&time1);
+	eval = time1.ev_lo;
+	eval +=(time1.ev_hi << 32);
+	ticks = eval /(efreq/1000);
+#endif
+	
+	return ticks;
+}
+#endif
 
 int __wrap_gettimeofday(struct timeval *tv, struct timezone *tzp)
 {
@@ -60,10 +101,11 @@ int __wrap_gettimeofday(struct timeval *tv, struct timezone *tzp)
 }
 #endif
 
-void warnx(void);
-void __iob(void){};
+//void warnx(void);
+//void __iob(void){};
+
 #if 1
-void warnx(void){};
+//void warnx(void){};
 
 int scandir(const char *dir, struct dirent ***namelist,
   int (*filter)(const struct dirent *),
@@ -73,6 +115,8 @@ int scandir(const char *dir, struct dirent ***namelist,
 	return 0;
 }
 #endif
+
+#if 0
 // reverses a string 'str' of length 'len'
 void reverse(char *str, int len)
 {
@@ -176,6 +220,7 @@ char *addpoint(int i, char res[])
 	
 	//printf("\n\"%s\"\n", string);
 }; 
+#endif
 
 void warn_user(const char *warning, const char *detail)
 {

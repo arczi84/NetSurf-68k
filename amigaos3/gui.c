@@ -78,6 +78,7 @@
 #include "amiga/fs_backing_store.h"
 #include "amigaos3/fetch.h"
 #include "amigaos3/gui.h"
+#include "amigaos3/misc.h"
 
 #define   BUTTON_SIZE   24
 
@@ -95,18 +96,14 @@
 #include <proto/dos.h>
 #include <dos/dostags.h>
 #include <proto/intuition.h>
-#include <sys/time.h>
+//#include <sys/time.h>
+#include <clib/timer_protos.h>
+#include <clib/exec_protos.h>
 
 #if defined AGA || __libnix__
 
-#if defined __ixemul__
-
-struct Device *TimerBase; //Nie może być NULL!
-
-#else
 struct Device* TimerBase;
 static struct IORequest timereq;
-#endif
 
 #endif
 
@@ -705,19 +702,22 @@ static void framebuffer_run(void)
 		/* run the scheduler and discover how long to wait for
 		 * the next event.
 		 */
-
-		timeout = schedule_run();
-	
+		timeout = schedule_run();	
 		/* if redraws are pending do not wait for event,
 		 * return immediately
 		 */
+#if defined  AGA || __clib2__
 
+	if (nsoption_bool(warp_mode))	
+			timeout = 0;	
+	else
+			timeout = TimeOut;		
+
+
+#else
 		if (fbtk_get_redraw_pending(fbtk))
 			timeout = 0;
-			
-#if defined __clib2__	
-#warning: clib2 workaround
-			timeout = Timeout;
+	
 #endif		
 		
 		if (fbtk_event(fbtk, &event, timeout)) {
@@ -956,8 +956,9 @@ void rerun_netsurf(void)
 
 	strcpy(run, "run > nil: ");
 	strcat(run, "NetSurf");
+#if !defined __libnix__ && !defined AGA && !defined NOTTF
 	strcat(run, PARAMS);
-	
+#endif	
 	Execute(run, 0, 0);
 	
 	fb_complete = true;
@@ -1344,8 +1345,8 @@ fb_reload_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 
 
 	if (cbi->event->value.keycode == NSFB_KEY_MOUSE_3) {
-		nsoption_read(options, nsoptions);
-		SDL_Delay(500);
+		//nsoption_read(options, nsoptions);
+		//SDL_Delay(500);
 		nsoption_charp(lastpage_url) = strdup(nsurl_access(hlcache_handle_get_url(bw->current_content)));
 		nsoption_write(options, NULL, NULL);
 		rerun_netsurf();  	
@@ -1948,7 +1949,7 @@ fb_prefs_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	if (nsoption_int(fullscreen) == 1) {
 		SetTaskPri(FindTask(0), -1);
 	#if defined __clib2__		
-		Timeout = 100000;
+		//Timeout = 100000;
 	#endif
 		ScreenToFront(Workbench);
 	}
@@ -1959,7 +1960,7 @@ fb_prefs_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 if (nsoption_int(fullscreen) == 1){
 	ScreenToBack(Workbench);
 	#if defined __clib2__	
-	Timeout = 1;
+	//Timeout = 1;
 	#endif
 	}
 	
@@ -2513,7 +2514,7 @@ set_forward_status(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 static int
 set_close_status(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 {
-	gui_window_set_status(g2, "Close or restart(RMB) NetSurf");
+	gui_window_set_status(g2, messages_get("Quit"));
 
 	return 0;
 }
@@ -4656,9 +4657,9 @@ gui_window_update_extent(struct gui_window *gw)
 void
 gui_window_set_status(struct gui_window *g, const char *text)
 {
-	if (text != NULL)
+	if (text)
 		{
-		fbtk_set_text(g->status, text);
+		fbtk_set_text(g->status, text);///
 		status_txt = strdup(text);
 		}
 }
@@ -5068,10 +5069,12 @@ void OpenLibs()
 	CxBase = OpenLibrary("commodities.library", 37);
 #endif
 #if defined __libnix__ || AGA || NOVA_SDL
-#if !defined __ixemul__
+ // if (!TimerBase)gettimerbase();
+//#if defined __ixemul__
+
 	OpenDevice("timer.device", 0, &timereq, 0);
 	TimerBase = timereq.io_Device;
-#endif
+//#endif
 #endif	
 #ifndef USE_OLD_FETCH
 	LocaleBase = OpenLibrary("locale.library",  38);
@@ -5085,12 +5088,11 @@ void CloseLibs()
 	if (CxBase)     CloseLibrary(CxBase);
 #endif
 #if defined __libnix__  || AGA || NOVA_SDL
-	///if(TimerBase) CloseDevice(&timereq);
+#if defined __ixemul__
+	if(TimerBase) CloseDevice(&timereq);
+#endif	
 #endif	
 	if(LocaleBase) CloseLibrary(LocaleBase);
-#ifdef __ixemul__
-	//if(DOSBase) CloseLibrary(DOSBase);
-#endif
 }
 
 
@@ -5131,7 +5133,7 @@ main(int argc, char** argv)
 	nslog_init(nslog_stream_configure, &argc, argv);
 
 	OpenLibs();
-
+	
 	/* user options setup */
 	ret = nsoption_init(set_defaults, &nsoptions, &nsoptions_default);
 	if (ret != NSERROR_OK) {

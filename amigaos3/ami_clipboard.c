@@ -588,7 +588,7 @@ ReadClip()
 {
 struct IOClipReq *ior;
 struct cbbuf *buf;
-char *string = NULL;
+char *string;// = NULL;
 
 /* Open clipboard.device unit 0 */
 
@@ -630,7 +630,7 @@ else
     {
     puts("Error opening clipboard unit 0");
     }
-
+printf("Clipboard is :%s\n",string);
 return(string);
 }
 
