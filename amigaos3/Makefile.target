@@ -49,8 +49,8 @@ CFLAGS += -I/home/adminuser/host/opt/netsurf/share/include -Dsmall \
 		-I/home/adminuser/host/usr/local/amiga/clib/m68k-unknown-amigaos/env/include
 else
 CFLAGS += -I/opt/netsurf/share/include -Dsmall \
-		-I/usr/local/amiga/m68k-amigaos/include \
-		-I/usr/local/amiga/m68k-amigaos/env/include
+		-I/usr/local/amiga/m68k-amigaos/include #\
+		#-I/usr/local/amiga/m68k-amigaos/env/include
 endif		
 
 CFLAGS += -std=c99 -D_BSD_SOURCE \

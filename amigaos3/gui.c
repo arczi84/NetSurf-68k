@@ -526,7 +526,7 @@ process_cmdline(int argc, char** argv)
 
 	fewidth = nsoption_int(window_width);
 	feheight = nsoption_int(window_height);
-	febpp = 	 nsoption_int(window_depth);
+	febpp =  nsoption_int(window_depth);
 #else	
 	nsoption_int(window_depth) = 8;
 	febpp = 8;
@@ -711,8 +711,11 @@ static void framebuffer_run(void)
 	if (nsoption_bool(warp_mode))	
 			timeout = 0;	
 	else
-			timeout = TimeOut;		
+			timeout = TimeOut;
 
+#ifdef NO_TIMER
+		timeout = 0;
+#endif	
 
 #else
 		if (fbtk_get_redraw_pending(fbtk))
@@ -1560,7 +1563,7 @@ fb_getvideo_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	if (cbi->event->type == NSFB_EVENT_KEY_UP)
 		return 0;
 		
-	getvideo_click = 1;
+	getvideo_click = true;
 #ifdef getvideo			
     get_video(bw);
 #endif
@@ -4875,8 +4878,8 @@ gui_download_window_create(download_context *ctx, struct gui_window *parent)
 	bool wget = false;
 	int nodlpath = 0;
 	
-	if (strlen(url) > 200) {
-		getvideo_click = 0;
+	if (getvideo_click) {
+		getvideo_click = false;
 		mp4ee = true;
 		}
 //Printf(mime_type);
@@ -4913,12 +4916,10 @@ gui_download_window_create(download_context *ctx, struct gui_window *parent)
 			}
 	else	if (strcmp(nsoption_charp(download_manager), "wallget")==0)
 			{
-			#ifdef RTG
+			#ifdef AGA
+			ScreenToFront(Workbench);	
+			#endif			
 			strcpy(run, "run  > nil: Sys:Rexxc/rx rexx/wallget.rexx ");
-			#else
-			ScreenToFront(Workbench);
-			strcpy(run, "run  > nil: Sys:Rexxc/rx rexx/wallget.rexx ");	
-			#endif
 			}
 	else if (strcmp(nsoption_charp(download_manager), "httpresume")==0)
 			strcpy(run, "run  > nil: c:httpresume GUI STARTDIR=");
@@ -4937,7 +4938,7 @@ gui_download_window_create(download_context *ctx, struct gui_window *parent)
 		fh = Open("CON:", MODE_NEWFILE);
 		
 		strcat(run,"  -Oram:video.mp4 --no-check-certificate \" > RAM:script"); 
-		SetTaskPri(FindTask(0), -1);
+		SetTaskPri(FindTask(0), -10);
 		Execute(run, 0, 0);	
 		
 		if (nsoption_bool(youtube_autoplay)) {
@@ -4954,14 +4955,14 @@ gui_download_window_create(download_context *ctx, struct gui_window *parent)
 		{
 		BPTR fh;
 		fh = Open("CON:", MODE_NEWFILE);
-		SetTaskPri(FindTask(0), -1);
+		SetTaskPri(FindTask(0), -10);
 		
 		Execute(run, fh, 0);
 		Close(fh);
 		}
 	else	
 		{
-		SetTaskPri(FindTask(0), -1);
+		SetTaskPri(FindTask(0), -10);
 		Execute(run, 0, 0);
 		}
 
@@ -5200,7 +5201,11 @@ main(int argc, char** argv)
 					      &bw);
 		nsurl_unref(url);
 	}
-
+	
+#ifdef NO_TIMER
+	SetTaskPri(FindTask(0), nsoption_int(priority));
+#endif
+	
 	if (ret != NSERROR_OK) {
 		warn_user(messages_get_errorcode(ret), 0);
 	} else {

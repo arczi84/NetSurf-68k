@@ -566,7 +566,7 @@ static int sdl_initialise(nsfb_t *nsfb)
 #ifdef NO_TIMER
     if (SDL_Init(SDL_INIT_VIDEO) < 0 ) {
 #else
-    if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 ) {
+		if (SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER ) < 0 ) {
 #endif
         fprintf(stderr, "Unable to init SDL: %s\n", SDL_GetError());
         return -1;
@@ -710,7 +710,9 @@ static bool sdl_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 		if (timeout != 0)
 			timeout = TimeOut;
 	}
-	
+#ifdef NO_TIMER
+		timeout = 0;
+#endif		
     if (timeout == 0) {
         got_event = SDL_PollEvent(&sdlevent);
     }  else {

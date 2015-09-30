@@ -31,6 +31,7 @@ method Document::write()
 	err = dom_node_get_user_data(priv->parent.node,
 				     corestring_dom___ns_key_html_content_data,
 				     &htmlc);
+	assert(htmlc != NULL);
 	if (err == DOM_NO_ERR && htmlc->parser != NULL) {
 		dom_hubbub_parser_insert_chunk(htmlc->parser, (uint8_t *)text, text_len);
 	}
@@ -153,6 +154,19 @@ getter Document::body()
 
 	return 0; /* coerced to undefined */
 %}
+
+getter Document::location()
+%{
+	/* retrieve the location object from the root object (window) */
+	duk_push_global_object(ctx);
+	duk_get_prop_string(ctx, -1, "location");
+	if (duk_is_undefined(ctx, -1)) {
+		duk_pop(ctx);
+		return 0;
+	}
+	return 1;
+%}
+
 
 method Document::getElementById()
 %{

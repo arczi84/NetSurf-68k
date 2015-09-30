@@ -630,7 +630,7 @@ else
     {
     puts("Error opening clipboard unit 0");
     }
-printf("Clipboard is :%s\n",string);
+//printf("Clipboard is :%s\n",string);
 return(string);
 }
 

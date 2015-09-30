@@ -25,8 +25,9 @@ char *status_txt, *stitle;
 static char *icon_file = NULL;
 char *ReadClip( void );
 int WriteClip(const char * );
-int alt, ctrl, shift, x_pos, selected, getvideo_click;
-static bool mp4ee = false;
+int alt, ctrl, shift, x_pos, selected;
+static bool mp4ee = false, getvideo_click = false;
+
 unsigned short szerokosc(char *text);
 unsigned short zliczanie(char *text);
 

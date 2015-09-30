@@ -1,4 +1,4 @@
-font_size:140
+font_size:120
 font_min_size:50
 accept_language:pl
 accept_charset:ISO-8859-2
@@ -12,8 +12,8 @@ ca_path:PROGDIR:Resources/
 cookie_file:PROGDIR:Resources/cookies
 cookie_jar:PROGDIR:Resources/cookies
 homepage_url:http://www.google.pl/
-window_width:900
-window_height:663
+window_width:1057
+window_height:673
 incremental_reflow:0
 min_reflow_period:5
 core_select_menu:1
@@ -22,7 +22,8 @@ max_cached_fetch_handles:4
 scale_aga:75
 window_depth:32
 mobile_mode:0
-warp_mode:0
+priority:-20
+warp_mode:1
 youtube_autoplay:1
 download_path:SYS:Internet/Downloads/
 def_search_bar:http://www.google.com/search?q=
@@ -38,7 +39,7 @@ fb_face_monospace:PROGDIR:Fonts/DejaVuSansMono.ttf
 fb_face_monospace_bold:PROGDIR:Fonts/DejaVuSansMono-Bold.ttf
 fb_face_cursive:PROGDIR:Fonts/DejaVuSans-Oblique.ttf
 fb_face_fantasy:PROGDIR:Fonts/DejaVuSans-Oblique.ttf
-lastpage_url:http://www.ppa.pl/
+lastpage_url:http://www.google.pl/
 favourite_1_url:http://forum.amiga.sk/
 favourite_2_url:www.amigans.net
 favourite_3_url:www.amigaworld.net
@@ -46,7 +47,7 @@ favourite_4_url:http://www.ppa.pl/
 favourite_5_url:http://www.amiga.org/index.php
 favourite_6_url:http://aminet.net/
 favourite_7_url:http://www.pouet.net/
-favourite_8_url:http://www.osnews.com/
+favourite_8_url:http://eab.abime.net/
 favourite_9_url:eab.abime.net
 favourite_10_url:http://www.amigaremix.com/
 favourite_11_url:http://www.bitfellas.org/
@@ -58,7 +59,7 @@ favourite_4_label:PPA.pl
 favourite_5_label:Amiga.org
 favourite_6_label:Aminet
 favourite_7_label:pouet
-favourite_8_label:OSNews
+favourite_8_label:English Amiga Board
 favourite_9_label:EAB
 favourite_10_label:AmigaRmx
 favourite_11_label:BitFellas

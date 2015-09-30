@@ -104,7 +104,7 @@ static void gui_set_clipboard(const char *buffer, size_t length,
 	
 	gui_clipboard.buffer[gui_clipboard.length] = '\0';
 
-	WriteClip(strndup(gui_clipboard.buffer,gui_clipboard.length-1));
+	WriteClip(strdup(gui_clipboard.buffer));
 }
 
 static struct gui_clipboard_table clipboard_table = {

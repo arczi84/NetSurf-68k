@@ -228,7 +228,11 @@ static void content_update_status(struct content *c)
 				c->sub_status[0] != '\0' ? ", " : " ",
 				c->sub_status);
 		TimeOut = 0;
-		SetTaskPri(FindTask(0), 10);				
+		
+		if (nsoption_bool(warp_mode))
+				SetTaskPri(FindTask(0), -10);
+		else
+				SetTaskPri(FindTask(0), -1);				
 	} else {
 		unsigned int time = c->time;
 		#if defined __libnix__		
