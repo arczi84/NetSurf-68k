@@ -973,11 +973,19 @@ static void fetch_curl_done(CURL *curl_handle, CURLcode result)
 		msg.data.cert_err.num_certs = i;
 		fetch_send_callback(&msg, f->fetch_handle);
 	} else if (error) {
-		if (result != CURLE_SSL_CONNECT_ERROR) {
+		switch (result) {
+		case CURLE_SSL_CONNECT_ERROR:
+			msg.type = FETCH_SSL_ERR;
+			break;
+
+		case CURLE_OPERATION_TIMEDOUT:
+			msg.type = FETCH_TIMEDOUT;
+			msg.data.error = curl_easy_strerror(result);
+			break;
+
+		default:
 			msg.type = FETCH_ERROR;
 			msg.data.error = curl_easy_strerror(result);
-		} else {
-			msg.type = FETCH_SSL_ERR;
 		}
 
 		fetch_send_callback(&msg, f->fetch_handle);
@@ -997,6 +1005,44 @@ static void fetch_curl_poll(lwc_string *scheme_ignored)
 	int running, queue;
 	CURLMcode codem;
 	CURLMsg *curl_msg;
+
+	if (nsoption_bool(suppress_curl_debug) == false) {
+		fd_set read_fd_set, write_fd_set, exc_fd_set;
+		int max_fd = -1;
+		int i;
+
+		FD_ZERO(&read_fd_set);
+		FD_ZERO(&write_fd_set);
+		FD_ZERO(&exc_fd_set);
+
+		codem = curl_multi_fdset(fetch_curl_multi,
+				&read_fd_set, &write_fd_set,
+				&exc_fd_set, &max_fd);
+		assert(codem == CURLM_OK);
+
+		LOG("Curl file descriptor states (maxfd=%i):", max_fd);
+		for (i = 0; i <= max_fd; i++) {
+			bool read = false;
+			bool write = false;
+			bool error = false;
+
+			if (FD_ISSET(i, &read_fd_set)) {
+				read = true;
+			}
+			if (FD_ISSET(i, &write_fd_set)) {
+				write = true;
+			}
+			if (FD_ISSET(i, &exc_fd_set)) {
+				error = true;
+			}
+			if (read || write || error) {
+				LOG("  fd %i: %s %s %s", i,
+						read  ? "read" : "    ",
+						write ? "write" : "     ",
+						error ? "error" : "     ");
+			}
+		}
+	}
 
 	/* do any possible work on the current fetches */
 	do {
@@ -1302,7 +1348,7 @@ nserror fetch_curl_register(void)
 	SETOPT(CURLOPT_LOW_SPEED_LIMIT, 1L);
 	SETOPT(CURLOPT_LOW_SPEED_TIME, 180L);
 	SETOPT(CURLOPT_NOSIGNAL, 1L);
-	SETOPT(CURLOPT_CONNECTTIMEOUT, 30L);
+	SETOPT(CURLOPT_CONNECTTIMEOUT, nsoption_uint(curl_fetch_timeout));
 
 	if (nsoption_charp(ca_bundle) &&
 	    strcmp(nsoption_charp(ca_bundle), "")) {

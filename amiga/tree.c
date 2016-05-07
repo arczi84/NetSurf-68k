@@ -109,7 +109,7 @@ struct treeview_window {
 	char *sslerr;
 	char *sslaccept;
 	char *sslreject;
-	struct MinList shared_pens;
+	struct MinList *shared_pens;
 };
 
 struct ami_tree_redraw_req {
@@ -734,7 +734,7 @@ void ami_tree_open(struct treeview_window *twin,int type)
 	twin->scrollerhook.h_Entry = (void *)ami_tree_scroller_hook;
 	twin->scrollerhook.h_Data = twin;
 
-	ami_init_layers(&twin->globals, 0, 0);
+	ami_init_layers(&twin->globals, 0, 0, false);
 	ami_tree_menu(twin);
 
 	if(type == AMI_TREE_SSLCERT)
@@ -764,7 +764,7 @@ void ami_tree_open(struct treeview_window *twin,int type)
 			WINDOW_IconifyGadget, FALSE,
 			WINDOW_Position, WPOS_CENTERSCREEN,
 			WINDOW_ParentGroup, twin->objects[GID_MAIN] = LayoutVObj,
-				LAYOUT_AddImage, LabelObject,
+				LAYOUT_AddImage, LabelObj,
 					LABEL_Text, twin->sslerr,
 				LabelEnd,
 				LAYOUT_AddChild, twin->objects[GID_BROWSER] = SpaceObj,
@@ -772,7 +772,7 @@ void ami_tree_open(struct treeview_window *twin,int type)
 					SPACE_Transparent,TRUE,
 					SPACE_BevelStyle, BVS_DISPLAY,
        			SpaceEnd,
-				LAYOUT_AddChild, HGroupObject,
+				LAYOUT_AddChild, LayoutHObj,
 					LAYOUT_AddChild, twin->objects[GID_OPEN] = ButtonObj,
 						GA_ID,GID_OPEN,
 						GA_Text, twin->sslaccept,
@@ -887,7 +887,8 @@ void ami_tree_close(struct treeview_window *twin)
 	DisposeObject(twin->objects[OID_MAIN]);
 	DelObjectNoFree(twin->node);
 	ami_free_layers(&twin->globals);
-	ami_plot_release_pens(&twin->shared_pens);
+	ami_plot_release_pens(twin->shared_pens);
+	FreeVec(twin->shared_pens);
 
 	for(i=0;i<AMI_TREE_MENU_ITEMS;i++) {
 		if(twin->menu_name[i] && (twin->menu_name[i] != NM_BARLABEL))
@@ -904,7 +905,7 @@ void ami_tree_close(struct treeview_window *twin)
 		ami_ssl_free(twin);
 	}
 
-	if(twin->type == AMI_TREE_SSLCERT)
+	if(twin->type == AMI_TREE_HOTLIST)
 		ami_gui_hotlist_update_all();
 }
 
@@ -1485,8 +1486,8 @@ struct treeview_window *ami_tree_create(int flags,
 	twin->ssl_data = ssl_data;
 	twin->tree = tree_create(flags, &ami_tree_callbacks, twin);
 
-	ami_NewMinList(&twin->shared_pens);
-	twin->globals.shared_pens = &twin->shared_pens;
+	twin->shared_pens = ami_AllocMinList();
+	twin->globals.shared_pens = twin->shared_pens;
 	
 	return twin;
 }

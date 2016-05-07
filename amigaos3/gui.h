@@ -7,24 +7,23 @@ AmigaOS 3 related prototypes
 
 void OpenLibs(void);
 void CloseLibs(void);
-char* usunhttp(char* s);
+char *ReadClip( void );
+int WriteClip(const char * );
 
+char* usunstr(char* s, int i);
+int pixel_format(void);
 extern struct gui_file_table *amiga_file_table;
 char *exe_name;
-//static colour frame_colour;
 static int first_run = 1;
-char **respaths; /** resource search path vector */
-char *options;
-struct browser_window *bw_url;
-struct gui_window *g2;
+//char **respaths; /** resource search path vector */
+static const char *options = "PROGDIR:Resources/Options";
 fbtk_callback_info *Cbi;
 static int mouse_2_click = 0;
 char *get_url;
 char* usunznaki(char* s, char *c);
 char *status_txt, *stitle;
 static char *icon_file = NULL;
-char *ReadClip( void );
-int WriteClip(const char * );
+
 int alt, ctrl, shift, x_pos, selected;
 static bool mp4ee = false, getvideo_click = false;
 
@@ -40,7 +39,7 @@ struct fbtk_bitmap *favicon_bitmap;
 void get_video(struct browser_window *bw);
 void getvideo_mp4ee(struct browser_window *bw);  
 void redraw_gui(void);
-void rerun_netsurf(void);
+void rerun_netsurf(const char *url);
 void read_labels(void);
 
 fbtk_widget_t *searchbar, *home, *addfav, *addbook, *quick, 

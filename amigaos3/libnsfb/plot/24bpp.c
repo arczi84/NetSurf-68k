@@ -9,6 +9,7 @@
 #include <stdbool.h>
 #include <endian.h>
 #include <stdlib.h>
+#include <sdl/sdl.h>
 
 #include "libnsfb.h"
 #include "libnsfb_plot.h"
@@ -378,14 +379,22 @@ bitmap(nsfb_t *nsfb,
                 for (yloop = yoff; yloop < height; yloop += bmp_stride) {
                         for (xloop = 0; xloop < width; xloop++) {
                                 abpixel = pixel[yloop + xloop + xoff];
-                                if ((abpixel & 0xFF000000) != 0) {
-                                        if ((abpixel & 0xFF000000) != 0xFF000000) {
-                                                abpixel = nsfb_plot_ablend(abpixel,
-                                                                           pixel_to_colour(*(pvideo + xloop)));
-                                        }
+								
+								if ((abpixel & 0x000000FF) != 0) {	
 
-                                        *(pvideo + xloop) = colour_to_pixel(abpixel);
-                                }
+								if ((abpixel & 0xFF000000) != 0xFF000000) {
+	
+									abpixel = nsfb_plot_ablend(SDL_Swap32(abpixel),
+											pixel_to_colour(*(pvideo +xloop)));
+								}
+
+								if ((abpixel & 0xFF000000) != 0xFF000000) {
+								/* plot pixel */
+									*(pvideo + xloop) = colour_to_pixel( abpixel);
+									}
+								else
+									*(pvideo + xloop) = colour_to_pixel( SDL_Swap32(abpixel));
+							}
                         }
                         pvideo += (nsfb->linelen >> 2);
                 }

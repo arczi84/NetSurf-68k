@@ -145,7 +145,7 @@ void ami_arexx_execute(char *script)
 	char full_script_path[1025];
 	BPTR lock;
 
-	if(lock = Lock(script, ACCESS_READ)) {
+	if((lock = Lock(script, ACCESS_READ))) {
 		DevNameFromLock(lock, full_script_path, 1024, DN_FULLPATH);
 		LOG("Executing script: %s", full_script_path);
 		IDoMethod(arexx_obj, AM_EXECUTE, full_script_path, NULL, NULL, NULL, NULL, NULL);
@@ -614,7 +614,7 @@ STATIC VOID rx_close(struct ARexxCmd *cmd, struct RexxMsg *rxm __attribute__((un
 		gw = ami_find_tab(*(ULONG *)cmd->ac_ArgList[0], *(ULONG *)cmd->ac_ArgList[1]);
 	else if(cmd->ac_ArgList[0])
 	{
-		ami_close_all_tabs(gw->shared);
+		ami_gui_close_window(gw->shared);
 		return;
 	}
 

@@ -16,22 +16,19 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "testament.h"
+//#include "testament.h"
 
 /* NB: AmigaOS revision numbers start at 1 (not 0) and are monotonically
  * incremental (v1.20 is higher than v1.3 and not the same as v1.2).
  * Consequently, this version pair may not match the user-facing one in
  * desktop/version.c.
  */
-#define NETSURF_VERSION_MAJOR "3"
-#if defined(CI_BUILD)
-#define NETSURF_VERSION_MINOR CI_BUILD
-#else
-#define NETSURF_VERSION_MINOR "4"
-#endif
+ 
+#include "version.h"
 
+//const char * netsurf_version = "3.5"
 #ifdef RTG
-const char version[] = "\0$VER:NetSurf " NETSURF_VERSION_MAJOR "." NETSURF_VERSION_MINOR " Dev (" __DATE__ ") port by Artur Jarosik  ©2009-2015 \0";
+const char version[] = "\0$VER:NetSurf " NETSURF_VERSION_MAJOR "." NETSURF_VERSION_MINOR " (" __DATE__ ") port by Artur Jarosik  (c)2009-2016 \0";
 #else
-const char version[] = "\0$VER:NetSurfAGA " NETSURF_VERSION_MAJOR "." NETSURF_VERSION_MINOR " (" __DATE__ ") port by Artur Jarosik  ©2009-2015 \0";
+const char version[] = "\0$VER:NetSurfAGA " NETSURF_VERSION_MAJOR "." NETSURF_VERSION_MINOR " (" __DATE__ ") port by Artur Jarosik  (c)2009-2016 \0";
 #endif

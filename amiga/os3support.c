@@ -33,6 +33,7 @@
 #include <proto/dos.h>
 #include <proto/utility.h>
 
+#include <diskfont/diskfont.h>
 #include <diskfont/diskfonttag.h>
 #include <intuition/gadgetclass.h>
 
@@ -41,7 +42,7 @@
 #define SUCCESS (TRUE)
 #define FAILURE (FALSE)
 #define NO      !
-#if 0
+
 /* Diskfont */
 struct OutlineFont *OpenOutlineFont(STRPTR fileName, struct List *list, ULONG flags)
 {
@@ -68,7 +69,7 @@ struct OutlineFont *OpenOutlineFont(STRPTR fileName, struct List *list, ULONG fl
 		return NULL;
 	}
 
-	if(Read(fh, &magic, sizeof(struct FontContentsHeader)) != sizeof(struct FontContentsHeader)) {
+	if(Read(fh, &fch, sizeof(struct FontContentsHeader)) != sizeof(struct FontContentsHeader)) {
 		LOG("Unable to read FONT %s", fontpath);
 		FreeVec(fontpath);
 		Close(fh);
@@ -173,7 +174,7 @@ void CloseOutlineFont(struct OutlineFont *of, struct List *list)
 	FreeVec(of->olf_OTagList);
 	FreeVec(of);
 }
-#endif
+
 
 /* DOS */
 int64 GetFileSize(BPTR fh)
@@ -280,9 +281,8 @@ struct FormatContext
 	LONG	Size;
 	BOOL	Overflow;
 };
-
-//STATIC VOID ASM
-static void __asm
+#if 0
+STATIC VOID ASM
 StuffChar(
 	REG(a3, struct FormatContext *	Context),
 	REG(d0, UBYTE Char))
@@ -343,7 +343,7 @@ VSPrintfN(
 
 	return(result);
 }
-
+#endif
 BOOL
 SPrintfN(
 	LONG			MaxLen,

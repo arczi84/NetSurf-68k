@@ -312,7 +312,8 @@ endif
 
 # compiler versioning to adjust warning flags
 #CC_VERSION := $(shell $(CC) -dumpversion)
-CC_VERSION := 4.5.0
+#CC_VERSION := 4.5.0
+CC_VERSION := 3.4.0
 CC_MAJOR := $(word 1,$(subst ., ,$(CC_VERSION)))
 CC_MINOR := $(word 2,$(subst ., ,$(CC_VERSION)))
 define cc_ver_ge
@@ -404,8 +405,8 @@ define pkg_config_find_and_add
       endif
   else
     ifneq ($(MAKECMDGOALS),clean)
-      $$(info PKG.CNFG: $(2) ($(1))	failed)
-      $$(error Unable to find library for: $(2) ($(1)))
+   #   $$(info PKG.CNFG: $(2) ($(1))	failed)
+   #   $$(error Unable to find library for: $(2) ($(1)))
     endif
   endif
 endef
@@ -417,7 +418,7 @@ endef
 # 3: Human-readable name for the feature
 define pkg_config_find_and_add_enabled
   ifeq ($$(PKG_CONFIG),)
-    $$(error pkg-config is required to auto-detect feature availability)
+   # $$(error pkg-config is required to auto-detect feature availability)
   endif
 
   NETSURF_FEATURE_$(1)_AVAILABLE := $$(shell $$(PKG_CONFIG) --exists $(2) && echo yes)
@@ -669,10 +670,10 @@ clean-target:
 	$(Q)$(RM) $(EXETARGET)
 CLEANS += clean-target
 
-clean-testament:
-	$(VQ)echo "   CLEAN: testament.h"
-	$(Q)$(RM) $(OBJROOT)/testament.h
-CLEANS += clean-testament
+#clean-testament:
+	#$(VQ)echo "   CLEAN: testament.h"
+	#$(Q)$(RM) $(OBJROOT)/testament.h
+#CLEANS += clean-testament
 
 clean-builddir:
 	$(VQ)echo "   CLEAN: $(OBJROOT)"
@@ -682,8 +683,8 @@ CLEANS += clean-builddir
 
 .PHONY: all-program testament
 
-testament $(OBJROOT)/testament.h:
-	$(Q)$(PERL) utils/git-testament.pl $(CURDIR) $(OBJROOT)/testament.h
+#testament $(OBJROOT)/testament.h:
+	#$(Q)$(PERL) utils/git-testament.pl $(CURDIR) $(OBJROOT)/testament.h
 
 all-program: $(EXETARGET) $(POSTEXES)
 

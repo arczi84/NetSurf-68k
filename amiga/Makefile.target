@@ -7,7 +7,7 @@ CFLAGS += -std=c99 -Dnsamiga
 ifneq ($(SUBTARGET),os3)
   CFLAGS += -O2 -finline-functions -U__STRICT_ANSI__ -D__USE_INLINE__ -D__USE_BASETYPE__
 else
-  CFLAGS += -m68020-60 -O0 -DPATH_MAX=1024 -D__m68k__
+  CFLAGS += -msoft-float -m68020-60 -O0 -DPATH_MAX=1024 -D__m68k__
 endif
 
 NETSURF_FEATURE_ROSPRITE_CFLAGS := -DWITH_NSSPRITE
@@ -70,12 +70,13 @@ MESSAGES_FILTER=ami
 S_AMIGA := gui.c tree.c history.c hotlist.c schedule.c file.c		\
 	misc.c bitmap.c font.c filetype.c utf8.c login.c	\
 	plotters.c object.c menu.c save_pdf.c arexx.c version.c		\
-	cookies.c context_menu.c clipboard.c help.c font_scan.c	\
+	cookies.c ctxmenu.c clipboard.c help.c font_scan.c	\
 	launch.c search.c history_local.c download.c iff_dr2d.c		\
 	sslcert.c gui_options.c print.c	theme.c	drag.c icon.c libs.c	\
 	datatypes.c dt_picture.c dt_anim.c dt_sound.c plugin_hack.c	\
 	stringview/stringview.c stringview/urlhistory.c rtg.c		\
-	agclass/amigaguide_class.c os3support.c font_bitmap.c
+	agclass/amigaguide_class.c os3support.c font_diskfont.c		\
+	selectmenu.c hash/xxhash.c font_cache.c font_bullet.c
 S_AMIGA := $(addprefix amiga/,$(S_AMIGA))
 
 # This is the final source build list
@@ -117,6 +118,13 @@ netsurf.lha: $(EXETARGET)
 	$(Q)cp \!NetSurf/Resources/netsurf.png,b60 $(AMIGA_INSTALL_TARGET_DIR)/NetSurf/Resources/netsurf.png
 	$(Q)cp amiga/pkg/drawer.info $(AMIGA_INSTALL_TARGET_DIR)/NetSurf.info
 	$(Q)cp amiga/pkg/AutoInstall $(AMIGA_INSTALL_TARGET_DIR)
+  ifeq ($(SUBTARGET),os3)
+	$(Q)cp amiga/pkg/netsurf_os3.readme $(AMIGA_INSTALL_TARGET_DIR)/NetSurf
+	$(Q)cp amiga/pkg/netsurf_os3.readme.info $(AMIGA_INSTALL_TARGET_DIR)/NetSurf
+  else
+	$(Q)cp amiga/pkg/netsurf.readme $(AMIGA_INSTALL_TARGET_DIR)/NetSurf
+	$(Q)cp amiga/pkg/netsurf.readme.info $(AMIGA_INSTALL_TARGET_DIR)/NetSurf
+  endif
 	$(Q)cd $(AMIGA_INSTALL_TARGET_DIR); \
 	  lha a netsurf.lha NetSurf NetSurf.info AutoInstall
 

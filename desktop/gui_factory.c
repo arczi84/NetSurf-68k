@@ -799,7 +799,6 @@ nserror netsurf_register(struct netsurf_table *gt)
 
 	/* web search table */
 	if (gt->search_web == NULL) {
-		//Printf();
 		/* set default search table */
 		gt->search_web = &default_search_web_table;
 	}

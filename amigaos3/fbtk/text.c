@@ -29,16 +29,18 @@
 
 #include "utils/log.h"
 #include "desktop/browser.h"
-#include "desktop/font.h"
+//#include "desktop/font.h"
 
 #include "framebuffer/gui.h"
 #include "framebuffer/fbtk.h"
-#include "framebuffer/font.h"
 #include "framebuffer/framebuffer.h"
 #include "framebuffer/image_data.h"
 
+#include "amigaos3/font.h"
 #include "amigaos3/gui.h"
+
 #include "utils/nsoption.h"
+//#include "amigaos3/options.h"
 
 #include "widget.h"
 
@@ -65,27 +67,32 @@ fb_text_font_style(fbtk_widget_t *widget, int *font_height, int *padding,
 	else
 		*padding = 0;
 
-#ifdef FB_USE_FREETYPE
-	if (nsoption_int(gui_font_bold) < 1)
+//#ifdef FB_USE_FREETYPE
+	if (!nsoption_bool(bitmap_fonts)) {
 		*padding += widget->height / 6;	
+		*font_height = widget->height - *padding - *padding;
+	}
 	else {
-		*padding += 4.5;	
-		}
-	*font_height = widget->height - *padding - *padding;
-#else
-	*font_height = FB_FONT_HEIGHT;
-	*padding = (widget->height - *padding - *font_height) / 2;
-#endif
+		*font_height = FB_FONT_HEIGHT;
+		*padding = (widget->height - *padding - *font_height) / 2;
+	}
 
 	font_style->family = PLOT_FONT_FAMILY_SANS_SERIF;
-	font_style->size = px_to_pt(*font_height * FONT_SIZE_SCALE);
-	font_style->weight = 700;		
-	if (nsoption_int(gui_font_bold) < 1)
-		font_style->weight = 400;
+	if (!nsoption_bool(bitmap_fonts))
+#ifdef AGA
+		font_style->size = (nsoption_int(gui_font_size)-1)*(790-nsoption_int(browser_dpi));
+#else
+		font_style->size = nsoption_int(gui_font_size)*(790-nsoption_int(browser_dpi));
+#endif
+		else
+		font_style->size = px_to_pt(*font_height * FONT_SIZE_SCALE);	
+	font_style->weight = 400;
 	font_style->flags = FONTF_NONE;
 	font_style->background = widget->bg;
 	font_style->foreground = widget->fg;
 }
+
+/*8000;//px_to_pt(*font_height * FONT_SIZE_SCALE);*/
 
 /** Text redraw callback.
  *
@@ -140,10 +147,12 @@ fb_redraw_text(fbtk_widget_t *widget, fbtk_callback_info *cbi )
 		int x = bbox.x0 + padding;
 		int y = bbox.y0 + ((fh * 3 + 2) / 4) + padding;
 
-#ifdef FB_USE_FREETYPE
+//#ifdef FB_USE_FREETYPE
+	if (!nsoption_bool(bitmap_fonts))
 		/* Freetype renders text higher */
 		y += 1;
-#endif
+
+//#endif
 
 		if (caret && widget->width - padding - padding < caret_x) {
 			scroll = (widget->width - padding - padding) - caret_x;
@@ -306,6 +315,11 @@ text_input(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 
 	fb_text_font_style(widget, &fh, &border, &font_style);
 
+	if (nsoption_bool(bitmap_fonts))
+		nsfont = nsfont_internal;
+	//else
+		//nsfont = nsfont_ttf;
+	
 	if (cbi->event == NULL) {
 		/* gain focus */
 		if (widget->u.text.text == NULL)
@@ -505,6 +519,9 @@ text_input_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	int border;
 	size_t idx;
 
+	if (nsoption_bool(bitmap_fonts))
+		nsfont = nsfont_internal;
+	
 	fb_text_font_style(widget, &fh, &border, &font_style);
 
 	widget->u.text.idx = widget->u.text.len;
@@ -558,6 +575,9 @@ fbtk_set_text(fbtk_widget_t *widget, const char *text)
 	int fh;
 	int border;
 
+	if (nsoption_bool(bitmap_fonts))
+		nsfont = nsfont_internal;
+	
 	if ((widget == NULL) || (widget->type != FB_WIDGET_TYPE_TEXT))
 		return;
 	if (widget->u.text.text != NULL) {

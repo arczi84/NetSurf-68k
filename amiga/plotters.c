@@ -45,12 +45,11 @@
 #include "amiga/bitmap.h"
 #include "amiga/font.h"
 #include "amiga/gui.h"
+#include "amiga/misc.h"
 #include "amiga/rtg.h"
 #include "amiga/utf8.h"
 
-#ifdef __amigaos4__
-static void ami_bitmap_tile_hook(struct Hook *hook,struct RastPort *rp,struct BackFillMessage *bfmsg);
-#endif
+HOOKF(void, ami_bitmap_tile_hook, struct RastPort *, rp, struct BackFillMessage *);
 
 struct bfbitmap {
 	struct BitMap *bm;
@@ -71,7 +70,8 @@ struct bez_point {
 	float y;
 };
 
-bool palette_mapped = false;
+static int init_layers_count = 0;
+static APTR pool_pens = NULL;
 
 #ifndef M_PI /* For some reason we don't always get this from math.h */
 #define M_PI		3.14159265358979323846
@@ -89,29 +89,32 @@ bool palette_mapped = false;
 /* Define the below to get additional debug */
 #undef AMI_PLOTTER_DEBUG
 
-void ami_init_layers(struct gui_globals *gg, ULONG width, ULONG height)
+void ami_init_layers(struct gui_globals *gg, ULONG width, ULONG height, bool force32bit)
 {
 	/* init shared bitmaps                                               *
 	 * Height is set to screen width to give enough space for thumbnails *
 	 * Also applies to the further gfx/layers functions and memory below */
  
-	ULONG depth = 32;
+	int depth = 32;
 	struct BitMap *friend = NULL;
 
-	depth = GetBitMapAttr(scrn->RastPort.BitMap, BMA_DEPTH);
+	if(force32bit == false) depth = GetBitMapAttr(scrn->RastPort.BitMap, BMA_DEPTH);
 	LOG("Screen depth = %d", depth);
 
 	if(depth < 16) {
-		palette_mapped = true;
+		gg->palette_mapped = true;
 	} else {
-		palette_mapped = false;
+		gg->palette_mapped = false;
 	}
 
 #ifndef __amigaos4__
 #warning OS3 locked to palette-mapped modes
-	palette_mapped = true;
+	gg->palette_mapped = true;
 	if(depth > 8) depth = 8;
 #endif
+
+	/* Probably need to fix this next line */
+	if(gg->palette_mapped == true) nsoption_set_bool(font_antialiasing, false);
 
 	if(!width) width = nsoption_int(redraw_tile_size_x);
 	if(!height) height = nsoption_int(redraw_tile_size_y);
@@ -139,11 +142,11 @@ void ami_init_layers(struct gui_globals *gg, ULONG width, ULONG height)
 	} else {
 		/* Force friend BitMaps on for obvious RTG screens under OS3.
 		 * If we get a bit smarter about this we can lose the user option. */
-		if(depth >= 16) friend = scrn->RastPort.BitMap;
+		if((depth >= 16) && (force32bit == false)) friend = scrn->RastPort.BitMap;
 	}
 #endif
 
-	if(palette_mapped == true) {
+	if(gg->palette_mapped == true) {
 		gg->bm = AllocBitMap(width, height, depth, 0, friend);
 	} else {
 #ifdef __amigaos4__
@@ -151,7 +154,7 @@ void ami_init_layers(struct gui_globals *gg, ULONG width, ULONG height)
 		 * We get freezes and other problems on OS4 if we befriend at any
 		 * other depths, hence this check.
 		 */
-		if(depth >= 24) friend = scrn->RastPort.BitMap;
+		if((depth >= 24) && (force32bit == false)) friend = scrn->RastPort.BitMap;
 #endif
 		gg->bm = ami_rtg_allocbitmap(width, height, 32, 0, friend, RGBFB_A8R8G8B8);
 	}
@@ -180,10 +183,23 @@ void ami_init_layers(struct gui_globals *gg, ULONG width, ULONG height)
 	if((!gg->tmprasbuf) || (!gg->rp->TmpRas))	warn_user("NoMemory","");
 
 	InitTmpRas(gg->rp->TmpRas, gg->tmprasbuf, width*height);
+
+	if((gg->palette_mapped == true) && (pool_pens == NULL)) {
+		pool_pens = ami_misc_itempool_create(sizeof(struct ami_plot_pen));
+	}
+
+	init_layers_count++;
 }
 
 void ami_free_layers(struct gui_globals *gg)
 {
+	init_layers_count--;
+
+	if((init_layers_count == 0) && (pool_pens != NULL)) {
+		ami_misc_itempool_delete(pool_pens);
+		pool_pens = NULL;
+	}
+
 	if(gg->rp) {
 		DeleteLayer(0,gg->rp->Layer);
 		FreeVec(gg->rp->TmpRas);
@@ -194,7 +210,7 @@ void ami_free_layers(struct gui_globals *gg)
 	FreeVec(gg->tmprasbuf);
 	FreeVec(gg->areabuf);
 	DisposeLayerInfo(gg->layerinfo);
-	if(palette_mapped == false) {
+	if(gg->palette_mapped == false) {
 		if(gg->bm) ami_rtg_freebitmap(gg->bm);
 	} else {
 		if(gg->bm) FreeBitMap(gg->bm);
@@ -225,8 +241,8 @@ static ULONG ami_plot_obtain_pen(struct MinList *shared_pens, ULONG colr)
 	
 	if(pen == -1) LOG("WARNING: Cannot allocate pen for ABGR:%lx", colr);
 
-	if(shared_pens != NULL) {
-		if((node = (struct ami_plot_pen *)AllocVecTagList(sizeof(struct ami_plot_pen), NULL))) {
+	if((shared_pens != NULL) && (pool_pens != NULL)) {
+		if((node = (struct ami_plot_pen *)ami_misc_itempool_alloc(pool_pens, sizeof(struct ami_plot_pen)))) {
 			node->pen = pen;
 			AddTail((struct List *)shared_pens, (struct Node *)node);
 		}
@@ -250,14 +266,14 @@ void ami_plot_release_pens(struct MinList *shared_pens)
 		nnode = (struct ami_plot_pen *)GetSucc((struct Node *)node);
 		ReleasePen(scrn->ViewPort.ColorMap, node->pen);
 		Remove((struct Node *)node);
-		FreeVec(node);
+		ami_misc_itempool_free(pool_pens, node, sizeof(struct ami_plot_pen));
 	} while((node = nnode));
 }
 
 static void ami_plot_setapen(struct RastPort *rp, ULONG colr)
 {
 #ifdef __amigaos4__
-	if(palette_mapped == false) {
+	if(glob->palette_mapped == false) {
 		SetRPAttrs(rp, RPTAG_APenColor,
 			ns_color_to_nscss(colr),
 			TAG_DONE);
@@ -272,7 +288,7 @@ static void ami_plot_setapen(struct RastPort *rp, ULONG colr)
 static void ami_plot_setopen(struct RastPort *rp, ULONG colr)
 {
 #ifdef __amigaos4__
-	if(palette_mapped == false) {
+	if(glob->palette_mapped == false) {
 		SetRPAttrs(rp, RPTAG_OPenColor,
 			ns_color_to_nscss(colr),
 			TAG_DONE);
@@ -430,13 +446,10 @@ static bool ami_text(int x, int y, const char *text, size_t length,
 	LOG("[ami_plotter] Entered ami_text()");
 	#endif
 
-	bool aa = true;
-	
-	if((nsoption_bool(font_antialiasing) == false) || (palette_mapped == true))
-		aa = false;
+	if(__builtin_expect(ami_nsfont == NULL, 0)) return false;
 	
 	ami_plot_setapen(glob->rp, fstyle->foreground);
-	ami_font_unicode_text(glob->rp, text, length, fstyle, x, y, aa);
+	ami_nsfont->text(glob->rp, text, length, fstyle, x, y, nsoption_bool(font_antialiasing));
 	
 	return true;
 }
@@ -524,7 +537,7 @@ static bool ami_bitmap(int x, int y, int width, int height, struct bitmap *bitma
 	#endif
 
 #ifdef __amigaos4__
-	if(__builtin_expect((GfxBase->LibNode.lib_Version >= 53) && (palette_mapped == false) &&
+	if(__builtin_expect((GfxBase->LibNode.lib_Version >= 53) && (glob->palette_mapped == false) &&
 		(nsoption_bool(direct_render) == false), 1)) {
 		uint32 comptype = COMPOSITE_Src_Over_Dest;
 		uint32 compflags = COMPFLAG_IgnoreDestAlpha;
@@ -551,14 +564,14 @@ static bool ami_bitmap(int x, int y, int width, int height, struct bitmap *bitma
 	{
 		ULONG tag, tag_data, minterm = 0xc0;
 		
-		if(palette_mapped == false) {
+		if(glob->palette_mapped == false) {
 			tag = BLITA_UseSrcAlpha;
 			tag_data = !bitmap->opaque;
 			minterm = 0xc0;
 		} else {
 			tag = BLITA_MaskPlane;
 			if((tag_data = (ULONG)ami_bitmap_get_mask(bitmap, width, height, tbm)))
-				minterm = (ABC|ABNC|ANBC);
+				minterm = MINTERM_SRCMASK;
 		}
 #ifdef __amigaos4__
 		BltBitMapTags(BLITA_Width,width,
@@ -614,7 +627,7 @@ static bool ami_bitmap_tile(int x, int y, int width, int height,
 
 	tbm = ami_bitmap_get_native(bitmap,width,height,glob->rp->BitMap);
 	if(!tbm) return true;
-#ifdef __amigaos4__
+
 	ox = x;
 	oy = y;
 
@@ -650,7 +663,7 @@ static bool ami_bitmap_tile(int x, int y, int width, int height,
 		yf = y + height;
 		ym = y;
 	}
-
+#ifdef __amigaos4__
 	if(bitmap->opaque)
 	{
 		bfh = CreateBackFillHook(BFHA_BitMap,tbm,
@@ -661,6 +674,7 @@ static bool ami_bitmap_tile(int x, int y, int width, int height,
 							TAG_DONE);
 	}
 	else
+#endif
 	{
 		bfbm.bm = tbm;
 		bfbm.width = width;
@@ -668,82 +682,50 @@ static bool ami_bitmap_tile(int x, int y, int width, int height,
 		bfbm.offsetx = ox;
 		bfbm.offsety = oy;
 		bfbm.mask = ami_bitmap_get_mask(bitmap, width, height, tbm);
-		bfh = AllocVecTags(sizeof(struct Hook), AVT_ClearWithValue, 0, TAG_DONE); /* NB: Was not MEMF_PRIVATE */
+		bfh = ami_misc_allocvec_clear(sizeof(struct Hook), 0); /* NB: Was not MEMF_PRIVATE */
 		bfh->h_Entry = (HOOKFUNC)ami_bitmap_tile_hook;
 		bfh->h_SubEntry = 0;
 		bfh->h_Data = &bfbm;
 	}
 
 	InstallLayerHook(glob->rp->Layer,bfh);
-
 	EraseRect(glob->rp,xm,ym,xf,yf);
-
 	InstallLayerHook(glob->rp->Layer,LAYERS_NOBACKFILL);
+
+#ifdef __amigaos4__
 	if(bitmap->opaque) DeleteBackFillHook(bfh);
-		else FreeVec(bfh);
-#else
-	/* get left most tile position */
-	if (repeat_x)
-		for (; x > glob->rect.MinX; x -= width)
-			;
-
-	/* get top most tile position */
-	if (repeat_y)
-		for (; y > glob->rect.MinY; y -= height)
-			;
-
-	/* tile down and across to extents */
-	for (xf = x; xf < glob->rect.MaxX; xf += width) {
-		for (yf = y; yf < glob->rect.MaxY; yf += height) {
-
-			ULONG tag, tag_data = NULL, minterm = 0xc0;
-		
-			if(bitmap->opaque) {
-				minterm = 0xc0;
-			} else {
-				if((tag_data = (ULONG)ami_bitmap_get_mask(bitmap, width, height, tbm)))
-					minterm = (ABC|ABNC|ANBC);
-			}
-
-			if(tag_data) {
-				BltMaskBitMapRastPort(tbm, 0, 0, glob->rp, x, y, width, height, minterm, tag_data);
-			} else {
-				BltBitMapRastPort(tbm, 0, 0, glob->rp, x, y, width, height, 0xc0);
-			}
-		}
-	}
+		else
 #endif
+		FreeVec(bfh);
 
-	if((bitmap->dto == NULL) && (tbm != bitmap->nativebm))
-	{
+	if((bitmap->dto == NULL) && (tbm != bitmap->nativebm)) {
 		ami_rtg_freebitmap(tbm);
 	}
 
 	return true;
 }
 
-#ifdef __amigaos4__
-static void ami_bitmap_tile_hook(struct Hook *hook,struct RastPort *rp,struct BackFillMessage *bfmsg)
+HOOKF(void, ami_bitmap_tile_hook, struct RastPort *, rp, struct BackFillMessage *)
 {
 	int xf,yf;
 	struct bfbitmap *bfbm = (struct bfbitmap *)hook->h_Data;
 
-	/* tile down and across to extents  (bfmsg->Bounds.MinX)*/
-	for (xf = -bfbm->offsetx; xf < bfmsg->Bounds.MaxX; xf += bfbm->width) {
-		for (yf = -bfbm->offsety; yf < bfmsg->Bounds.MaxY; yf += bfbm->height) {
+	/* tile down and across to extents  (msg->Bounds.MinX)*/
+	for (xf = -bfbm->offsetx; xf < msg->Bounds.MaxX; xf += bfbm->width) {
+		for (yf = -bfbm->offsety; yf < msg->Bounds.MaxY; yf += bfbm->height) {
 #ifdef __amigaos4__
 			if(__builtin_expect((GfxBase->LibNode.lib_Version >= 53) &&
-				(palette_mapped == false), 1)) {
+				(glob->palette_mapped == false), 1)) {
 				CompositeTags(COMPOSITE_Src_Over_Dest, bfbm->bm, rp->BitMap,
 					COMPTAG_Flags, COMPFLAG_IgnoreDestAlpha,
-					COMPTAG_DestX,bfmsg->Bounds.MinX,
-					COMPTAG_DestY,bfmsg->Bounds.MinY,
-					COMPTAG_DestWidth,bfmsg->Bounds.MaxX - bfmsg->Bounds.MinX + 1,
-					COMPTAG_DestHeight,bfmsg->Bounds.MaxY - bfmsg->Bounds.MinY + 1,
-					COMPTAG_SrcWidth,bfbm->width,
-					COMPTAG_SrcHeight,bfbm->height,
-					COMPTAG_OffsetX,xf,
-					COMPTAG_OffsetY,yf,
+					COMPTAG_DestX, msg->Bounds.MinX,
+					COMPTAG_DestY, msg->Bounds.MinY,
+					COMPTAG_DestWidth, msg->Bounds.MaxX - msg->Bounds.MinX + 1,
+					COMPTAG_DestHeight, msg->Bounds.MaxY - msg->Bounds.MinY + 1,
+					COMPTAG_SrcWidth, bfbm->width,
+					COMPTAG_SrcHeight, bfbm->height,
+					COMPTAG_OffsetX, xf,
+					COMPTAG_OffsetY, yf,
 					COMPTAG_FriendBitMap, scrn->RastPort.BitMap,
 					TAG_DONE);
 			}
@@ -752,16 +734,16 @@ static void ami_bitmap_tile_hook(struct Hook *hook,struct RastPort *rp,struct Ba
 			{
 				ULONG tag, tag_data, minterm = 0xc0;
 		
-				if(palette_mapped == false) {
+				if(glob->palette_mapped == false) {
 					tag = BLITA_UseSrcAlpha;
 					tag_data = TRUE;
 					minterm = 0xc0;
 				} else {
 					tag = BLITA_MaskPlane;
 					if((tag_data = (ULONG)bfbm->mask))
-						minterm = (ABC|ABNC|ANBC);
+						minterm = MINTERM_SRCMASK;
 				}
-		
+#ifdef __amigaos4__
 				BltBitMapTags(BLITA_Width, bfbm->width,
 					BLITA_Height, bfbm->height,
 					BLITA_Source, bfbm->bm,
@@ -773,11 +755,19 @@ static void ami_bitmap_tile_hook(struct Hook *hook,struct RastPort *rp,struct Ba
 					BLITA_Minterm, minterm,
 					tag, tag_data,
 					TAG_DONE);
+#else
+				if(tag_data) {
+					BltMaskBitMapRastPort(bfbm->bm, 0, 0, rp, xf, yf,
+						bfbm->width, bfbm->height, minterm, tag_data);
+				} else {
+					BltBitMapRastPort(bfbm->bm, 0, 0, rp, xf, yf,
+						bfbm->width, bfbm->height, minterm);
+				}
+#endif
 			}			
 		}
 	}
 }
-#endif
 
 static void ami_bezier(struct bez_point *a, struct bez_point *b, struct bez_point *c,
 			struct bez_point *d, double t, struct bez_point *p) {
@@ -886,7 +876,7 @@ static bool ami_path(const float *p, unsigned int n, colour fill, float width,
 
 bool ami_plot_screen_is_palettemapped(void)
 {
-	return palette_mapped;
+	return glob->palette_mapped;
 }
 
 struct plotter_table plot;

@@ -19,6 +19,7 @@
 #ifndef AMIGA_BITMAP_H
 #define AMIGA_BITMAP_H
 
+#include <stdbool.h>
 #include <exec/types.h>
 #include <proto/graphics.h>
 #include <intuition/classusr.h>
@@ -34,6 +35,7 @@ struct bitmap {
 	int height;
 	UBYTE *pixdata;
 	bool opaque;
+	int native;
 	struct BitMap *nativebm;
 	int nativebmwidth;
 	int nativebmheight;
@@ -52,9 +54,10 @@ PLANEPTR ami_bitmap_get_mask(struct bitmap *bitmap, int width,
 Object *ami_datatype_object_from_bitmap(struct bitmap *bitmap);
 struct bitmap *ami_bitmap_from_datatype(char *filename);
 
-#ifndef __amigaos4__
-void ami_bitmap_argb_to_rgba(struct bitmap *bm);
-#endif
+/**
+ * Cleanup bitmap allocations
+ */
+void ami_bitmap_fini(void);
 
 /**
  * Create a bitmap.

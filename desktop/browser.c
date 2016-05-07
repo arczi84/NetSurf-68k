@@ -106,7 +106,6 @@ static inline void browser_window_get_scrollbar_pos(struct browser_window *bw,
  * \param  horizontal	Whether to get length of horizontal scrollbar
  * \return the scrollbar's length
  */
-
 static inline int browser_window_get_scrollbar_len(struct browser_window *bw,
 		bool horizontal)
 {
@@ -114,6 +113,42 @@ static inline int browser_window_get_scrollbar_len(struct browser_window *bw,
 		return bw->width - (bw->scroll_y != NULL ? SCROLLBAR_WIDTH : 0);
 	else
 		return bw->height;
+}
+
+
+/* exported interface, documented in browser.h */
+nserror
+browser_window_get_name(struct browser_window *bw, const char **out_name)
+{
+	assert(bw != NULL);
+
+	*out_name = bw->name;
+
+	return NSERROR_OK;
+}
+
+/* exported interface, documented in browser.h */
+nserror 
+browser_window_set_name(struct browser_window *bw, const char *name)
+{
+	char *nname = NULL;
+
+	assert(bw != NULL);
+
+	if (name != NULL) {
+		nname = strdup(name);
+		if (nname == NULL) {
+			return NSERROR_NOMEM;
+		}
+	}
+	
+	if (bw->name != NULL) {
+		free(bw->name);
+	}
+
+	bw->name = nname;
+
+	return NSERROR_OK;
 }
 
 /* exported interface, documented in browser.h */
@@ -1266,7 +1301,7 @@ static void browser_window_convert_to_download(struct browser_window *bw,
 
 
 /**
- * Callback handler for content event messages.
+ * Browser window content event callback handler.
  */
 static nserror browser_window_callback(hlcache_handle *c,
 		const hlcache_event *event, void *pw)
@@ -1712,6 +1747,15 @@ static void browser_window_destroy_internal(struct browser_window *bw)
 
 	if (bw->children != NULL || bw->iframes != NULL) {
 		browser_window_destroy_children(bw);
+	}
+
+	/* Destroy scrollbars */
+	if (bw->scroll_x != NULL) {
+		scrollbar_destroy(bw->scroll_x);
+	}
+
+	if (bw->scroll_y != NULL) {
+		scrollbar_destroy(bw->scroll_y);
 	}
 
 	/* clear any pending callbacks */
@@ -2481,7 +2525,6 @@ nserror browser_window_schedule_reformat(struct browser_window *bw)
 	/* The ugly cast here is so the reformat function can be
 	 * passed a gui window pointer in its API rather than void*
 	 */
-	LOG("Scheduleing %p(%p)", guit->window->reformat, bw->window);
 	guit->browser->schedule(0, (void(*)(void*))guit->window->reformat, bw->window);
 	return NSERROR_OK;
 }

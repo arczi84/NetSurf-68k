@@ -211,12 +211,8 @@ bool content_can_reformat(hlcache_handle *h)
 	return (c->handler->reformat != NULL);
 }
 
-#include "amigaos3/misc.h"
-#if defined __libnix__	
-void ftoa(float n, char *res, int afterpoint);
-#endif
 
-#include <clib/exec_protos.h>
+#include "amigaos3/misc.h"
 
 static void content_update_status(struct content *c)
 {
@@ -227,31 +223,31 @@ static void content_update_status(struct content *c)
 				"%s%s%s", messages_get("Fetching"),
 				c->sub_status[0] != '\0' ? ", " : " ",
 				c->sub_status);
+		TimeOut = 0;				
+#ifdef NO_TIMER
 		TimeOut = 0;
-		
-		if (nsoption_bool(warp_mode))
-				SetTaskPri(FindTask(0), -10);
-		else
-				SetTaskPri(FindTask(0), -1);				
+		SetTaskPri(FindTask(0), 11);
+#endif
 	} else {
+	
 		unsigned int time = c->time;
-		#if defined __libnix__		
-		//char res[6];
-	//	float n = time/100;
-	//	ftoa(n,res,1);		
-	//	unsigned short t1 = (time/1000);
-		//addpoint(time,res);
+#ifdef __libnix__			
 		snprintf(c->status_message, sizeof (c->status_message),
-				//"%s (%u%ss)", messages_get("Done"),t1, res,time);
-				"%s (%dms)", messages_get("Done"), time);
-				//"%s (%ss)", messages_get("Done"), res);
-		#else	
+				"%s (%dms)", messages_get("Done"),
+				time*10);
+#else
 		snprintf(c->status_message, sizeof (c->status_message),
 				"%s (%.1fs)", messages_get("Done"),
 				(float) time / 100);
-		#endif	
+		TimeOut = 10;		
+#ifdef NO_TIMER				
+		TimeOut = 10;
+		SetTaskPri(FindTask(0), -100);
+#endif /* NO_TIMER */
+#endif
 	}
 }
+
 
 /**
  * Updates content with new status.
@@ -346,12 +342,6 @@ void content_set_done(struct content *c)
 	c->time = wallclock() - c->time;
 	content_update_status(c);
 	content_broadcast(c, CONTENT_MSG_DONE, msg_data);
-		
-	if (!nsoption_bool(warp_mode))
-	{	
-		TimeOut = 1;
-		SetTaskPri(FindTask(0), -1);
-	}
 }
 
 /**
@@ -387,7 +377,7 @@ void content__reformat(struct content *c, bool background,
 	assert(c->status == CONTENT_STATUS_READY ||
 			c->status == CONTENT_STATUS_DONE);
 	assert(c->locked == false);
-	LOG("%p %s", c, nsurl_access(llcache_handle_get_url(c->llcache)));
+
 	c->available_width = width;
 	if (c->handler->reformat != NULL) {
 
@@ -443,8 +433,8 @@ void content_destroy(struct content *c)
 	if (c->fallback_charset != NULL) {
 		free(c->fallback_charset);
 	}
-	if (c != NULL)
-		free(c);
+
+	free(c);
 }
 
 
@@ -699,6 +689,9 @@ bool content_add_user(struct content *c,
 	user->next = c->user_list->next;
 	c->user_list->next = user;
 
+	if (c->handler->add_user != NULL)
+		c->handler->add_user(c);
+
 	return true;
 }
 
@@ -728,6 +721,10 @@ void content_remove_user(struct content *c,
 		assert(0);
 		return;
 	}
+
+	if (c->handler->remove_user != NULL)
+		c->handler->remove_user(c);
+
 	next = user->next;
 	user->next = next->next;
 	free(next);

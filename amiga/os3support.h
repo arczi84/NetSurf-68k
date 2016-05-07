@@ -73,6 +73,7 @@
 #define GETFONT_ScalableOnly	TAG_IGNORE
 #define PDTA_PromoteMask	TAG_IGNORE
 #define RPTAG_APenColor		TAG_IGNORE
+#define GA_ContextMenu		TAG_IGNORE
 #define GA_HintInfo			TAG_IGNORE
 #define GAUGEIA_Level		TAG_IGNORE
 #define IA_InBorder			TAG_IGNORE
@@ -81,6 +82,7 @@
 #define SBNA_Text			TAG_IGNORE
 #define TNA_CloseGadget		TAG_IGNORE
 #define TNA_HintInfo		TAG_IGNORE
+#define WA_ContextMenuHook		TAG_IGNORE
 #define WA_ToolBox			TAG_IGNORE
 #define WINDOW_BuiltInScroll	TAG_IGNORE
 #define WINDOW_NewMenu		TAG_IGNORE
@@ -98,6 +100,9 @@
 #define RAWKEY_CRSRRIGHT	0x4E
 #define RAWKEY_CRSRLEFT	0x4F
 #define RAWKEY_F5	0x54
+#define RAWKEY_F8	0x57
+#define RAWKEY_F9	0x58
+#define RAWKEY_F10	0x59
 #define RAWKEY_HELP	0x5F
 #define RAWKEY_HOME	0x70
 #define RAWKEY_END	0x71
@@ -119,6 +124,9 @@
 #define GetFontEnd End
 #define GetScreenModeEnd End
 
+/* MinTerm stuff */
+#define MINTERM_SRCMASK (ABC|ABNC|ANBC)
+
 /* Easy compat macros */
 /* application */
 #define Notify(...) (void)0
@@ -132,21 +140,19 @@
 #define ESetInfo SetInfo
 
 /* Only used in one place we haven't ifdeffed, where it returns the charset name */
-#define ObtainCharsetInfo(A,B,C) (const char *)"ISO-8859-1"
+#define ObtainCharsetInfo(A,B,C) (const char *)nsoption_charp(local_charset)
 
 /* DOS */
 #define AllocSysObjectTags(A,B,C,D) CreateMsgPort() /* Assume ASOT_PORT for now */
 #define FOpen(A,B,C) Open(A,B)
 #define FClose(A) Close(A)
 #define CreateDirTree(D) CreateDir(D) /*\todo This isn't quite right */
+#define SetCurrentDir(L) CurrentDir(L)
 #define DevNameFromLock(A,B,C,D) NameFromLock(A,B,C)
 
 /* Exec */
 #define AllocVecTagList(SZ,TAG) AllocVec(SZ,MEMF_ANY) /* AllocVecTagList with no tags */
 #define FindIName FindName
-
-/* Gfx */
-#define SetRPAttrs(...) (void)0 /*\todo Probably need to emulate this */
 
 /* Intuition */
 #define ICoerceMethod CoerceMethod
@@ -189,6 +195,14 @@ struct OutlineFont {
 	struct TagItem *olf_OTagList;
 };
 
+/* BackFillMessage *//*
+struct BackFillMessage {
+    struct Layer *Layer;
+    struct Rectangle Bounds;
+    LONG OffsetX;
+    LONG OffsetY;
+};
+*/
 /* icon.library v51 (ie. AfA_OS version) */
 #define ICONCTRLA_SetImageDataFormat        (ICONA_Dummy + 0x67) /*103*/
 #define ICONCTRLA_GetImageDataFormat        (ICONA_Dummy + 0x68) /*104*/
@@ -224,13 +238,9 @@ struct Node *GetPred(struct Node *node);
 struct Node *GetSucc(struct Node *node);
 
 /* Intuition */
-struct Requester *r;
-struct Gadget *g;
-struct Window *w;
-struct TagItem *tags;
-uint32 GetAttrs(Object *obj, Tag tag1, ...);
-ULONG RefreshSetGadgetAttrs(struct Gadget *g, struct Window *w, struct Requester *r, Tag tag1, ...);
-ULONG RefreshSetGadgetAttrsA(struct Gadget *g, struct Window *w, struct Requester *r, struct TagItem *tags);
+//static uint32 GetAttrs(Object *obj, Tag tag1, ...);
+//static ULONG RefreshSetGadgetAttrs(struct Gadget *g, struct Window *w, struct Requester *r, Tag tag1, ...);
+//static ULONG RefreshSetGadgetAttrsA(struct Gadget *g, struct Window *w, struct Requester *r, struct TagItem *tags);
 
 /* Utility */
 char *ASPrintf(const char *fmt, ...);

@@ -520,7 +520,10 @@ static int sdl_set_geometry(nsfb_t *nsfb, int width, int height,
                                   Bpp,
                                   SDL_SWSURFACE | SDL_FULLSCREEN);		
 #else	
-			Bpp = nsoption_int(window_depth);	
+			Bpp = nsoption_int(window_depth);
+			if ((Bpp != 8) && (Bpp != 16) && (Bpp != 24) && (Bpp != 32))  
+				Bpp = nsoption_int(window_depth)= 32;
+		
 			sdl_screen = SDL_SetVideoMode(width,
 										  height,
 										  Bpp,
@@ -575,9 +578,10 @@ static int sdl_initialise(nsfb_t *nsfb)
 #ifdef RTG
 	Bpp = nsoption_int(window_depth);
 	if ((Bpp != 8) && (Bpp != 16) && (Bpp != 24) && (Bpp != 32))  
-		Bpp = SDL_VideoModeOK(nsfb->width,nsfb->height, 32, SDL_HWSURFACE);		
-				
-    if  (nsoption_int(fullscreen) == 1)
+		Bpp = 32;//SDL_VideoModeOK(nsfb->width,nsfb->height, 32, SDL_HWSURFACE);		
+	//Bpp = nsoption_int(window_depth)= 32;	
+	
+    if  (nsoption_int(fullscreen))
 		{flags = SDL_HWSURFACE | SDL_FULLSCREEN;}
     else
 #if !defined NOVA_SDL 
@@ -704,12 +708,12 @@ static bool sdl_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 
     nsfb = nsfb; /* unused */
 
-	if (nsoption_bool(warp_mode)) {
+	if (nsoption_bool(warp_mode)) //{
 		timeout = 0;
-	} else {
+/*	} else {
 		if (timeout != 0)
 			timeout = TimeOut;
-	}
+	}*/
 #ifdef NO_TIMER
 		timeout = 0;
 #endif		
@@ -882,7 +886,6 @@ sdl_cursor(nsfb_t *nsfb, struct nsfb_cursor_s *cursor)
     }
     return true;
 }
-
 
 static int sdl_update(nsfb_t *nsfb, nsfb_bbox_t *box)
 {

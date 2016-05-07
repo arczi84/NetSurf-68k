@@ -17,11 +17,7 @@
  */
 
 #include <sys/types.h>
-#include <sys/stat.h>
-#include <fcntl.h>
-#include <sys/ioctl.h>
 #include <limits.h>
-#include <unistd.h>
 #include <getopt.h>
 #include <assert.h>
 #include <string.h>
@@ -58,7 +54,6 @@
 #include "framebuffer/schedule.h"
 #include "framebuffer/findfile.h"
 #include "framebuffer/image_data.h"
-#include "framebuffer/font.h"
 #ifdef USE_OLD_FETCH	
 #include "framebuffer/fetch.h"
 #endif
@@ -71,14 +66,21 @@
 #include "content/hlcache.h"
 #include "content/backing_store.h"
 
+//static const __attribute__((used)) char *stack_cookie = "\0$STACK:196608\0";
+
+/* Integral type definitions */
+typedef int32_t int32;
+
 /* NetSurf Amiga platform includes */
 #include "amiga/utf8.h"
 #include "amiga/misc.h"
 #include "amiga/filetype.h"
 #include "amiga/fs_backing_store.h"
+#include "amigaos3/font.h"
 #include "amigaos3/fetch.h"
 #include "amigaos3/gui.h"
 #include "amigaos3/misc.h"
+#include "amigaos3/version.h"
 
 #define   BUTTON_SIZE   24
 
@@ -96,13 +98,13 @@
 #include <proto/dos.h>
 #include <dos/dostags.h>
 #include <proto/intuition.h>
-//#include <sys/time.h>
+#include <sys/time.h>
 #include <clib/timer_protos.h>
 #include <clib/exec_protos.h>
 
-#if defined AGA || __libnix__
+#if defined AGA || __libnix__ || NOVA_SDL 
 
-struct Device* TimerBase;
+struct Device* TimerBase = NULL;
 static struct IORequest timereq;
 
 #endif
@@ -124,8 +126,8 @@ struct gui_window *search_current_window;
 struct gui_window *window_list = NULL;
 
 extern struct gui_utf8_table *amiga_utf8_table;
+static void fb_update_back_forward(struct gui_window *gw);
 
-int scale;
 /**
  * Cause an abnormal program termination.
  *
@@ -504,8 +506,6 @@ static int fb_browser_window_destroy(fbtk_widget_t *widget,
 	return 0;
 }
 
-char *options;
-static const char *fename;
 static int febpp;
 static int fewidth;
 static int feheight;
@@ -517,39 +517,32 @@ process_cmdline(int argc, char** argv)
 	int opt;
 
 	LOG("argc %d, argv %p", argc, argv);
-	
-	fename = "sdl";
+
 	
 #ifdef RTG
-	if (nsoption_int(window_depth) == 0) { nsoption_int(window_depth) = 32;
-		nsoption_write(options, NULL, NULL);}
-
+	/*if (nsoption_int(window_depth) == 0) 
+	{ nsoption_int(window_depth) = 32;
+	  nsoption_write(options, NULL, NULL);}*/
 	fewidth = nsoption_int(window_width);
 	feheight = nsoption_int(window_height);
 	febpp =  nsoption_int(window_depth);
-#else	
-	nsoption_int(window_depth) = 8;
+	if (fewidth < 640)
+		fewidth = 640;
+	if (feheight < 480)
+		feheight = 480;
+	if ((febpp != 8) && (febpp != 16) && (febpp != 24) && (febpp != 32))  
+		febpp = 32;
+#else
 	febpp = 8;
 	fewidth = 640;
 	feheight = 512;
 #endif
 	
-	if ((nsoption_charp(homepage_url) != NULL) && 
-	    (nsoption_charp(homepage_url)[0] != '\0')) {
-		if (nsoption_charp(lastpage_url) == NULL)
-			feurl = nsoption_charp(homepage_url); 
-		else {
-			feurl = nsoption_charp(lastpage_url);
-			nsoption_charp(lastpage_url) = NULL;
-			nsoption_write(options, NULL, NULL);
-			}	
-	}		
+	feurl = nsoption_charp(homepage_url); 
+
 
 	while((opt = getopt(argc, argv, "f:b:w:h:")) != -1) {
 		switch (opt) {
-		case 'f':
-			fename = optarg;
-			break;
 
 		case 'b':
 			febpp = atoi(optarg);
@@ -621,27 +614,27 @@ static nserror set_defaults(struct nsoption_s *defaults)
 	/* Set defaults for absent option strings */
 	nsoption_setnull_charp(cookie_file, strdup("PROGDIR:Resources/Cookies"));
 	nsoption_setnull_charp(cookie_jar, strdup("PROGDIR:Resources/Cookies"));
+	nsoption_charp(accept_language) = strndup(nsoption_charp(accept_language),2);
 #ifdef RTG	
-	//nsoption_int(scale) = 100;
-	nsoption_setnull_charp(fb_toolbar_layout, strdup("blfsrhuvaqetk123456789xwzgdmyop"));	
+	scale_cp = nsoption_int(scale);
+	nsoption_charp(fb_toolbar_layout) = strdup("blfsrhuvaqetk123456789xwzgdmyop");
 #else
-	scale = nsoption_int(scale);
+	scale_cp = nsoption_int(scale);
 	nsoption_int(scale) = nsoption_int(scale_aga);	
-	nsoption_setnull_charp(fb_toolbar_layout, strdup("blfrcuvaqetk12345gdyop"));
-	nsoption_int(window_depth) = 8;
-	nsoption_int(fullscreen) = 1;
+	nsoption_charp(fb_toolbar_layout) = strdup("blfrcuvaqetk12345gdyop");
 #endif
 #ifdef JS
 	nsoption_bool(enable_javascript) = true;
 #endif
-
 	nsoption_setnull_charp(net_player, strdup("C:ffplay"));
 	nsoption_setnull_charp(download_path, strdup("PROGDIR:Downloads"));
+	nsoption_setnull_charp(cache_dir, strdup("PROGDIR:Resources/Cache"));
 	nsoption_setnull_charp(homepage_url, strdup("www.netsurf-browser.org/welcome"));
-	nsoption_setnull_charp(theme, strdup("default"));
+	nsoption_setnull_charp(theme, strdup("PROGDIR:Resources/themes/default"));
 	nsoption_setnull_charp(text_editor, strdup("C:ed"));
-	nsoption_setnull_charp(download_manager, strdup("wallget"));
-	nsoption_setnull_charp(favicon_source,strdup("http://www.google.com/s2/favicons?domain=")); 
+	nsoption_setnull_charp(download_manager, strdup("c/wallget"));
+	nsoption_setnull_charp(favicon_source, strdup("http://www.google.com/s2/favicons?domain=")); 
+	nsoption_setnull_charp(youtube_handler, strdup("http://youtubeinmp4.com/youtube.php?video="));
 	
 	if (nsoption_charp(cookie_file) == NULL ||
 	    nsoption_charp(cookie_jar) == NULL) {
@@ -682,6 +675,29 @@ static nserror set_defaults(struct nsoption_s *defaults)
 	return NSERROR_OK;
 }
 
+UWORD waitPointer[] =
+    {
+    0x0000, 0x0000,     /* reserved, must be NULL */
+
+    0x0400, 0x07C0,
+    0x0000, 0x07C0,
+    0x0100, 0x0380,
+    0x0000, 0x07E0,
+    0x07C0, 0x1FF8,
+    0x1FF0, 0x3FEC,
+    0x3FF8, 0x7FDE,
+    0x3FF8, 0x7FBE,
+    0x7FFC, 0xFF7F,
+    0x7EFC, 0xFFFF,
+    0x7FFC, 0xFFFF,
+    0x3FF8, 0x7FFE,
+    0x3FF8, 0x7FFE,
+    0x1FF0, 0x3FFC,
+    0x07C0, 0x1FF8,
+    0x0000, 0x07E0,
+
+    0x0000, 0x0000,     /* reserved, must be NULL */
+    };
 /**
  * Ensures output logging stream is correctly configured
  */
@@ -706,22 +722,22 @@ static void framebuffer_run(void)
 		/* if redraws are pending do not wait for event,
 		 * return immediately
 		 */
+		
 #if defined  AGA || __clib2__
-
-	if (nsoption_bool(warp_mode))	
-			timeout = 0;	
-	else
-			timeout = TimeOut;
-
-#ifdef NO_TIMER
+	
 		timeout = 0;
-#endif	
 
 #else
 		if (fbtk_get_redraw_pending(fbtk))
 			timeout = 0;
-	
-#endif		
+#endif	
+
+#ifdef NO_TIMER
+		timeout = TimeOut;
+#endif	
+
+	if (nsoption_bool(warp_mode))	
+		timeout = 0;	
 		
 		if (fbtk_event(fbtk, &event, timeout)) {
 			if ((event.type == NSFB_EVENT_CONTROL) &&
@@ -737,7 +753,7 @@ static void framebuffer_run(void)
 static void gui_quit(void)
 {
 	LOG("gui_quit");
-	nsoption_int(scale) = scale;
+	nsoption_int(scale) = scale_cp;
 	urldb_save_cookies(nsoption_charp(cookie_jar));
 	
 	framebuffer_finalise();
@@ -805,11 +821,24 @@ fb_browser_window_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 				widget_scroll_y(gw, -100, false);
 			break;
 
-		case NSFB_KEY_MOUSE_5:
-			/* scroll down */
-			if (browser_window_scroll_at_point(gw->bw, x, y,
-					0, 100) == false)
-				widget_scroll_y(gw, 100, false);
+		case NSFB_KEY_MOUSE_6:
+			/* go back */
+			if (browser_window_back_available(gw->bw))
+			{
+				browser_window_history_back(gw->bw, false);
+					
+				fb_update_back_forward(gw);
+			}
+			break;
+
+		case NSFB_KEY_MOUSE_7:
+			/* go forward */
+			if (browser_window_back_available(gw->bw))
+			{
+				browser_window_history_forward(gw->bw, false);
+
+				fb_update_back_forward(gw);
+			}
 			break;
 
 		default:
@@ -953,21 +982,26 @@ fb_browser_window_move(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 
 int ucs4_pop = 0;
 
-void rerun_netsurf(void)
+void rerun_netsurf(const char *url)
 {
-	char run[150];
+	char run[250];
 
 	strcpy(run, "run > nil: ");
 	strcat(run, "NetSurf");
-#if !defined __libnix__ && !defined AGA && !defined NOTTF
-	strcat(run, PARAMS);
-#endif	
+	
+#if defined __ixemul__ && defined RTG
+#else
+	strcat(run, PARAMS);	
+#endif
+	if (strlen(url) > 4)  {	
+		strcat(run, " ");
+		strcat(run, url); 
+	}
 	Execute(run, 0, 0);
 	
 	fb_complete = true;
-}
 
-static void fb_update_back_forward(struct gui_window *gw);
+}
 
 int ctrl = 0;
 
@@ -1023,6 +1057,8 @@ fb_browser_window_input(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 				if (browser_window_key_press(gw->bw,
 						NS_KEY_RIGHT) == false)
 					widget_scroll_x(gw, 100, false);
+				/* for 7 mouse button*/
+				alt = 3;					
 			}
 			break;
 			 	
@@ -1049,6 +1085,8 @@ fb_browser_window_input(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 				if (browser_window_key_press(gw->bw,
 						NS_KEY_LEFT) == false)
 					widget_scroll_x(gw, -100, false);
+				/* for 6 mouse button*/
+				alt = 2;
 			}
 			break;
 
@@ -1105,14 +1143,11 @@ fb_browser_window_input(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 			break;
 
 		case NSFB_KEY_F6:
-			nsoption_charp(lastpage_url) = strdup(nsurl_access(hlcache_handle_get_url(gw->bw->current_content)));
-			rerun_netsurf();  
+			rerun_netsurf(NULL); 
 			break;
 			
 		case NSFB_KEY_F7:
-			nsoption_charp(lastpage_url) = strdup(nsurl_access(hlcache_handle_get_url(gw->bw->current_content)));
-			nsoption_write("PROGDIR:Resources/Options", NULL,NULL);
-			rerun_netsurf(); 
+			rerun_netsurf(nsurl_access(hlcache_handle_get_url(gw->bw->current_content)));
 			break;
 		
 		case NSFB_KEY_ESCAPE:
@@ -1221,6 +1256,26 @@ fb_browser_window_input(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 			break;
 		
 		case NSFB_KEY_LALT:
+			if (alt == 2)
+			{
+				/* go back */
+				if (browser_window_back_available(gw->bw))
+				{
+					browser_window_history_back(gw->bw, false);
+
+					fb_update_back_forward(gw);
+				}				
+			}
+			else
+			{
+				/* go forward */
+				if (browser_window_forward_available(gw->bw))
+				{
+					browser_window_history_forward(gw->bw, false);
+
+					fb_update_back_forward(gw);
+				}
+			}
 		case NSFB_KEY_RALT:
 			SDL_EnableKeyRepeat(300, 50);
 			alt = 0;
@@ -1269,15 +1324,18 @@ fb_browser_window_input(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 }
 
 const char *
-add_theme_path(const char *icon) 
+add_theme_path(const char *icon)
 {
 	static char path[128];
-
-	strcpy(path, "PROGDIR:Resources/theme/");
-	strcat(path, nsoption_charp(theme));
-	strcat(path,"/");
+	int len;
+	
+	len = strlen(nsoption_charp(theme));
+	strlcpy(path, nsoption_charp(theme),len);
+	
+	if (path[len-1] != '/')
+		strcat(path, "/");
 	strcat(path, icon);
-
+	
 	return path;
 }
 
@@ -1293,7 +1351,6 @@ fb_update_back_forward(struct gui_window *gw)
 	fbtk_set_bitmap(gw->forward,
 			(browser_window_forward_available(bw)) ?			
 			load_bitmap(add_theme_path("forward.png")) :  load_bitmap(add_theme_path("forward_g.png")));
-
 
 }
 
@@ -1347,13 +1404,8 @@ fb_reload_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 		return 0;
 
 
-	if (cbi->event->value.keycode == NSFB_KEY_MOUSE_3) {
-		//nsoption_read(options, nsoptions);
-		//SDL_Delay(500);
-		nsoption_charp(lastpage_url) = strdup(nsurl_access(hlcache_handle_get_url(bw->current_content)));
-		nsoption_write(options, NULL, NULL);
-		rerun_netsurf();  	
-	}
+	if (cbi->event->value.keycode == NSFB_KEY_MOUSE_3)
+			rerun_netsurf(nsurl_access(hlcache_handle_get_url(bw->current_content)));
 	
 	browser_window_reload(bw, true);
 
@@ -1369,9 +1421,11 @@ fb_stop_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	if (cbi->event->type == NSFB_EVENT_KEY_UP) 
 		return 0;
 	
-	//fbtk_set_bitmap(widget, load_bitmap(icon_file));
-	
-	browser_window_stop(bw);
+	if (cbi->event->value.keycode == NSFB_KEY_MOUSE_3)
+		fb_complete = true;
+
+	else	
+		browser_window_stop(bw);
 
 	return 1;
 }
@@ -1385,13 +1439,8 @@ fb_close_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	if (cbi->event->type != NSFB_EVENT_KEY_UP)
 		return 0;
 		
-		if (cbi->event->value.keycode == NSFB_KEY_MOUSE_3) {
-			nsoption_read(options, nsoptions);
-			SDL_Delay(500);
-			nsoption_charp(lastpage_url) = strdup(nsurl_access(hlcache_handle_get_url(bw->current_content)));
-			nsoption_write(options, NULL, NULL);
-			rerun_netsurf();  	
-		}
+		if (cbi->event->value.keycode == NSFB_KEY_MOUSE_3)
+			rerun_netsurf(nsurl_access(hlcache_handle_get_url(bw->current_content))); 	
 		else
 			fb_complete = true;
 		
@@ -1505,7 +1554,6 @@ fb_copy_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	if (cbi->event->type == NSFB_EVENT_KEY_UP) 
 		return 0;
 
-			
 	char *clip = strdup(nsurl_access(hlcache_handle_get_url(bw->current_content)));
 	
 	WriteClip(clip);
@@ -1513,40 +1561,15 @@ fb_copy_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	return 1;
 }
 
-char* usunznaki(char* s, char *c)
-{
-	 int i = strlen(c);
-     int p = 0, q = 0;
-     while (s[++p] != '\0') if (p >= i) s[q++] = s[p];
-     s[q] = '\0';
-
-    return s;
-}
-
-void 
-get_video(struct browser_window *bw) 
-{	
-	char *cmd = AllocVec(1000, MEMF_ANY);
-	char *url = strdup(nsurl_access(hlcache_handle_get_url(bw->current_content)));
-	
-	strcpy(cmd, "run Sys:Rexxc/rx S:getvideo.rexx "); 
-	strcat(cmd, url);
-	strcat(cmd, " play ");
-	
-	Execute("Mount >NIL: TCP: from AmiTCP:devs/Inet-Mountlist",0,0);
-	Execute(cmd, 0, 0);
-
-	FreeVec(cmd);
-}
-
 void 
 getvideo_mp4ee(struct browser_window *bw) 
 {   	
 	char *url = strdup(nsurl_access(hlcache_handle_get_url(bw->current_content)));
-	char *addr = malloc(strlen(url) + strlen("http://www.mp4.ee/watch?v="));
+	char *addr = malloc(strlen(url) + strlen(nsoption_charp(youtube_handler)));
 	
 	mp4ee = true;
-	strcpy(addr,"http://www.mp4.ee/watch?v=");
+	//strcpy(addr,"http://www.mp4.ee/watch?v=");
+	strcpy(addr, nsoption_charp(youtube_handler));
 	strcat(addr, url);
 	fb_url_enter(bw, addr);
 
@@ -1564,13 +1587,9 @@ fb_getvideo_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 		return 0;
 		
 	getvideo_click = true;
-#ifdef getvideo			
-    get_video(bw);
-#endif
+
 	getvideo_mp4ee(bw);
-    
-	//fbtk_set_bitmap(widget, load_bitmap(icon_file));
-	
+   	
 	return 1;
 }
 
@@ -1582,11 +1601,9 @@ fb_sethome_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	
 	if (cbi->event->type == NSFB_EVENT_KEY_UP) 
 		return 0;
-
 	
 	nsoption_charp(homepage_url) = strdup(nsurl_access(hlcache_handle_get_url(bw->current_content)));
 	nsoption_write(options, NULL, NULL);
-	//free(nsoption_charp(homepage_url));
 	
 	return 1;
 }
@@ -1604,7 +1621,7 @@ fb_add_fav_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	if (cbi->event->type == NSFB_EVENT_KEY_UP) 
 		return 0;
 
-		
+
 	BPTR fh;
 	char *cmd = AllocVec(1000, MEMF_ANY);
 
@@ -1618,7 +1635,7 @@ fb_add_fav_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	strcat(cmd, messages_get("Cancel"));
 	strcat(cmd,"\"");
 
-	Execute(cmd, 0, 0);
+	Execute(cmd, 0, fh);
 	fh = Open("ENV:NSfav",MODE_OLDFILE);
 
 	char snum[3];
@@ -1631,10 +1648,9 @@ fb_add_fav_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	/* Download favicon */		
 	
 	char *wget = AllocVec(1000, MEMF_ANY);
-	char *opt = strdup("?&format=png&width=16&height=16&canAudit=false -OResources/Icons/favicon");
 	//char *opt = strdup("?&format=png&width=16&height=16 -OResources/Icons/favicon");
 
-	strcpy(wget, "echo >nil: \" C:wget >nil: ");
+	strcpy(wget, "echo \" C:wget ");
 	strcat(wget, "-PPROGDIR:Resources/Icons/ ");
 	//strcat(wget, " 	http://g.fvicon.com/");
 	//strcat(wget, " 	http://www.google.com/s2/favicons?domain=");
@@ -1688,9 +1704,9 @@ fb_add_fav_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 		   } 	
 	else if (inum == 8  ) {
 		   nsoption_charp(favourite_8_url) = strdup(get_url);
-		   strcat(wget, get_url);
+		  // strcat(wget, get_url);
 		   nsoption_charp(favourite_8_label) = strdup(stitle);   
-		   strcat(wget, opt);
+		   //strcat(wget, opt);
 		   fav = fav8;	
 		   label = label8;	   
 		   }	 
@@ -1724,15 +1740,15 @@ fb_add_fav_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 		sprintf(snum, "%d", inum);
 		
 		strcat(wget, get_url);
-		strcat(wget, opt);	
+		strcat(wget, " -OResources/Icons/favicon");
 		strcat(wget, snum);
 		strcat(wget, ".png ");
 		strcat(wget, " \" >RAM:script");
 			
 		Execute(wget, 0, 0);
-		Execute("echo \"endcli\" >>RAM:script", 0, 0);
+		//Execute("echo \"endcli\" >>RAM:script", 0, 0);
 		Execute("execute RAM:script >nil:", 0, 0);
-		Execute("delete RAM:script >nil: ", 0, 0);
+		//Delete("RAM:script", 0, 0);
 	
 		nsoption_write(options, NULL, NULL);
 				
@@ -1917,24 +1933,28 @@ fb_bookmarks_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	fb_url_enter(bw, cmd);
 	free(cmd);
 	
+	//check_version();
+	
 	return 1;
 }
 
 void
 read_labels(void)
 {
-fbtk_set_text(label1, nsoption_charp(favourite_1_label));
-fbtk_set_text(label2, nsoption_charp(favourite_2_label));
-fbtk_set_text(label3, nsoption_charp(favourite_3_label));
-fbtk_set_text(label4, nsoption_charp(favourite_4_label));
-fbtk_set_text(label5, nsoption_charp(favourite_5_label));
-fbtk_set_text(label6, nsoption_charp(favourite_6_label));
-fbtk_set_text(label7, nsoption_charp(favourite_7_label));
-fbtk_set_text(label8, nsoption_charp(favourite_8_label));
-fbtk_set_text(label9, nsoption_charp(favourite_9_label));
-fbtk_set_text(label10, nsoption_charp(favourite_10_label));
-fbtk_set_text(label11, nsoption_charp(favourite_11_label));
-fbtk_set_text(label12, nsoption_charp(favourite_12_label));
+	fbtk_set_text(label1, nsoption_charp(favourite_1_label));
+	fbtk_set_text(label2, nsoption_charp(favourite_2_label));
+	fbtk_set_text(label3, nsoption_charp(favourite_3_label));
+	fbtk_set_text(label4, nsoption_charp(favourite_4_label));
+	fbtk_set_text(label5, nsoption_charp(favourite_5_label));
+	fbtk_set_text(label6, nsoption_charp(favourite_6_label));
+	fbtk_set_text(label7, nsoption_charp(favourite_7_label));
+	fbtk_set_text(label8, nsoption_charp(favourite_8_label));
+	fbtk_set_text(label9, nsoption_charp(favourite_9_label));
+	fbtk_set_text(label10, nsoption_charp(favourite_10_label));
+	fbtk_set_text(label11, nsoption_charp(favourite_11_label));
+	fbtk_set_text(label12, nsoption_charp(favourite_12_label));
+
+	redraw_gui();
 }
 
 int 
@@ -1942,43 +1962,27 @@ fb_prefs_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 {	
 	if (cbi->event->type == NSFB_EVENT_KEY_UP) 
 		return 0;
-
 	
-	char *text_editor = AllocVec(200, MEMF_ANY);
-
-#ifndef RTG	
-	nsoption_int(fullscreen) = 1;
-#endif	
-	if (nsoption_int(fullscreen) == 1) {
-		SetTaskPri(FindTask(0), -1);
-	#if defined __clib2__		
-		//Timeout = 100000;
-	#endif
-		ScreenToFront(Workbench);
-	}
-	strcpy(text_editor, nsoption_charp(text_editor));
-	strcat(text_editor, " Resources/Options"); 
-	Execute(text_editor,0,0);
-
-if (nsoption_int(fullscreen) == 1){
-	ScreenToBack(Workbench);
-	#if defined __clib2__	
-	//Timeout = 1;
-	#endif
-	}
+	OpenPrefs();
 	
-	FreeVec(text_editor);
+	if (restart || save)	
+		browser_window_reload(bw_window, true);
 	
-	nsoption_read(options, nsoptions);
+	if (nsoption_bool(fullscreen) || (Bpp == 24) || (Bpp == 8)) {
+		ScreenToBack(Workbench);
+		}
+	
+	if (restart)
+		rerun_netsurf(NULL);
 
-	read_labels();
+	//read_labels();
 	
 	return 1;
-} 
- 
-char* usunhttp(char* s)
+}
+
+char* usunstr(char* s, int i)
 {
-     int p = 0, q = 0, i = 7;
+     int p = 0, q = 0;
      while (s[++p] != '\0') if (p >= i) s[q++] = s[p];
      s[q] = '\0';
 
@@ -2032,7 +2036,7 @@ fb_getpage_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 		char *url = strdup(nsurl_access(hlcache_handle_get_url(bw->current_content)));
 		
 		if ( resint == 2 ) {
-			usunhttp(url);
+			usunstr(url,7);
 			char *wsk;
 			wsk=strchr(url,'/');
 			*wsk='-';
@@ -2077,6 +2081,8 @@ fb_getpage_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 int
 fb_javascript_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 {
+	struct browser_window *bw = cbi->context;
+	
 	if (cbi->event->type == NSFB_EVENT_KEY_UP) {
 			nsoption_read(options, nsoptions);
 		return 0;
@@ -2087,7 +2093,9 @@ fb_javascript_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 	else
 		{nsoption_bool(enable_javascript) = true;
 		fbtk_set_bitmap(widget, load_bitmap(add_theme_path("java.png")));}	
-	   
+	
+	browser_window_reload(bw, true);
+		
 	nsoption_write(options, NULL, NULL);
 		
 	return 1;
@@ -2439,7 +2447,7 @@ fb_fav12_click(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 static int
 fb_url_move(fbtk_widget_t *widget, fbtk_callback_info *cbi)
 {
-    bw_url =  cbi->context;
+    bw_window =  cbi->context;
 	
 	framebuffer_set_cursor(&caret);
 	SDL_ShowCursor(SDL_DISABLE);
@@ -2455,7 +2463,7 @@ set_ptr_default_move(fbtk_widget_t *widget, fbtk_callback_info *cbi)
     SDL_ShowCursor(SDL_ENABLE);
 #else
 	framebuffer_set_cursor(&pointer); 	
-    SDL_ShowCursor(SDL_DISABLE);
+	SDL_ShowCursor(SDL_DISABLE);
 #endif
 	
 	return 0;
@@ -2833,10 +2841,11 @@ unsigned short szerokosc(char *text)
   dl = strlen(text);
   szer = (9 * dl) - (zliczanie(text) * 6);
   
-#ifdef NOTTF
-	if(dl>0)
-		szer += 10;
-#endif
+	if (nsoption_bool(bitmap_fonts))
+	{
+		if(dl>0)
+			szer += 7;
+	}
  
   return szer;
 }
@@ -3007,7 +3016,8 @@ create_toolbar(struct gui_window *gw,
 	fbtk_widget_t *toolbar;
 
 	fbtk_widget_t *widget;
-
+	bw_window = gw->bw;
+	
 	int xpos; /* The position of the next widget. */
 	int xlhs = 0; /* extent of the left hand side widgets */
 	int xdir = 1; /* the direction of movement + or - 1 */
@@ -3110,7 +3120,7 @@ create_toolbar(struct gui_window *gw,
 			break;
 
 		case 'c': /* close the current window */
-#ifndef RTG	
+#ifndef RTG
 			widget = fbtk_create_button(toolbar,
 							80,
 						    padding,
@@ -3313,10 +3323,10 @@ create_toolbar(struct gui_window *gw,
 						    throbber00.height,
 						    frame_col, 
 						    &throbber00);
-						    //load_bitmap(add_theme_path("throbber/throbber00.png")));
+
 			gw->throbber = widget;
 #ifdef RTG			
-			if (nsoption_int(fullscreen) == 1) {
+			if (nsoption_bool(fullscreen)) {
 #endif
 					fbtk_set_handler(widget, 
 							 FBTK_CBT_CLICK, 
@@ -3490,25 +3500,25 @@ create_toolbar(struct gui_window *gw,
 			break;
 
 		case '5': /* fav 5 button */
+			x5 = x4 + text_w4 + 31;		
 			text_w5 = szerokosc(nsoption_charp(favourite_5_label));
-			x5 = x4 + text_w4 + 31;
 			if (nsoption_int(window_width) - 230 < (xpos) || text_w5 == 0) break;		
 			fav5 = create_fav_widget(5, x5, text_w5, toolbar, gw); 				 
 			break;
 
 		case '6': /* fav 6 button */
 #ifdef RTG
-			text_w6 = szerokosc(nsoption_charp(favourite_6_label));
 			x6 = x5 + text_w5 + 31;
+			text_w6 = szerokosc(nsoption_charp(favourite_6_label));
 			if (nsoption_int(window_width) - 250 < (xpos) || text_w6 == 0) break;	
 			fav6 = create_fav_widget(6, x6, text_w6, toolbar, gw);
 #endif			
 			break;
 
 		case '7': /* fav 7 button */	
-#ifdef RTG		
-			xpos = x7 = x6 + text_w6 + 31;
-			text_w = text_w7 = szerokosc(nsoption_charp(favourite_7_label));	
+#ifdef RTG
+			xpos = x7 = x6 + text_w6 + 31;	
+			text_w = text_w7 = szerokosc(nsoption_charp(favourite_7_label));		
 			if (nsoption_int(window_width) - 250 < (xpos) || text_w7 == 0) break;
 			fav7 = create_fav_widget(7, xpos, text_w, toolbar, gw);
 #endif			
@@ -3563,7 +3573,6 @@ create_toolbar(struct gui_window *gw,
 			xpos = calc_x;
 #ifndef RTG		
 			xpos = xpos	+ 20;
-//#else
 #endif
 		spacer3 = fbtk_create_bitmap(toolbar,
 										xpos-7,
@@ -3588,7 +3597,7 @@ create_toolbar(struct gui_window *gw,
 			fbtk_set_handler(widget, FBTK_CBT_POINTERLEAVE, 
 				 set_prefs_status, gw->bw);					 
 			break;
-#ifdef JS			
+#ifdef JS
 		case 'd': /* javascript button */
 			widget = fbtk_create_button(toolbar,
 						    xpos,
@@ -3693,11 +3702,13 @@ create_toolbar(struct gui_window *gw,
 			fbtk_set_handler(widget, FBTK_CBT_POINTERENTER, 
 				 set_paste_status, gw->bw);
 			fbtk_set_handler(widget, FBTK_CBT_POINTERLEAVE, 
-				 set_paste_status, gw->bw);				 
+				 set_paste_status, gw->bw);
+				 
 			/* toolbar is complete */
 			xdir = 0; 
-			break;	
-		
+			break;
+			
+			
 			/* met url going forwards, note position and
 			 * reverse direction 
 			 */
@@ -3761,12 +3772,13 @@ resize_toolbar(struct gui_window *gw,
 	if (toolbar_layout == NULL)
 		toolbar_layout = NSFB_TOOLBAR_DEFAULT_LAYOUT;
 	
-	unsigned int calc_favs = (fbtk_get_width(gw->window) - 100) / 100;
+	unsigned int calc_favs = (fbtk_get_width(gw->window) - 90) / 100;
 	unsigned int calc_x = fbtk_get_width(gw->window) - (BUTTON_SIZE*6+12);
 
-#ifdef NOTTF
-calc_favs = calc_favs -1;
-#endif
+//#ifdef NOTTF
+	if (nsoption_bool(bitmap_fonts))
+		calc_favs = calc_favs -1;
+//#endif
 
 	if (calc_favs > 12) calc_favs = 12;
 
@@ -4569,13 +4581,18 @@ static void
 gui_window_set_title(struct gui_window *g, const char *title)
 {
 	if(!title) 
-		SDL_WM_SetCaption("NetSurf", "NetSurf");
-				
+	  title = strdup("NetSurf");
+	
+	char mtitle[25];
+	
+	sprintf(mtitle, "NetSurf %s.%s (%s)", NETSURF_VERSION_MAJOR, NETSURF_VERSION_MINOR, __DATE__);
+	
 	stitle = strdup(ami_utf8_easy(title));
 	
-	SDL_WM_SetCaption(stitle, "NetSurf");
-		
-	LOG("****** %p, %s ********", g, title);
+	SDL_WM_SetCaption(stitle, mtitle);
+	//free(title);
+
+	//LOG("****** %p, %s ********", g, title);
 }
 
 void
@@ -4684,7 +4701,7 @@ gui_window_set_pointer(struct gui_window *g, gui_pointer_shape shape)
 	case GUI_POINTER_MENU:
 		framebuffer_set_cursor(&menu);
 		#ifdef  RTG
-			SDL_ShowCursor(SDL_DISABLE);
+			SDL_ShowCursor(SDL_ENABLE);
 		#else
 			SDL_ShowCursor(SDL_DISABLE);
 		#endif     
@@ -4723,7 +4740,8 @@ gui_window_hide_pointer(struct gui_window *g)
 static nserror
 gui_window_set_url(struct gui_window *g, nsurl *url)
 {
-	fbtk_set_text(g->url, nsurl_access(url)); 	
+	fbtk_set_text(g->url, nsurl_access(url));
+	url_global = url;
 	return NSERROR_OK;
 }
 
@@ -4866,76 +4884,124 @@ gui_window_remove_caret(struct gui_window *g)
 
 static struct gui_download_window *
 gui_download_window_create(download_context *ctx, struct gui_window *parent)
-{		
+{
+
 	if (Cbi->event->type == NSFB_EVENT_KEY_UP)
 		return 0;
 	
+	if (Cbi->event->value.keycode == NSFB_KEY_MOUSE_3)
+		return 0;
+	
 #ifdef ENABLE_DOWNLOAD
+
+	char *stat = strdup(status_txt);
+		
 	char *url = strdup(nsurl_access(download_context_get_url(ctx)));
 	const char *mime_type = download_context_get_mime_type(ctx);
 	
+#ifdef 	RTG
+	framebuffer_set_cursor(&progress);
+	SDL_ShowCursor(SDL_DISABLE);
+#endif	
+
 	char *run = AllocVec(1500, MEMF_ANY);
 	bool wget = false;
+	bool torrent = false;
+	bool play_module = false;	
 	int nodlpath = 0;
 	
 	if (getvideo_click) {
 		getvideo_click = false;
 		mp4ee = true;
 		}
-//Printf(mime_type);
-	if (strcmp(mime_type, "audio/x-mpegurl") == 0) 
-		{
-			//strlcpy(url, url, strlen(url)-3);
-			mime_type = strdup("audio/mpeg");//video
-		}
-	else if (mp4ee == true) {
-			mime_type = strdup("file");
-		}
+
 		
-	if (((strcmp(mime_type, "audio/mpeg") == 0)||
-		(strcmp(mime_type, "audio/x-scpls") == 0)) && (mouse_2_click == 0))
+//PrintG(mime_type);
+//Printf("\n");
+//Printf(strndup(url,21));
+
+	if (nsoption_bool(module_autoplay)  && 
+		((strncmp(url, "http://www.modules.pl",21)==0) ||
+		 (strncmp(url, "http://api.modarchive",21)==0)))
+		{
+		play_module = true;
+		}
+	else if (mp4ee) 
+			mime_type = strdup("file");
+		
+		
+	if ((strcmp(mime_type, "audio/x-mpegurl") == 0)||
+		(strcmp(mime_type, "audio/x-scpls") == 0)||
+		(strcmp(mime_type, "audio/mpeg") == 0))
 			{	
 			strcpy(run, "run > nil: ");
 			strcat(run, nsoption_charp(net_player));
 			strcat(run, "  "); 
 			nodlpath = 1;
 			}
-	else if ((strncmp(mime_type, "video", 5) == 0) && (mouse_2_click == 0))
+	else if (strncmp(mime_type, "video", 5)==0)
 			{	
 			strcpy(run, "run > nil: ");
 			strcat(run, "ffplay ");
 			nodlpath = 1;
-			}	
-	else if (mp4ee==true) {
-			strcpy(run, "echo \"C:wget -P");			
 			}
-	else if (strcmp(nsoption_charp(download_manager), "wget")==0)
-			{	
-			strcpy(run, "run c:wget -P");
+	else if ((strcmp(mime_type, "application/x-bittorrent")==0) )
+			{
+			nodlpath = 1;
+			strcpy(run, "echo \"C:wget -P");	
+			torrent = true;			
+			}
+	else if ((mp4ee) || (play_module)) {
+			strcpy(run, "echo \"C:wget ");	
+			nodlpath = 1;
+			}
+	else if (strcasestr(nsoption_charp(download_manager), "wget")!= NULL)
+			{
+			#ifdef AGA
+			ScreenToFront(Workbench);	
+			#endif
+			strcpy(run, "run c:wget --content-disposition -P");
 			wget = true;			
 			}
-	else	if (strcmp(nsoption_charp(download_manager), "wallget")==0)
+	else if (strcasestr(nsoption_charp(download_manager), "wallget")!= NULL)
 			{
 			#ifdef AGA
 			ScreenToFront(Workbench);	
 			#endif			
 			strcpy(run, "run  > nil: Sys:Rexxc/rx rexx/wallget.rexx ");
+			strcat(run, nsoption_charp(download_manager));
+			strcat(run, " ");
 			}
-	else if (strcmp(nsoption_charp(download_manager), "httpresume")==0)
+	else if (strcasestr(nsoption_charp(download_manager), "httpresume")!= NULL)
+			{
+			#ifdef AGA
+			ScreenToFront(Workbench);	
+			#endif
 			strcpy(run, "run  > nil: c:httpresume GUI STARTDIR=");
+			}
 
 	if (nodlpath == 0)
 		{
 		strcat(run, nsoption_charp(download_path));	
 		strcat(run, " ");
 	}
-	strcat(run, url);	
 	
-	if (mp4ee==true) 
+	strcat(run, url);	
+
+	if (wget)
+		{
+		BPTR fh;
+		fh = Open("CON:5/5/600/100", MODE_NEWFILE);
+		SetTaskPri(FindTask(0), -10);
+		
+		Execute(run, fh, 0);
+		Close(fh);
+		}	
+	else if (mp4ee) 
 		{
 			
 		BPTR fh;
-		fh = Open("CON:", MODE_NEWFILE);
+		fh = Open("CON:5/5/600/100", MODE_NEWFILE);
 		
 		strcat(run,"  -Oram:video.mp4 --no-check-certificate \" > RAM:script"); 
 		SetTaskPri(FindTask(0), -10);
@@ -4949,16 +5015,102 @@ gui_download_window_create(download_context *ctx, struct gui_window *parent)
 		Execute("run > nil: C:ffplay ram:video.mp4", 0, 0);			
 		Close(fh);	
 		Execute("delete > nil: ram:script", 0, 0);		
-		}
-
-	if (wget)
+		}		
+	else if (torrent) 
 		{
-		BPTR fh;
-		fh = Open("CON:", MODE_NEWFILE);
-		SetTaskPri(FindTask(0), -10);
 		
-		Execute(run, fh, 0);
+		BPTR fh;
+		fh = Open("CON:5/5/600/100", MODE_NEWFILE);
+		
+		strcat(run,"  -Oram:file.torrent --no-check-certificate \" > RAM:torscript"); 
+		SetTaskPri(FindTask(0), -10);
+		Execute(run, 0, 0);	
+
+		Execute("echo \"endcli\" >> ram:torscript", 0, 0);			
+			
+		Execute("execute ram:torscript", fh, 0);		
+		Execute("run C:ctorrent ram:file.torrent", fh, 0);			
+		Close(fh);	
+		Execute("delete > nil: ram:torscript", 0, 0);		
+		}
+	else if (play_module)
+		{
+		Execute("delete > nil: ram:mod/*", 0, 0);	
+		if (strncmp(url, "http://www.modules.pl",21)==0)
+			Execute("delete > nil: ram:zip/*", 0, 0);
+		
+		BPTR fh = 0;
+		uint8_t size;
+		char *modname;
+		fh = Open("CON:5/5/600/100", MODE_NEWFILE);
+		
+		if (strncmp(url, "http://www.modules.pl",21)==0)		
+			strcat(run,"  -PRAM:zip"); 
+		else
+			strcat(run,"  -PRAM:mod");
+		
+		strcat(run,"  --no-check-certificate --content-disposition \" > RAM:modscript");
+		SetTaskPri(FindTask(0), -20);
+		Execute(run, 0, 0);
+		
+		Execute("echo \"endcli\" >> ram:modscript", 0, 0);
+			
+		Execute("execute ram:modscript", fh, 0);
 		Close(fh);
+		
+		if (strncmp(url, "http://www.modules.pl",21)==0) {
+			Execute("makedir ram:mod",0,0);
+			Execute("c:unzip Ram:zip/#?.zip -d ram:mod/",0,0);
+		}	
+		
+		Execute("list ram:mod/* QUICK NOHEAD >ram:lista", 0, 0);
+		
+		fh = Open("RAM:lista", MODE_OLDFILE);	
+		
+		size = GetFileSize(fh);	
+
+		modname = AllocVec(size,MEMF_ANY);
+		
+		Read(fh,modname,size);		
+		modname[size-1] = 0;
+		Close(fh);
+		
+		bool deli = false, eagle = false;
+		
+		if (strcasestr( nsoption_charp(module_player), "delitracker") != NULL)
+			deli = true;
+		else if (strcasestr( nsoption_charp(module_player), "eagleplayer") != NULL)
+			eagle = true;
+		
+		if (deli)
+			strcpy(run, "sys:rexxc/rx rexx/DT_LoadModule.rexx ");
+		else if (eagle)
+			strcpy(run, "sys:rexxc/rx rexx/EP_LoadModule.rexx ");
+		else
+			strcpy(run, "run ");
+		
+		strcat(run, nsoption_charp(module_player));
+		strcat(run, " ");			
+			
+		if ((!deli) && (!eagle))
+			strcat(run, " \"");			
+		strcat(run, "RAM:mod/");
+		strcat(run, modname);
+		if ((!deli) && (!eagle))
+			strcat(run, "\"");
+		/*
+		Printf("\n*");
+		Printf(run);
+		Printf("*\n");		
+		*/
+		//strcat(run, " > ram:log");	
+		//SetTaskPri(FindTask(0), -10);
+		Execute(run, 0, 0);
+		if (strncmp(url, "http://www.modules.pl",21)==0)
+			Execute(run, 0, 0);
+			
+		FreeVec(modname);
+		Execute("delete > nil: ram:modscript", 0, 0);
 		}
 	else	
 		{
@@ -4967,10 +5119,11 @@ gui_download_window_create(download_context *ctx, struct gui_window *parent)
 		}
 
 	mouse_2_click = 0;	
-	mp4ee = false;
+	mp4ee = false;	
 	
 	free(url);
 	FreeVec(run);
+	
 #endif
 }
 
@@ -5065,18 +5218,19 @@ struct Library *LocaleBase;
 
 void OpenLibs()
 {
+
 #if defined AGA || NOVA_SDL 
 	KeymapBase = OpenLibrary("keymap.library", 37);
 	CxBase = OpenLibrary("commodities.library", 37);
 #endif
+
 #if defined __libnix__ || AGA || NOVA_SDL
- // if (!TimerBase)gettimerbase();
-//#if defined __ixemul__
 
 	OpenDevice("timer.device", 0, &timereq, 0);
 	TimerBase = timereq.io_Device;
-//#endif
-#endif	
+#endif
+	
+
 #ifndef USE_OLD_FETCH
 	LocaleBase = OpenLibrary("locale.library",  38);
 #endif
@@ -5088,14 +5242,15 @@ void CloseLibs()
 	if (KeymapBase) CloseLibrary(KeymapBase);
 	if (CxBase)     CloseLibrary(CxBase);
 #endif
-#if defined __libnix__  || AGA || NOVA_SDL
-#if defined __ixemul__
+#if defined __libnix__  || AGA || NOVA_SDL 
+//#if defined __ixemul__
 	if(TimerBase) CloseDevice(&timereq);
-#endif	
+//#endif
 #endif	
 	if(LocaleBase) CloseLibrary(LocaleBase);
 }
 
+#include "nsfb.h"
 
 nsurl *html_default_stylesheet_url;
 int
@@ -5112,14 +5267,11 @@ main(int argc, char** argv)
 		.browser = &framebuffer_browser_table,
 		.window = &framebuffer_window_table,
 		.clipboard = framebuffer_clipboard_table,
-		.bitmap = framebuffer_bitmap_table,		
-		.utf8 = amiga_utf8_table,
-#ifdef USE_OLD_FETCH
-		.fetch = framebuffer_fetch_table,
-#else		
+		.bitmap = framebuffer_bitmap_table,			
 		.fetch = amiga_fetch_table,	
 		.file = amiga_file_table,		
-#endif		
+		.utf8 = amiga_utf8_table,
+		
 #ifdef ENABLE_DOWNLOAD	
 		.download = amiga_download_table,
 #endif		
@@ -5144,6 +5296,17 @@ main(int argc, char** argv)
 	options = strdup("PROGDIR:Resources/Options");
 	nsoption_read(options, nsoptions);
 	
+#ifdef RTG
+	if (nsoption_bool(autodetect_depth))
+		febpp = detect_screen();
+	else
+		febpp = nsoption_int(window_depth);
+#else
+	febpp = 8;
+#endif
+    if (Bpp == 24)
+		nsoption_bool(fullscreen) = true;
+	
     ret = netsurf_register(&framebuffer_table);
 	if (ret != NSERROR_OK) {
 		die("NetSurf operation table failed registration");
@@ -5151,7 +5314,7 @@ main(int argc, char** argv)
 
 	/* message init */	
 #ifdef USE_OLD_FETCH	
-	char *messages = strdup("PROGDIR:Resources/polski/Messages");
+	char *messages = strdup("PROGDIR:Resources/en/Messages");
 #else	
 	char messages[200];
 	if (ami_locate_resource(messages, "Messages") == false) {
@@ -5164,7 +5327,7 @@ main(int argc, char** argv)
 		fprintf(stderr, "Cannot open Messages file");
 	
 #ifdef CACHE
-	ret = netsurf_init("PROGDIR:Resources/Cache");
+	ret = netsurf_init(nsoption_charp(cache_dir));
 #else
 	ret = netsurf_init(NULL);
 #endif	
@@ -5174,8 +5337,12 @@ main(int argc, char** argv)
 
 	if (process_cmdline(argc,argv) != true) /* calls nsoption_commandline */
 		die("unable to process command line.\n");
-
-	nsfb = framebuffer_initialise("sdl",  fewidth, feheight,  febpp);
+#ifdef RTG
+	nsfb = framebuffer_initialise("sdl",  fewidth, feheight ,  febpp);
+#else
+	nsfb = framebuffer_initialise("sdl",  640, 512,  8);
+#endif
+	
 	if (nsfb == NULL)
 		die("Unable to initialise framebuffer");
 
@@ -5203,9 +5370,13 @@ main(int argc, char** argv)
 	}
 	
 #ifdef NO_TIMER
-	SetTaskPri(FindTask(0), nsoption_int(priority));
+	//SetTaskPri(FindTask(0), nsoption_int(priority));
 #endif
-	
+#ifdef AGA
+	//Execute("Run >NIL: C:CPointer XPOS=0 YPOS=0",0,0);
+	SDL_WarpMouse(0, 0);
+#endif
+
 	if (ret != NSERROR_OK) {
 		warn_user(messages_get_errorcode(ret), 0);
 	} else {
@@ -5223,7 +5394,9 @@ main(int argc, char** argv)
 	if (status_txt != NULL) free(status_txt);
 	if (options != NULL) free(options);
 	if (stitle != NULL) free(stitle);
-	
+
+	if (Bpp == 24)
+			nsoption_bool(fullscreen) = false;	
 	CloseLibs();
 	netsurf_exit();
 

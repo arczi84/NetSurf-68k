@@ -27,12 +27,14 @@
 #include <dos/dos.h>
 #include <proto/dos.h>
 
+#include <machine/param.h>
 #include <ncurses/ncurses.h>
 #include <libraries/bsdsocket.h>
 #include <clib/exec_protos.h>
 
 #include "utils/log.h"
 #include "utils/utils.h"
+#include "utils/messages.h"
 #include <amigaos3/misc.h>
 #include "amigaos3/libnix.h"
 
@@ -40,9 +42,108 @@
 #include <sys/ttycom.h>
 #include <sys/termios.h>
 
+#include "content/content_protected.h"
+#include "content/hlcache.h"
+
 #define NSIG     9
 
+static void content_update_status(struct content *c)
+{
+	if (c->status == CONTENT_STATUS_LOADING ||
+			c->status == CONTENT_STATUS_READY) {
+		/* Not done yet */
+		snprintf(c->status_message, sizeof (c->status_message),
+				"%s%s%s", messages_get("Fetching"),
+				c->sub_status[0] != '\0' ? ", " : " ",
+				c->sub_status);
+	} else {
+		unsigned int time = c->time;
+		snprintf(c->status_message, sizeof (c->status_message),
+				"%s (%s)", messages_get("Done"),
+				time);
+	}
+}
+
+int uname(struct utsname *uts)
+{
+	struct Resident *res;
+	ULONG ver, rev;
+
+	ver = 3;
+	rev = 9;
+
+	strcpy(uts->sysname, "Workbench");
+	strcpy(uts->nodename, "amiga");
+	strcpy(uts->machine, "m68k");
+}
+
 #if 0
+
+char *substring(char *string, int position, int length) 
+{
+   char *pointer;
+   int c;
+ 
+   pointer = malloc(length+1);
+ 
+   if( pointer == NULL )
+       return 0;
+ 
+   for( c = 0 ; c < length ; c++ ) 
+      *(pointer+c) = *((string+position-1)+c);       
+ 
+   *(pointer+c) = '\0';
+ 
+   return pointer;
+}
+
+char *insert_dot(char *a)
+{
+   char *f, *e;
+   int length;
+   char *b = strdup(".");
+
+   length = strlen(a);
+   int position = length - 1;
+ 
+   f = substring(a, 1, position - 1 );      
+   e = substring(a, position, length-position+1);
+ 
+   strcpy(a, "");
+   strcat(a, f);
+   free(f);
+   strcat(a, b);
+   strcat(a, e);
+   
+   free(e);
+   free(b);
+   strlcpy(a,a,length+1);
+ 
+   return a;
+   
+}
+
+char *addpoint(int i, char res[])
+{
+    char *string = malloc(6);
+	res[6];
+	
+	if (i < 100)	
+		i = i*10;
+		
+	intToStr(i, string, 0);	
+	int length = strlen(string);
+	
+	//res = strdup(insert_dot(string));
+	strcpy(res,insert_dot(string));
+
+	free(string);
+	
+	//return res;	
+	
+	//printf("\n\"%s\"\n", string);
+}; 
+
 
 long __gmtoffset;
 
@@ -66,20 +167,6 @@ int __wrap_gettimeofday(struct timeval *tv, struct timezone *tzp)
   return 0;
 }
 
-#endif
-
-int uname(struct utsname *uts)
-{
-	struct Resident *res;
-	ULONG ver, rev;
-
-	ver = 3;
-	rev = 1;
-
-	strcpy(uts->sysname, "Workbench");
-	strcpy(uts->nodename, "amiga");
-	strcpy(uts->machine, "m68k");
-}
 
 int tcgetattr(int fd, struct termios *t)
 {
@@ -131,3 +218,4 @@ fcntl (int fd,int  cmd)
   __set_errno (ENOSYS);
   return -1;
 }
+#endif

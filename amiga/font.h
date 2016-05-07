@@ -1,5 +1,5 @@
 /*
- * Copyright 2008, 2009, 2012 Chris Young <chris@unsatisfactorysoftware.co.uk>
+ * Copyright 2008, 2009, 2012, 2016 Chris Young <chris@unsatisfactorysoftware.co.uk>
  *
  * This file is part of NetSurf, http://www.netsurf-browser.org/
  *
@@ -23,35 +23,37 @@
 #include <graphics/rastport.h>
 #include <graphics/text.h>
 
-struct ami_font_node;
+void ami_font_init(void);
+void ami_font_fini(void);
 
-ULONG ami_font_unicode_text(struct RastPort *rp, const char *string,
-	ULONG length, const plot_font_style_t *fstyle, ULONG x, ULONG y, bool aa);
+/* DPI stuff */
 void ami_font_setdevicedpi(int id);
-void ami_init_fonts(void);
-void ami_close_fonts(void);
-void ami_font_close(struct ami_font_node *node);
-
-/* Alternate entry points into font_scan */
-void ami_font_initscanner(bool force, bool save);
-void ami_font_finiscanner(void);
-void ami_font_savescanner(void);
+ULONG ami_font_dpi_get_devicedpi(void);
+ULONG ami_font_dpi_get_xdpi(void);
 
 /* Simple diskfont functions for graphics.library use (not page rendering) */
 struct TextFont *ami_font_open_disk_font(struct TextAttr *tattr);
 void ami_font_close_disk_font(struct TextFont *tfont);
 
-/* In font_bitmap.c */
-bool amiga_bm_nsfont_width(const plot_font_style_t *fstyle,
-		const char *string, size_t length, int *width);
-bool amiga_bm_nsfont_position_in_string(const plot_font_style_t *fstyle,
-		const char *string, size_t length,
-		int x, size_t *char_offset, int *actual_x);
-bool amiga_bm_nsfont_split(const plot_font_style_t *fstyle,
-		const char *string, size_t length,
-		int x, size_t *char_offset, int *actual_x);
-ULONG ami_font_bm_text(struct RastPort *rp, const char *string, ULONG length,
-			const plot_font_style_t *fstyle, ULONG dx, ULONG dy);
+/* Font engine tables */
+struct ami_font_functions {
+	bool (*width)(const plot_font_style_t *fstyle,
+			const char *string, size_t length,
+			int *width);
 
+	bool (*posn)(const plot_font_style_t *fstyle,
+			const char *string, size_t length,
+			int x, size_t *char_offset, int *actual_x);
+
+	bool (*split)(const plot_font_style_t *fstyle,
+			const char *string, size_t length,
+			int x, size_t *char_offset, int *actual_x);
+
+	ULONG (*text)(struct RastPort *rp, const char *string,
+			ULONG length, const plot_font_style_t *fstyle,
+			ULONG x, ULONG y, bool aa);
+};
+
+const struct ami_font_functions *ami_nsfont;
 #endif
 

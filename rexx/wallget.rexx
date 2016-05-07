@@ -3,21 +3,13 @@
 */
 
 options RESULTS
-parse arg downloaddir url
+parse arg wallpath downloaddir url 
 
 url=strip(url)
 
-address command 'run <nil: >nil: c/wallget'	
-/*
-START                      
-Working = 1
-DO WHILE Working > 0
-	CALL Delay(150) 
-	QUERY FINISHED
-	Working = Result
-END
-*/
-DO 50000
+address command 'run <nil: >nil: 'wallpath
+
+DO 5000
 	address command 'WaitForPort WALLGET'	
 IF SHOW('P', WALLGET) THEN LEAVE
 END

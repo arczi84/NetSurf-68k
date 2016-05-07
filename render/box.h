@@ -132,7 +132,8 @@ typedef enum {
 	NEED_MIN    = 1 << 8,	/* minimum width is required for layout */
 	REPLACE_DIM = 1 << 9,	/* replaced element has given dimensions */
 	IFRAME      = 1 << 10,	/* box contains an iframe */
-	CONVERT_CHILDREN = 1 << 11  /* wanted children converting */
+	CONVERT_CHILDREN = 1 << 11,  /* wanted children converting */
+	IS_REPLACED = 1 << 12	/* box is a replaced element */
 } box_flags;
 
 /* Sides of a box */
@@ -244,6 +245,9 @@ struct box {
 	 * This is used only for boxes with float_children */
 	int clear_level;
 
+	/* Level below which floats have been placed. */
+	int cached_place_below_level;
+
 	/** List marker box if this is a list-item, or 0. */
 	struct box *list_marker;
 
@@ -331,7 +335,8 @@ struct box *box_pick_text_box(struct html_content *html,
 struct box *box_find_by_id(struct box *box, lwc_string *id);
 bool box_visible(struct box *box);
 void box_dump(FILE *stream, struct box *box, unsigned int depth, bool style);
-bool box_extract_link(const char *rel, struct nsurl *base, struct nsurl **result);
+bool box_extract_link(const struct html_content *content,
+		const char *rel, struct nsurl *base, struct nsurl **result);
 
 bool box_handle_scrollbars(struct content *c, struct box *box,
 		bool bottom, bool right);

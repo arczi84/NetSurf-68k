@@ -1,0 +1,22 @@
+cd /opt/libdom &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos clean &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos  &&
+cd /opt/libcss &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos clean &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos  &&
+cd /opt/libnsutils &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos clean &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos  &&
+cd /opt/libparserutils &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos clean &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos  &&
+cd /opt/libhubbub &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos clean &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos  &&
+cd /opt/libwapcaplet &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos clean &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos  &&
+cd /opt/libnsgif &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos clean &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos  &&
+cd /opt/libnsbmp &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos clean &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos  &&
+cd /opt/libutf8proc &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos clean &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos  &&
+cd /opt/libdom  &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos install &&
+cd /opt/libcss  &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos install &&
+cd /opt/libnsutils  &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos install &&
+cd /opt/libparserutils  &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos install &&
+cd /opt/libhubbub  &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos install &&
+cd /opt/libwapcaplet  &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos install &&
+cd /opt/libnsgif  &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos install &&
+cd /opt/libnsbmp  &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos install &&
+cd /opt/libutf8proc  &&  make TARGET=amigaos3 HOST=m68k-unknown-amigaos install &&
+touch framebuffer/font.h &&
+cd /media/sf_E_DRIVE/projects/netsurf &&  make TARGET=amigaos3 HOST=clib2 RTG=YES TTF=YES USE_TIMER=NO &&
+touch framebuffer/font.h &&
+cd /media/sf_E_DRIVE/projects/netsurf &&  make TARGET=amigaos3 HOST=clib2 RTG=YES TTF=NO USE_TIMER=NO

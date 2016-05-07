@@ -16,7 +16,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/** \file
+/**
+ * \file
  * Option reading and saving (implementation).
  *
  * Options are stored in the format key:value, one per line.
@@ -67,8 +68,6 @@ static struct nsoption_s defaults[] = {
 #include "beos/options.h"
 #elif defined(nsamiga)
 #include "amiga/options.h"
-#elif defined(nsamigaos3)
-#include "amigaos3/options.h"
 #elif defined(nsframebuffer)
 #include "framebuffer/options.h"
 #elif defined(nsatari)
@@ -182,6 +181,21 @@ static void nsoption_validate(struct nsoption_s *opts, struct nsoption_s *defs)
 			opts[cloop].value.c = defs[cloop].value.c;
 		}
 	}
+
+	/* To aid migration and ensure that timeouts don't go crazy,
+	 * ensure that (a) we allow at least 1 attempt and
+	 * (b) the total time that we spend should not exceed 60s
+	 */
+	if (opts[NSOPTION_max_retried_fetches].value.u == 0)
+		opts[NSOPTION_max_retried_fetches].value.u = 1;
+	if (opts[NSOPTION_curl_fetch_timeout].value.u < 5)
+		opts[NSOPTION_curl_fetch_timeout].value.u = 5;
+	if (opts[NSOPTION_curl_fetch_timeout].value.u > 60)
+		opts[NSOPTION_curl_fetch_timeout].value.u = 60;
+	while (((opts[NSOPTION_curl_fetch_timeout].value.u *
+		 opts[NSOPTION_max_retried_fetches].value.u) > 60) &&
+		(opts[NSOPTION_max_retried_fetches].value.u > 1))
+		opts[NSOPTION_max_retried_fetches].value.u--;
 }
 
 /**
@@ -234,6 +248,8 @@ nsoption_is_set(const struct nsoption_s *opts,
 		 */
 		if (((defs[entry].value.s == NULL) &&
 		     (opts[entry].value.s != NULL)) ||
+		    ((defs[entry].value.s != NULL) &&
+		     (opts[entry].value.s == NULL)) ||
 		    ((defs[entry].value.s != opts[entry].value.s) &&
 		     (strcmp(opts[entry].value.s, defs[entry].value.s) != 0))) {
 			ret = true;

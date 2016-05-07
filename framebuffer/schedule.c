@@ -18,6 +18,9 @@
 
 #include <sys/time.h>
 #include <time.h>
+#ifdef __clib2__
+#include <timeradd.h>
+#endif
 #include <stdlib.h>
 
 #include "utils/log.h"

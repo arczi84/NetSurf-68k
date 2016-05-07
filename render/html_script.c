@@ -183,6 +183,13 @@ convert_script_async_cb(hlcache_handle *script,
 		break;
 	}
 
+	/* if there are no active fetches remaining begin post parse
+	 * conversion
+	 */
+	if (html_can_begin_conversion(parent)) {
+		html_begin_conversion(parent);
+	}
+
 	return NSERROR_OK;
 }
 
@@ -271,7 +278,7 @@ convert_script_sync_cb(hlcache_handle *script,
 
 		/* attempt to execute script */
 		script_handler = select_script_handler(content_get_type(s->data.handle));
-		if (script_handler != NULL) {
+		if (script_handler != NULL && parent->jscontext != NULL) {
 			/* script has a handler */
 			const char *data;
 			unsigned long size;
@@ -510,6 +517,9 @@ html_process_script(void *ctx, dom_node *node)
 	dom_hubbub_error err = DOM_HUBBUB_OK;
 
 	/* ensure javascript context is available */
+	/* We should only ever be here if scripting was enabled for this
+	 * content so it's correct to make a javascript context if there
+	 * isn't one already. */
 	if (c->jscontext == NULL) {
 		union content_msg_data msg_data;
 

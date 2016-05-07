@@ -25,7 +25,9 @@
 
 #include <proto/exec.h>
 #include <proto/intuition.h>
-#include <proto/utility.h>
+//#include <proto/utility.h>
+
+#include <graphics/gfxbase.h> /* Needed for v54 version check */
 
 #ifndef __amigaos4__
 /* OS3 needs these for the XXXX_GetClass() functions */
@@ -75,8 +77,8 @@
 	if(PREFIX##Base) CloseLibrary((struct Library *)PREFIX##Base);
 
 #define AMINS_LIB_STRUCT(PREFIX)	\
-	struct PREFIX##Base *PREFIX##Base;	\
-	struct PREFIX##IFace *I##PREFIX;
+	struct PREFIX##Base *PREFIX##Base = NULL;	\
+	struct PREFIX##IFace *I##PREFIX = NULL;
 
 #define AMINS_CLASS_OPEN(CLASS, CLASSVER, PREFIX, CLASSGET, NEEDINTERFACE)	\
 	LOG("Opening %s v%d", CLASS, CLASSVER); \
@@ -123,7 +125,7 @@
 	if(PREFIX##Base) CloseLibrary((struct Library *)PREFIX##Base);
 
 #define AMINS_LIB_STRUCT(PREFIX)	\
-	struct PREFIX##Base *PREFIX##Base;
+	struct PREFIX##Base *PREFIX##Base = NULL;
 
 #define AMINS_CLASS_OPEN(CLASS, CLASSVER, PREFIX, CLASSGET, NEEDINTERFACE)	\
 	LOG("Opening %s v%d", CLASS, CLASSVER); \
@@ -183,6 +185,9 @@ AMINS_CLASS_STRUCT(Label);
 AMINS_CLASS_STRUCT(Layout);
 AMINS_CLASS_STRUCT(ListBrowser);
 AMINS_CLASS_STRUCT(RadioButton);
+#ifndef __amigaos4__
+AMINS_CLASS_STRUCT(Page);
+#endif
 AMINS_CLASS_STRUCT(Scroller);
 AMINS_CLASS_STRUCT(Space);
 AMINS_CLASS_STRUCT(SpeedBar);
@@ -213,10 +218,11 @@ bool ami_libs_open(void)
 	AMINS_LIB_OPEN("locale.library",       38, Locale,      "main",        1, true)
 	AMINS_LIB_OPEN("workbench.library",    37, Workbench,   "main",        1, true)
 
-	/*\todo This is down here as we need to check the graphics.library version
-	 * before opening.  If it is sufficiently new enough we can avoid using P96
+	/* This is down here as we need to check the graphics.library version
+	 * before opening.  If it is sufficiently new enough we can avoid using P96.
 	 */
-	AMINS_LIB_OPEN("Picasso96API.library",  0, P96,         "main",        1, false)
+	if(GfxBase->LibNode.lib_Version < 54)
+		AMINS_LIB_OPEN("Picasso96API.library",  0, P96,         "main",        1, false)
 
 	/* NB: timer.device is opened in schedule.c (ultimately by the scheduler process).
 	 * The library base and interface are obtained there, rather than here, due to
@@ -235,7 +241,6 @@ bool ami_libs_open(void)
 	 * NB: the last argument should be "true" only if the class also has
 	 * library functions we use.
 	 */
-
 	AMINS_CLASS_OPEN("arexx.class",                  44, ARexx,         AREXX,         false)
 	AMINS_CLASS_OPEN("images/bevel.image",           44, Bevel,         BEVEL,         false)
 	AMINS_CLASS_OPEN("images/bitmap.image",          44, BitMap,        BITMAP,        false)
@@ -257,6 +262,10 @@ bool ami_libs_open(void)
 	AMINS_CLASS_OPEN("gadgets/speedbar.gadget",      44, SpeedBar,      SPEEDBAR,      true)
 	AMINS_CLASS_OPEN("gadgets/string.gadget",        44, String,        STRING,        false)
 	AMINS_CLASS_OPEN("window.class",                 44, Window,        WINDOW,        false)
+
+#ifndef __amigaos4__
+	PageClass = PAGE_GetClass();
+#endif
 
 	return true;
 }

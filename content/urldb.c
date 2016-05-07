@@ -1210,15 +1210,20 @@ static struct path_data *urldb_find_url(nsurl *url)
 	assert(url);
 
 	if (url_bloom != NULL) {
-		if (bloom_search_hash(url_bloom,
-					nsurl_hash(url)) == false) {
-					return NULL;
+		if (bloom_search_hash(url_bloom, nsurl_hash(url)) == false) {
+			return NULL;
 		}
 	}
 
 	scheme = nsurl_get_component(url, NSURL_SCHEME);
 	if (scheme == NULL)
 		return NULL;
+
+	if (lwc_string_isequal(scheme, corestring_lwc_mailto, &match) ==
+			lwc_error_ok && match == true) {
+		lwc_string_unref(scheme);
+		return NULL;
+	}
 
 	host = nsurl_get_component(url, NSURL_HOST);
 	if (host != NULL) {

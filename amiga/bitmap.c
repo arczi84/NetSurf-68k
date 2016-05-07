@@ -29,7 +29,9 @@
 #include <proto/dos.h>
 #include <proto/intuition.h>
 #include <proto/utility.h>
+#ifdef __amigaos4__
 #include <sys/param.h>
+#endif
 #include "assert.h"
 
 #include "utils/nsoption.h"
@@ -44,21 +46,40 @@
 #include "amiga/misc.h"
 #include "amiga/rtg.h"
 
+enum {
+	AMI_NSBM_NONE = 0,
+	AMI_NSBM_TRUECOLOUR,
+	AMI_NSBM_PALETTEMAPPED 
+};
+
+APTR pool_bitmap = NULL;
+
 /* exported function documented in amiga/bitmap.h */
 void *amiga_bitmap_create(int width, int height, unsigned int state)
 {
 	struct bitmap *bitmap;
-	
-	bitmap = ami_misc_allocvec_clear(sizeof(struct bitmap), 0);
-	if(bitmap)
-	{
-		bitmap->pixdata = ami_misc_allocvec_clear(width*height*4, 0xff);
-		bitmap->width = width;
-		bitmap->height = height;
 
-		if(state & BITMAP_OPAQUE) bitmap->opaque = true;
-			else bitmap->opaque = false;
-	}
+	if(pool_bitmap == NULL) pool_bitmap = ami_misc_itempool_create(sizeof(struct bitmap));
+
+	bitmap = ami_misc_itempool_alloc(pool_bitmap, sizeof(struct bitmap));
+	if(bitmap == NULL) return NULL;
+
+	bitmap->pixdata = ami_misc_allocvec_clear(width*height*4, 0xff);
+	bitmap->width = width;
+	bitmap->height = height;
+
+	if(state & BITMAP_OPAQUE) bitmap->opaque = true;
+		else bitmap->opaque = false;
+
+	bitmap->nativebm = NULL;
+	bitmap->nativebmwidth = 0;
+	bitmap->nativebmheight = 0;
+	bitmap->native_mask = NULL;
+	bitmap->dto = NULL;
+	bitmap->url = NULL;
+	bitmap->title = NULL;
+	bitmap->icondata = NULL;
+	bitmap->native = AMI_NSBM_NONE;
 
 	return bitmap;
 }
@@ -94,11 +115,12 @@ void amiga_bitmap_destroy(void *bitmap)
 
 	if(bm)
 	{
-		if((bm->nativebm) && (bm->dto == NULL)) {
+		if((bm->nativebm) && (bm->native == AMI_NSBM_TRUECOLOUR)) {
 			ami_rtg_freebitmap(bm->nativebm);
 		}
-		
+
 		if(bm->dto) {
+			/**\todo find out why this crashes on exit but not during normal program execution */
 			DisposeDTObject(bm->dto);
 		}
 
@@ -109,7 +131,7 @@ void amiga_bitmap_destroy(void *bitmap)
 		bm->native_mask = NULL;
 		bm->dto = NULL;
 	
-		FreeVec(bm);
+		ami_misc_itempool_free(pool_bitmap, bm, sizeof(struct bitmap));
 		bm = NULL;
 	}
 }
@@ -145,7 +167,7 @@ void amiga_bitmap_modified(void *bitmap)
 {
 	struct bitmap *bm = bitmap;
 
-	if((bm->nativebm) && (bm->dto == NULL))
+	if((bm->nativebm) && (bm->native == AMI_NSBM_TRUECOLOUR))
 		ami_rtg_freebitmap(bm->nativebm);
 		
 	if(bm->dto) DisposeDTObject(bm->dto);
@@ -153,6 +175,7 @@ void amiga_bitmap_modified(void *bitmap)
 	bm->nativebm = NULL;
 	bm->dto = NULL;
 	bm->native_mask = NULL;
+	bm->native = AMI_NSBM_NONE;
 }
 
 
@@ -240,6 +263,7 @@ static size_t bitmap_get_bpp(void *vbitmap)
 	return 4;
 }
 
+#ifdef __amigaos4__
 static void ami_bitmap_argb_to_rgba(struct bitmap *bm)
 {
 	if(bm == NULL) return;
@@ -249,6 +273,7 @@ static void ami_bitmap_argb_to_rgba(struct bitmap *bm)
 		data[i] = (data[i] << 8) | (data[i] >> 24);
 	}
 }
+#endif
 
 #ifdef BITMAP_DUMP
 void bitmap_dump(struct bitmap *bitmap)
@@ -341,6 +366,10 @@ static inline struct BitMap *ami_bitmap_get_truecolour(struct bitmap *bitmap,int
 
 	if(!bitmap) return NULL;
 
+	if((bitmap->native != AMI_NSBM_NONE) && (bitmap->native != AMI_NSBM_TRUECOLOUR)) {
+		amiga_bitmap_modified(bitmap);
+	}
+
 	if(bitmap->nativebm)
 	{
 		if((bitmap->nativebmwidth == width) && (bitmap->nativebmheight==height))
@@ -372,6 +401,7 @@ static inline struct BitMap *ami_bitmap_get_truecolour(struct bitmap *bitmap,int
 			bitmap->nativebm = tbm;
 			bitmap->nativebmwidth = bitmap->width;
 			bitmap->nativebmheight = bitmap->height;
+			bitmap->native = AMI_NSBM_TRUECOLOUR;
 		}
 	}
 
@@ -424,12 +454,14 @@ static inline struct BitMap *ami_bitmap_get_truecolour(struct bitmap *bitmap,int
 		ami_rtg_freebitmap(tbm);
 		tbm = scaledbm;
 		bitmap->nativebm = NULL;
+		bitmap->native = AMI_NSBM_NONE;
 
 		if(nsoption_int(cache_bitmaps) >= 1)
 		{
 			bitmap->nativebm = tbm;
 			bitmap->nativebmwidth = width;
 			bitmap->nativebmheight = height;
+			bitmap->native = AMI_NSBM_TRUECOLOUR;
 		}
 	}
 
@@ -470,7 +502,11 @@ static inline struct BitMap *ami_bitmap_get_palettemapped(struct bitmap *bitmap,
 					int width, int height)
 {
 	struct BitMap *dtbm;
-	
+
+	if((bitmap->native != AMI_NSBM_NONE) && (bitmap->native != AMI_NSBM_PALETTEMAPPED)) {
+		amiga_bitmap_modified(bitmap);
+	}
+
 	/* Dispose the DataTypes object if we've performed a layout already,
 		and we need to scale, as scaling can only be performed before
 		the first GM_LAYOUT */
@@ -484,7 +520,7 @@ static inline struct BitMap *ami_bitmap_get_palettemapped(struct bitmap *bitmap,
 	
 	if(bitmap->dto == NULL) {
 		bitmap->dto = ami_datatype_object_from_bitmap(bitmap);
-		
+
 		SetDTAttrs(bitmap->dto, NULL, NULL,
 				PDTA_Screen, scrn,
 				PDTA_ScaleQuality, nsoption_bool(scale_quality),
@@ -507,6 +543,10 @@ static inline struct BitMap *ami_bitmap_get_palettemapped(struct bitmap *bitmap,
 	bitmap->nativebmwidth = width;
 	bitmap->nativebmheight = height;
 
+	/**\todo Native bitmaps are stored as DataTypes Objects here?
+	   This is sub-optimal and they should be cached as BitMaps according to user
+	   preferences */
+	bitmap->native = AMI_NSBM_PALETTEMAPPED;
 	return dtbm;
 }
 
@@ -520,27 +560,31 @@ struct BitMap *ami_bitmap_get_native(struct bitmap *bitmap,
 	}
 }
 
+void ami_bitmap_fini(void)
+{
+	if(pool_bitmap) ami_misc_itempool_delete(pool_bitmap);
+	pool_bitmap = NULL;
+}
+
 static nserror bitmap_render(struct bitmap *bitmap, hlcache_handle *content)
 {
-	int plot_width;
-	int plot_height;
-	struct MinList shared_pens;
-	struct gui_globals bm_globals;
-	struct gui_globals *temp_gg = glob;
-
 	struct redraw_context ctx = {
 		.interactive = false,
 		.background_images = true,
 		.plot = &amiplot
 	};
 
+	int plot_width;
+	int plot_height;
+	struct gui_globals bm_globals;
+	struct gui_globals *temp_gg = glob;
+
 	plot_width = MIN(content_get_width(content), bitmap->width);
 	plot_height = ((plot_width * bitmap->height) + (bitmap->width / 2)) /
 			bitmap->width;
 
-	ami_init_layers(&bm_globals, bitmap->width, bitmap->height);
-	ami_NewMinList(&shared_pens);
-	bm_globals.shared_pens = &shared_pens;
+	ami_init_layers(&bm_globals, bitmap->width, bitmap->height, true);
+	bm_globals.shared_pens = NULL;
 
 	glob = &bm_globals;
 	ami_clearclipreg(&bm_globals);
@@ -563,14 +607,13 @@ static nserror bitmap_render(struct bitmap *bitmap, hlcache_handle *content)
 
 	ami_bitmap_argb_to_rgba(bitmap);
 #else
-#warning FIXME for OS3
+#warning FIXME for OS3 (in current state none of bitmap_render can work!)
 #endif
 
 	/**\todo In theory we should be able to move the bitmap to our native area
 		to try to avoid re-conversion (at the expense of memory) */
 
 	ami_free_layers(&bm_globals);
-	ami_plot_release_pens(&shared_pens);
 	amiga_bitmap_set_opaque(bitmap, true);
 
 	/* Restore previous render area.  This is set when plotting starts,

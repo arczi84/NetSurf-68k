@@ -28,12 +28,13 @@
 #include "utils/log.h"
 #include "utils/nsoption.h"
 #include "desktop/gui_utf8.h"
-#include "desktop/font.h"
+//#include "desktop/font.h"
 #include "desktop/browser.h"
 
 #include "framebuffer/gui.h"
-#include "framebuffer/font.h"
 #include "framebuffer/findfile.h"
+
+#include "amigaos3/font.h"
 
 /* glyph cache minimum size */
 #define CACHE_MIN_SIZE (100 * 1024)
@@ -385,15 +386,15 @@ static void fb_fill_scalar(const plot_font_style_t *fstyle, FTC_Scaler srec)
 	srec->pixel = 0;
 	//srec->x_res = srec->y_res = nsoption_int(font_size);//72;
 #if defined AGA
-	srec->x_res = srec->y_res = browser_get_dpi();
+	srec->x_res = srec->y_res = 90;//browser_get_dpi()-10;
 	//nsoption_int(font_size)-63;//72;//;
 	//Printf("browser_get_dpi()=%d\n",browser_get_dpi());
 #else
-	srec->x_res = srec->y_res = browser_get_dpi()-10;//72;
+	srec->x_res = srec->y_res = nsoption_int(browser_dpi);//-10 72;
 #endif
 }
 
-FT_Glyph fb_getglyph(const plot_font_style_t *fstyle, uint32_t ucs4)
+FT_Glyph fb_getglyph_ttf(const plot_font_style_t *fstyle, uint32_t ucs4)
 {
         FT_UInt glyph_index;
         FTC_ScalerRec srec;
@@ -432,7 +433,7 @@ FT_Glyph fb_getglyph(const plot_font_style_t *fstyle, uint32_t ucs4)
  * \param  width   updated to width of string[0..length)
  * \return  true on success, false on error and error reported
  */
-static bool nsfont_width(const plot_font_style_t *fstyle,
+static bool nsfont_width_ttf(const plot_font_style_t *fstyle,
                          const char *string, size_t length,
                          int *width)
 {
@@ -445,7 +446,7 @@ static bool nsfont_width(const plot_font_style_t *fstyle,
                 ucs4 = utf8_to_ucs4(string + nxtchr, length - nxtchr);
                 nxtchr = utf8_next(string, length, nxtchr);
 
-                glyph = fb_getglyph(fstyle, ucs4);
+                glyph = fb_getglyph_ttf(fstyle, ucs4);
                 if (glyph == NULL)
                         continue;
 
@@ -467,7 +468,7 @@ static bool nsfont_width(const plot_font_style_t *fstyle,
  * \return  true on success, false on error and error reported
  */
 
-static bool nsfont_position_in_string(const plot_font_style_t *fstyle,
+static bool nsfont_position_in_string_ttf(const plot_font_style_t *fstyle,
 		const char *string, size_t length,
 		int x, size_t *char_offset, int *actual_x)
 {
@@ -480,7 +481,7 @@ static bool nsfont_position_in_string(const plot_font_style_t *fstyle,
         while (nxtchr < length) {
                 ucs4 = utf8_to_ucs4(string + nxtchr, length - nxtchr);
 
-                glyph = fb_getglyph(fstyle, ucs4);
+                glyph = fb_getglyph_ttf(fstyle, ucs4);
                 if (glyph == NULL)
                         continue;
 
@@ -524,7 +525,7 @@ static bool nsfont_position_in_string(const plot_font_style_t *fstyle,
  * Returning char_offset == length means no split possible
  */
 
-static bool nsfont_split(const plot_font_style_t *fstyle,
+static bool nsfont_split_ttf(const plot_font_style_t *fstyle,
 		const char *string, size_t length,
 		int x, size_t *char_offset, int *actual_x)
 {
@@ -538,7 +539,7 @@ static bool nsfont_split(const plot_font_style_t *fstyle,
         while (nxtchr < length) {
                 ucs4 = utf8_to_ucs4(string + nxtchr, length - nxtchr);
 
-                glyph = fb_getglyph(fstyle, ucs4);
+                glyph = fb_getglyph_ttf(fstyle, ucs4);
                 if (glyph == NULL)
                         continue;
 
@@ -564,10 +565,10 @@ static bool nsfont_split(const plot_font_style_t *fstyle,
 	return true;
 }
 
-const struct font_functions nsfont = {
-	nsfont_width,
-	nsfont_position_in_string,
-	nsfont_split
+struct font_functions nsfont = {
+	nsfont_width_ttf,
+	nsfont_position_in_string_ttf,
+	nsfont_split_ttf
 };
 
 struct gui_utf8_table *framebuffer_utf8_table = NULL;

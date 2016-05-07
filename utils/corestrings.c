@@ -75,6 +75,7 @@ lwc_string *corestring_lwc_justify;
 lwc_string *corestring_lwc_left;
 lwc_string *corestring_lwc_li;
 lwc_string *corestring_lwc_link;
+lwc_string *corestring_lwc_mailto;
 lwc_string *corestring_lwc_meta;
 lwc_string *corestring_lwc_middle;
 lwc_string *corestring_lwc_multipart_form_data;
@@ -269,6 +270,12 @@ dom_string *corestring_dom_radio;
 dom_string *corestring_dom_checkbox;
 dom_string *corestring_dom_file;
 dom_string *corestring_dom_on;
+dom_string *corestring_dom_onblur;
+dom_string *corestring_dom_onerror;
+dom_string *corestring_dom_onfocus;
+dom_string *corestring_dom_onload;
+dom_string *corestring_dom_onresize;
+dom_string *corestring_dom_onscroll;
 dom_string *corestring_dom___ns_key_box_node_data;
 dom_string *corestring_dom___ns_key_libcss_node_data;
 dom_string *corestring_dom___ns_key_file_name_node_data;
@@ -339,6 +346,7 @@ void corestrings_fini(void)
 	CSS_LWC_STRING_UNREF(left);
 	CSS_LWC_STRING_UNREF(li);
 	CSS_LWC_STRING_UNREF(link);
+	CSS_LWC_STRING_UNREF(mailto);
 	CSS_LWC_STRING_UNREF(meta);
 	CSS_LWC_STRING_UNREF(middle);
 	CSS_LWC_STRING_UNREF(multipart_form_data);
@@ -544,7 +552,15 @@ void corestrings_fini(void)
 	CSS_DOM_STRING_UNREF(radio);
 	CSS_DOM_STRING_UNREF(checkbox);
 	CSS_DOM_STRING_UNREF(file);
+	/* DOM event prefix */
 	CSS_DOM_STRING_UNREF(on);
+	/* DOM events forwarded from body to window */
+	CSS_DOM_STRING_UNREF(onblur);
+	CSS_DOM_STRING_UNREF(onerror);
+	CSS_DOM_STRING_UNREF(onfocus);
+	CSS_DOM_STRING_UNREF(onload);
+	CSS_DOM_STRING_UNREF(onresize);
+	CSS_DOM_STRING_UNREF(onscroll);
 	/* DOM userdata keys, not really CSS */
 	CSS_DOM_STRING_UNREF(__ns_key_box_node_data);
 	CSS_DOM_STRING_UNREF(__ns_key_libcss_node_data);
@@ -629,6 +645,7 @@ nserror corestrings_init(void)
 	CSS_LWC_STRING_INTERN(left);
 	CSS_LWC_STRING_INTERN(li);
 	CSS_LWC_STRING_INTERN(link);
+	CSS_LWC_STRING_INTERN(mailto);
 	CSS_LWC_STRING_INTERN(meta);
 	CSS_LWC_STRING_INTERN(middle);
 	CSS_LWC_STRING_INTERN(no);
@@ -863,7 +880,15 @@ nserror corestrings_init(void)
 	CSS_DOM_STRING_INTERN(radio);
 	CSS_DOM_STRING_INTERN(checkbox);
 	CSS_DOM_STRING_INTERN(file);
+	/* DOM event prefix */
 	CSS_DOM_STRING_INTERN(on);
+	/* DOM events forwarded from body to window */
+	CSS_DOM_STRING_INTERN(onblur);
+	CSS_DOM_STRING_INTERN(onerror);
+	CSS_DOM_STRING_INTERN(onfocus);
+	CSS_DOM_STRING_INTERN(onload);
+	CSS_DOM_STRING_INTERN(onresize);
+	CSS_DOM_STRING_INTERN(onscroll);
 	/* DOM userdata keys, not really CSS */
 	CSS_DOM_STRING_INTERN(__ns_key_box_node_data);
 	CSS_DOM_STRING_INTERN(__ns_key_libcss_node_data);

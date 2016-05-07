@@ -25,10 +25,9 @@
 #include "utils/nsoption.h"
 #include "utils/utf8.h"
 #include "desktop/gui_utf8.h"
-#include "desktop/font.h"
-
+//#include "desktop/font.h"
 #include "framebuffer/gui.h"
-#include "framebuffer/font.h"
+#include "amigaos3/font.h"
 
 #include <font-ns-sans.h>
 
@@ -183,12 +182,12 @@ static uint8_t * get_codepoint(uint32_t id, bool italic)
 }
 
 
-bool fb_font_init(void)
+bool fb_font_init_internal(void)
 {
 	return true;
 }
 
-bool fb_font_finalise(void)
+bool fb_font_finalise_internal(void)
 {
 	return true;
 }
@@ -245,7 +244,7 @@ glyph_scale_2(const uint8_t *glyph_data)
 }
 
 const uint8_t *
-fb_get_glyph(uint32_t ucs4, enum fb_font_style style, int scale)
+fb_get_glyph_internal(uint32_t ucs4, enum fb_font_style style, int scale)
 {
 	const uint8_t *glyph_data;
 	unsigned int section;
@@ -343,7 +342,7 @@ static nserror utf8_from_local(const char *string,
 }
 
 
-static bool nsfont_width(const plot_font_style_t *fstyle,
+static bool nsfont_width_internal(const plot_font_style_t *fstyle,
                          const char *string, size_t length,
                          int *width)
 {
@@ -376,7 +375,7 @@ static bool nsfont_width(const plot_font_style_t *fstyle,
  * \return  true on success, false on error and error reported
  */
 
-static bool nsfont_position_in_string(const plot_font_style_t *fstyle,
+static bool nsfont_position_in_string_internal(const plot_font_style_t *fstyle,
 		const char *string, size_t length,
 		int x, size_t *char_offset, int *actual_x)
 {
@@ -428,7 +427,7 @@ static bool nsfont_position_in_string(const plot_font_style_t *fstyle,
  * Returning char_offset == length means no split possible
  */
 
-static bool nsfont_split(const plot_font_style_t *fstyle,
+static bool nsfont_split_internal(const plot_font_style_t *fstyle,
 		const char *string, size_t length,
 		int x, size_t *char_offset, int *actual_x)
 {
@@ -467,10 +466,10 @@ static bool nsfont_split(const plot_font_style_t *fstyle,
 	return true;
 }
 
-const struct font_functions nsfont = {
-	nsfont_width,
-	nsfont_position_in_string,
-	nsfont_split
+struct font_functions nsfont_internal = {
+	nsfont_width_internal,
+	nsfont_position_in_string_internal,
+	nsfont_split_internal
 };
 
 static struct gui_utf8_table utf8_table = {
@@ -478,7 +477,7 @@ static struct gui_utf8_table utf8_table = {
 	.local_to_utf8 = utf8_from_local,
 };
 
-struct gui_utf8_table *framebuffer_utf8_table = &utf8_table;
+struct gui_utf8_table *bitmap_utf8_table = &utf8_table;
 
 
 /*

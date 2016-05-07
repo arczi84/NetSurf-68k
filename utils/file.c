@@ -113,63 +113,6 @@ static nserror posix_nsurl_to_path(struct nsurl *url, char **path_out)
 	bool match;
 	lwc_string *scheme;
 	nserror res;
-	char *colon;
-	char *slash;
-
-	if ((url == NULL) || (path_out == NULL)) {
-		return NSERROR_BAD_PARAMETER;
-	}
-
-	scheme = nsurl_get_component(url, NSURL_SCHEME);
-
-	if (lwc_string_caseless_isequal(scheme, corestring_lwc_file,
-					&match) != lwc_error_ok)
-	{
-		return NSERROR_BAD_PARAMETER;
-	}
-	lwc_string_unref(scheme);
-	if (match == false) {
-		return NSERROR_BAD_PARAMETER;
-	}
-
-	urlpath = nsurl_get_component(url, NSURL_PATH);
-	if (urlpath == NULL) {
-		return NSERROR_BAD_PARAMETER;
-	}
-
-	res = url_unescape(lwc_string_data(urlpath) + 1, &path);
-	lwc_string_unref(urlpath);
-	if (res != NSERROR_OK) {
-		return res;
-	}
-
-	colon = strchr(path, ':');
-	if(colon == NULL)
-	{
-		slash = strchr(path, '/');
-		if(slash)
-		{
-			*slash = ':';
-		}
-		else
-		{
-			int len = strlen(path);
-			path[len] = ':';
-			path[len + 1] = '\0';
-		}
-	}
-
-	*path_out = path;
-
-	return NSERROR_OK;
-}
-static nserror posix_nsurl_to_path2(struct nsurl *url, char **path_out)
-{
-	lwc_string *urlpath;
-	char *path;
-	bool match;
-	lwc_string *scheme;
-	nserror res;
 
 	if ((url == NULL) || (path_out == NULL)) {
 		return NSERROR_BAD_PARAMETER;
@@ -346,16 +289,12 @@ nserror netsurf_mkpath(char **str, size_t *size, size_t nelm, ...)
 /* exported interface documented in utils/file.h */
 nserror netsurf_nsurl_to_path(struct nsurl *url, char **path_out)
 {
-
 	return guit->file->nsurl_to_path(url, path_out);
 }
 
 /* exported interface documented in utils/file.h */
 nserror netsurf_path_to_nsurl(const char *path, struct nsurl **url)
 {
-//	Printf(path);
-//	Printf("\n");
-	
 	return guit->file->path_to_nsurl(path, url);
 }
 

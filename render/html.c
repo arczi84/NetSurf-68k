@@ -70,6 +70,30 @@ static const char *html_types[] = {
 	"text/html"
 };
 
+/* Exported interface, see html_internal.h */
+bool fire_dom_event(dom_string *type, dom_node *target,
+		    bool bubbles, bool cancelable)
+{
+	dom_exception exc;
+	dom_event *evt;
+	bool result;
+
+	exc = dom_event_create(&evt);
+	if (exc != DOM_NO_ERR) return false;
+	exc = dom_event_init(evt, type, bubbles, cancelable);
+	if (exc != DOM_NO_ERR) {
+		dom_event_unref(evt);
+		return false;
+	}
+	LOG("Dispatching '%*s' against %p",
+	    dom_string_length(type), dom_string_data(type), target);
+	exc = dom_event_target_dispatch_event(target, evt, &result);
+	if (exc != DOM_NO_ERR) {
+		result = false;
+	}
+	dom_event_unref(evt);
+	return result;
+}
 
 /**
  * Perform post-box-creation conversion of a document
@@ -141,7 +165,6 @@ static void html_box_convert_done(html_content *c, bool success)
 		content_set_done(&c->base);
 	}
 
-	html_set_status(c, "");
 	dom_node_unref(html);
 }
 
@@ -568,7 +591,9 @@ void html_finish_conversion(html_content *htmlc)
 	 * object, but with its target set to the Document object (and
 	 * the currentTarget set to the Window object)
 	 */
-	js_fire_event(htmlc->jscontext, "load", htmlc->document, NULL);
+	if (htmlc->jscontext != NULL) {
+		js_fire_event(htmlc->jscontext, "load", htmlc->document, NULL);
+	}
 
 	/* convert dom tree to box tree */
 	LOG("DOM to box (%p)", htmlc);
@@ -603,7 +628,6 @@ dom_default_action_DOMNodeInserted_cb(struct dom_event *evt, void *pw)
 {
 	dom_event_target *node;
 	dom_node_type type;
-	dom_string *name;
 	dom_exception exc;
 	html_content *htmlc = pw;
 
@@ -612,38 +636,56 @@ dom_default_action_DOMNodeInserted_cb(struct dom_event *evt, void *pw)
 		exc = dom_node_get_node_type(node, &type);
 		if ((exc == DOM_NO_ERR) && (type == DOM_ELEMENT_NODE)) {
 			/* an element node has been inserted */
-			exc = dom_node_get_node_name(node, &name);
-			if ((exc == DOM_NO_ERR) && (name != NULL)) {
+			dom_html_element_type tag_type;
 
-				if (dom_string_caseless_isequal(name,
-						corestring_dom_link)) {
-					/* Handle stylesheet loading */
-					html_css_process_link(htmlc,
-							(dom_node *)node);
-					/* Generic link handling */
-					html_process_link(htmlc,
-							(dom_node *)node);
+			exc = dom_html_element_get_tag_type(node, &tag_type);
+			if (exc != DOM_NO_ERR) {
+				tag_type = DOM_HTML_ELEMENT_TYPE__UNKNOWN;
+			}
 
-				} else if (dom_string_caseless_lwc_isequal(name,
-						corestring_lwc_meta) &&
-						htmlc->refresh == false) {
-					html_meta_refresh_process_element(htmlc,
-							(dom_node *)node);
-				} else if (dom_string_caseless_lwc_isequal(
-						name, corestring_lwc_base)) {
-					html_process_base(htmlc,
-							(dom_node *)node);
-				} else if (dom_string_caseless_lwc_isequal(
-						name, corestring_lwc_title) &&
-						htmlc->title == NULL) {
-					htmlc->title = dom_node_ref(node);
-				} else if (dom_string_caseless_lwc_isequal(
-						name, corestring_lwc_img)) {
-					html_process_img(htmlc,
-							(dom_node *) node);
+			switch (tag_type) {
+			case DOM_HTML_ELEMENT_TYPE_LINK:
+				/* Handle stylesheet loading */
+				html_css_process_link(htmlc, (dom_node *)node);
+				/* Generic link handling */
+				html_process_link(htmlc, (dom_node *)node);
+				break;
+			case DOM_HTML_ELEMENT_TYPE_META:
+				if (htmlc->refresh)
+					break;
+				html_meta_refresh_process_element(htmlc,
+						(dom_node *)node);
+				break;
+			case DOM_HTML_ELEMENT_TYPE_TITLE:
+				if (htmlc->title != NULL)
+					break;
+				htmlc->title = dom_node_ref(node);
+				break;
+			case DOM_HTML_ELEMENT_TYPE_BASE:
+				html_process_base(htmlc, (dom_node *)node);
+				break;
+			case DOM_HTML_ELEMENT_TYPE_IMG:
+				html_process_img(htmlc, (dom_node *) node);
+				break;
+			default:
+				break;
+			}
+			if (htmlc->enable_scripting) {
+				/* ensure javascript context is available */
+				if (htmlc->jscontext == NULL) {
+					union content_msg_data msg_data;
+
+					msg_data.jscontext = &htmlc->jscontext;
+					content_broadcast(&htmlc->base,
+							CONTENT_MSG_GETCTX,
+							msg_data);
+					LOG("javascript context: %p",
+							htmlc->jscontext);
 				}
-
-				dom_string_unref(name);
+				if (htmlc->jscontext != NULL) {
+					js_handle_new_element(htmlc->jscontext,
+							(dom_element *) node);
+				}
 			}
 		}
 		dom_node_unref(node);
@@ -688,6 +730,15 @@ dom_default_action_DOMSubtreeModified_cb(struct dom_event *evt, void *pw)
 	}
 }
 
+static void
+dom_default_action_finished_cb(struct dom_event *evt, void *pw)
+{
+	html_content *htmlc = pw;
+
+	if (htmlc->jscontext != NULL)
+		js_event_cleanup(htmlc->jscontext, evt);
+}
+
 /* callback function selector
  *
  * selects a callback function for libdom to call based on the type and phase.
@@ -714,6 +765,8 @@ dom_event_fetcher(dom_string *type,
 		} else if (dom_string_isequal(type, corestring_dom_DOMSubtreeModified)) {
 			return dom_default_action_DOMSubtreeModified_cb;
 		}
+	} else if (phase == DOM_DEFAULT_ACTION_FINISHED) {
+		return dom_default_action_finished_cb;
 	}
 	return NULL;
 }
@@ -801,6 +854,7 @@ html_create_html_data(html_content *c, const http_parameter *params)
 	c->scripts = NULL;
 	c->jscontext = NULL;
 
+	c->enable_scripting = nsoption_bool(enable_javascript);
 	c->base.active = 1; /* The html content itself is active */
 
 	if (lwc_intern_string("*", SLEN("*"), &c->universal) != lwc_error_ok) {
@@ -827,7 +881,7 @@ html_create_html_data(html_content *c, const http_parameter *params)
 	/* Create the parser binding */
 	parse_params.enc = c->encoding;
 	parse_params.fix_enc = true;
-	parse_params.enable_script = nsoption_bool(enable_javascript);
+	parse_params.enable_script = c->enable_scripting;
 	parse_params.msg = NULL;
 	parse_params.script = html_process_script;
 	parse_params.ctx = c;
@@ -970,7 +1024,7 @@ html_process_encoding_change(struct content *c,
 
 	parse_params.enc = html->encoding;
 	parse_params.fix_enc = true;
-	parse_params.enable_script = nsoption_bool(enable_javascript);
+	parse_params.enable_script = html->enable_scripting;
 	parse_params.msg = NULL;
 	parse_params.script = html_process_script;
 	parse_params.ctx = html;
@@ -1295,7 +1349,6 @@ static void html_stop(struct content *c)
 		/* If there are no further active fetches and we're still
  		 * in the READY state, transition to the DONE state. */
 		if (c->status == CONTENT_STATUS_READY && c->active == 0) {
-			html_set_status(htmlc, "");
 			content_set_done(c);
 		}
 
@@ -1549,15 +1602,6 @@ static nserror html_clone(const struct content *old, struct content **newc)
 	assert(0 && "html_clone should never be called");
 
 	return true;
-}
-
-/**
- * Set the content status.
- */
-
-void html_set_status(html_content *c, const char *extra)
-{
-	content_set_status(&c->base, extra);
 }
 
 

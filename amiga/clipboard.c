@@ -175,7 +175,6 @@ static void gui_get_clipboard(char **buffer, size_t *length)
 {
 	struct CollectionItem *ci = NULL;
 	struct StoredProperty *sp = NULL;
-	ULONG error;
 	struct CSet *cset;
 
 	if(OpenIFF(iffh,IFFF_READ)) return;
@@ -185,7 +184,7 @@ static void gui_get_clipboard(char **buffer, size_t *length)
 	if(CollectionChunk(iffh,ID_FTXT,ID_UTF8)) return;
 	if(StopOnExit(iffh, ID_FTXT, ID_FORM)) return;
 	
-	error = ParseIFF(iffh,IFFPARSE_SCAN);
+	ParseIFF(iffh,IFFPARSE_SCAN);
 
 	if((ci = FindCollection(iffh, ID_FTXT, ID_UTF8))) {
 		*buffer = ami_clipboard_cat_collection(ci, 106, length);
@@ -327,7 +326,7 @@ void ami_drag_selection(struct gui_window *g)
 	}
 }
 
-bool ami_easy_clipboard(char *text)
+bool ami_easy_clipboard(const char *text)
 {
 	gui_set_clipboard(text, strlen(text), NULL, 0);
 	return true;

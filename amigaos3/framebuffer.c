@@ -28,6 +28,7 @@
 #include <libnsfb_event.h>
 #include <libnsfb_cursor.h>
 
+#include "utils/nsoption.h"
 #include "utils/utils.h"
 #include "utils/log.h"
 #include "desktop/browser.h"
@@ -36,9 +37,9 @@
 #include "framebuffer/gui.h"
 #include "framebuffer/fbtk.h"
 #include "framebuffer/framebuffer.h"
-#include "framebuffer/font.h"
 #include "framebuffer/bitmap.h"
 
+#include "amigaos3/font.h"
 /* netsurf framebuffer library handle */
 static nsfb_t *nsfb;
 
@@ -74,10 +75,9 @@ framebuffer_plot_polygon(const int *p, unsigned int n, const plot_style_t *style
     return nsfb_plot_polygon(nsfb, p, n, style->fill_colour);
 }
 
-
-#ifdef FB_USE_FREETYPE
+//#ifdef FB_USE_FREETYPE
 static bool 
-framebuffer_plot_text(int x, int y, const char *text, size_t length,
+framebuffer_plot_text_ttf(int x, int y, const char *text, size_t length,
 		const plot_font_style_t *fstyle)
 {
         uint32_t ucs4;
@@ -90,7 +90,7 @@ framebuffer_plot_text(int x, int y, const char *text, size_t length,
                 ucs4 = utf8_to_ucs4(text + nxtchr, length - nxtchr);
                 nxtchr = utf8_next(text, length, nxtchr);
 
-                glyph = fb_getglyph(fstyle, ucs4);
+                glyph = fb_getglyph_ttf(fstyle, ucs4);
                 if (glyph == NULL)
                         continue;
 
@@ -123,8 +123,8 @@ framebuffer_plot_text(int x, int y, const char *text, size_t length,
         return true;
 
 }
-#else
-static bool framebuffer_plot_text(int x, int y, const char *text, size_t length,
+//#else
+static bool framebuffer_plot_text_internal(int x, int y, const char *text, size_t length,
 		const plot_font_style_t *fstyle)
 {
     enum fb_font_style style = fb_get_font_style(fstyle);
@@ -154,7 +154,7 @@ static bool framebuffer_plot_text(int x, int y, const char *text, size_t length,
         loc.x1 = loc.x0 + w;
         loc.y1 = loc.y0 + h;
 
-        chrp = fb_get_glyph(ucs4, style, size);
+        chrp = fb_get_glyph_internal(ucs4, style, size);
         nsfb_plot_glyph1(nsfb, &loc, chrp, p, fstyle->foreground);
 
         x += w;
@@ -163,8 +163,22 @@ static bool framebuffer_plot_text(int x, int y, const char *text, size_t length,
 
     return true;
 }
-#endif
+//#endif
 
+static bool 
+framebuffer_plot_text(int x, int y, const char *text, size_t length,
+		const plot_font_style_t *fstyle)
+{
+	if (nsoption_bool(bitmap_fonts)){
+		framebuffer_plot_text_internal(x,  y, text, length,
+		fstyle);
+	}
+	else {
+		framebuffer_plot_text_ttf(x,  y, text, length,
+		fstyle);
+	}	
+	
+}
 
 static bool 
 framebuffer_plot_bitmap(int x, int y,

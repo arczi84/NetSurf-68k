@@ -28,4 +28,10 @@
 #undef DUK_USE_DATE_PARSE_STRING
 #endif
 
-#define DUK_USE_DEEP_C_STACK
+#define DUK_USE_REGEXP_CANON_WORKAROUND
+
+/* Required for execution timeout checking */
+#define DUK_USE_INTERRUPT_COUNTER
+
+extern duk_bool_t dukky_check_timeout(void *udata);
+#define DUK_USE_EXEC_TIMEOUT_CHECK dukky_check_timeout

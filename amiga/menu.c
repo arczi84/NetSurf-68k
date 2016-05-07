@@ -28,6 +28,7 @@
 #include <proto/utility.h>
 #ifdef __amigaos4__
 #include <dos/anchorpath.h>
+#include <dos/obsolete.h> /* Needed for ExAll() */
 #endif
 
 #include <libraries/gadtools.h>
@@ -123,10 +124,9 @@ HOOKF(void, ami_menu_item_project_newwin, APTR, window, struct IntuiMessage *)
 HOOKF(void, ami_menu_item_project_newtab, APTR, window, struct IntuiMessage *)
 {
 	struct gui_window_2 *gwin;
-	nserror error;
 
 	GetAttr(WINDOW_UserData, (Object *)window, (ULONG *)&gwin);
-	error = ami_gui_new_blank_tab(gwin);
+	ami_gui_new_blank_tab(gwin);
 }
 
 HOOKF(void, ami_menu_item_project_open, APTR, window, struct IntuiMessage *)
@@ -201,10 +201,15 @@ HOOKF(void, ami_menu_item_project_about, APTR, window, struct IntuiMessage *)
 				TDR_Arg2,verdate,
 				TAG_DONE);
 #else
-	/*\todo proper requester for OS3
-	 * at the moment menus are disabled so won't get here anyway */
-	printf("NetSurf %s\nBuild date %s\n", netsurf_version, verdate);
-	sel = 0;
+	struct EasyStruct about_req = {
+		sizeof(struct EasyStruct),
+		0,
+		"NetSurf",
+		"NetSurf %s\nBuild date %s\n\nhttp://www.netsurf-browser.org",
+		temp2,
+	};
+
+	sel = EasyRequest(gwin->win, &about_req, NULL, netsurf_version, verdate);
 #endif
 	free(temp2);
 
@@ -378,8 +383,7 @@ HOOKF(void, ami_menu_item_browser_scale_decrease, APTR, window, struct IntuiMess
 	struct gui_window_2 *gwin;
 	GetAttr(WINDOW_UserData, (Object *)window, (ULONG *)&gwin);
 
-	if(gwin->gw->scale > 0.1)
-		ami_gui_set_scale(gwin->gw, gwin->gw->scale - 0.1);
+	ami_gui_set_scale(gwin->gw, gwin->gw->scale - 0.1);
 }
 
 HOOKF(void, ami_menu_item_browser_scale_normal, APTR, window, struct IntuiMessage *)
@@ -560,20 +564,24 @@ static void ami_menu_alloc_item(struct gui_window_2 *gwin, int num, UBYTE type,
 			gwin->menulab[num] = ami_utf8_easy(messages_get(label));
 		}
 	}
-	
+
 	gwin->menuicon[num] = NULL;
 	if(key) gwin->menukey[num] = key;
 	if(func) gwin->menu_hook[num].h_Entry = (HOOKFUNC)func;
 	if(hookdata) gwin->menu_hook[num].h_Data = hookdata;
 
-	if(icon) {
-		if(ami_locate_resource(menu_icon, icon) == true) {
-			gwin->menuicon[num] = (char *)strdup(menu_icon);
-		} else {
-			/* If the requested icon can't be found, put blank space in instead */
-			gwin->menuicon[num] = (char *)strdup(NSA_SPACE);
+#ifdef __amigaos4__
+	if(LIB_IS_AT_LEAST((struct Library *)GadToolsBase, 53, 7)) {
+		if(icon) {
+			if(ami_locate_resource(menu_icon, icon) == true) {
+				gwin->menuicon[num] = (char *)strdup(menu_icon);
+			} else {
+				/* If the requested icon can't be found, put blank space in instead */
+				gwin->menuicon[num] = (char *)strdup(NSA_SPACE);
+			}
 		}
 	}
+#endif
 }
 
 static void ami_init_menulabs(struct gui_window_2 *gwin)
@@ -592,7 +600,7 @@ static void ami_init_menulabs(struct gui_window_2 *gwin)
 	ami_menu_alloc_item(gwin, M_PROJECT, NM_TITLE, "Project",       0, NULL, NULL, NULL);
 	ami_menu_alloc_item(gwin, M_NEWWIN,   NM_ITEM, "NewWindowNS", 'N', "TBImages:list_app",
 			ami_menu_item_project_newwin, NULL);
-	ami_menu_alloc_item(gwin, M_NEWTAB,   NM_ITEM, "NewTab",      'T', "TBImages:list_add",
+	ami_menu_alloc_item(gwin, M_NEWTAB,   NM_ITEM, "NewTab",      'T', "TBImages:list_tab",
 			ami_menu_item_project_newtab, NULL);
 	ami_menu_alloc_item(gwin, M_BAR_P1,   NM_ITEM, NM_BARLABEL,     0, NULL, NULL, NULL);
 	ami_menu_alloc_item(gwin, M_OPEN,     NM_ITEM, "OpenFile",    'O', "TBImages:list_folder_misc",
@@ -655,7 +663,7 @@ static void ami_init_menulabs(struct gui_window_2 *gwin)
 	ami_menu_alloc_item(gwin, M_COOKIES,  NM_ITEM, "ShowCookiesNS",   0, "TBImages:list_internet",
 			ami_menu_item_browser_cookies, NULL);
 	ami_menu_alloc_item(gwin, M_BAR_B3,   NM_ITEM, NM_BARLABEL,     0, NULL, NULL, NULL);
-	ami_menu_alloc_item(gwin, M_SCALE,    NM_ITEM, "ScaleNS",       0, NSA_SPACE, NULL, NULL);
+	ami_menu_alloc_item(gwin, M_SCALE,    NM_ITEM, "ScaleNS",       0, "TBImages:list_preview", NULL, NULL);
 	ami_menu_alloc_item(gwin, M_SCALEDEC,  NM_SUB, "ScaleDec",    '-', "TBImages:list_zoom_out",
 			ami_menu_item_browser_scale_decrease, NULL);
 	ami_menu_alloc_item(gwin, M_SCALENRM,  NM_SUB, "ScaleNorm",   '=', "TBImages:list_zoom_100",
@@ -699,67 +707,61 @@ static void ami_init_menulabs(struct gui_window_2 *gwin)
 /* Menu refresh for hotlist */
 void ami_menu_refresh(struct gui_window_2 *gwin)
 {
+	struct Menu *menu;
+
 	SetAttrs(gwin->objects[OID_MAIN],
-#ifdef __amigaos4__
-			WINDOW_NewMenu, NULL,
-#else
 			WINDOW_MenuStrip, NULL,
-#endif
 			TAG_DONE);
 
-#ifndef __amigaos4__
-	ami_menu_free_os3(gwin->menu_os3);
-#endif
+	ami_menu_free(gwin);
 	ami_free_menulabs(gwin);
-	ami_create_menu(gwin);
-#ifndef __amigaos4__
-	gwin->menu_os3 = ami_menu_create_os3(gwin, gwin->menu);
-#endif
+
+	menu = ami_menu_create(gwin);
 
 	SetAttrs(gwin->objects[OID_MAIN],
-#ifdef __amigaos4__
-			WINDOW_NewMenu, gwin->menu,
-#else
-			WINDOW_MenuStrip, gwin->menu_os3,
-#endif
+			WINDOW_MenuStrip, menu,
 			TAG_DONE);
 }
 
 static void ami_menu_load_glyphs(struct DrawInfo *dri)
 {
 #ifdef __amigaos4__
-	for(int i = 0; i < NSA_GLYPH_MAX; i++)
-		menu_glyph[i] = NULL;
+	if(LIB_IS_AT_LEAST((struct Library *)GadToolsBase, 53, 7)) {
+		for(int i = 0; i < NSA_GLYPH_MAX; i++)
+			menu_glyph[i] = NULL;
 
-	menu_glyph[NSA_GLYPH_SUBMENU] = NewObject(NULL, "sysiclass",
-										SYSIA_Which, MENUSUB,
-										SYSIA_DrawInfo, dri,
-									TAG_DONE);
-	menu_glyph[NSA_GLYPH_AMIGAKEY] = NewObject(NULL, "sysiclass",
-										SYSIA_Which, AMIGAKEY,
-										SYSIA_DrawInfo, dri,
-									TAG_DONE);
-	GetAttr(IA_Width, menu_glyph[NSA_GLYPH_SUBMENU],
-		(ULONG *)&menu_glyph_width[NSA_GLYPH_SUBMENU]);
-	GetAttr(IA_Width, menu_glyph[NSA_GLYPH_AMIGAKEY],
-		(ULONG *)&menu_glyph_width[NSA_GLYPH_AMIGAKEY]);
+		menu_glyph[NSA_GLYPH_SUBMENU] = NewObject(NULL, "sysiclass",
+											SYSIA_Which, MENUSUB,
+											SYSIA_DrawInfo, dri,
+										TAG_DONE);
+		menu_glyph[NSA_GLYPH_AMIGAKEY] = NewObject(NULL, "sysiclass",
+											SYSIA_Which, AMIGAKEY,
+											SYSIA_DrawInfo, dri,
+										TAG_DONE);
+		GetAttr(IA_Width, menu_glyph[NSA_GLYPH_SUBMENU],
+			(ULONG *)&menu_glyph_width[NSA_GLYPH_SUBMENU]);
+		GetAttr(IA_Width, menu_glyph[NSA_GLYPH_AMIGAKEY],
+			(ULONG *)&menu_glyph_width[NSA_GLYPH_AMIGAKEY]);
 	
-	menu_glyphs_loaded = true;
+		menu_glyphs_loaded = true;
+	}
 #endif
 }
 
 void ami_menu_free_glyphs(void)
 {
 #ifdef __amigaos4__
-	int i;
-	if(menu_glyphs_loaded == false) return;
+	if(LIB_IS_AT_LEAST((struct Library *)GadToolsBase, 53, 7)) {
+		int i;
+		if(menu_glyphs_loaded == false) return;
+
+		for(i = 0; i < NSA_GLYPH_MAX; i++) {
+			if(menu_glyph[i]) DisposeObject(menu_glyph[i]);
+			menu_glyph[i] = NULL;
+		};
 	
-	for(i = 0; i < NSA_GLYPH_MAX; i++) {
-		if(menu_glyph[i]) DisposeObject(menu_glyph[i]);
-		menu_glyph[i] = NULL;
-	};
-	
-	menu_glyphs_loaded = false;
+		menu_glyphs_loaded = false;
+	}
 #endif
 }
 
@@ -794,7 +796,7 @@ static struct gui_window_2 *ami_menu_layout(struct gui_window_2 *gwin)
 {
 	int i, j;
 	int txtlen = 0;
-	int left_posn;
+	int left_posn = 0;
 	struct RastPort *rp = &scrn->RastPort;
 	struct DrawInfo *dri = GetScreenDrawInfo(scrn);
 	int space_width = TextLength(rp, " ", 1);
@@ -896,25 +898,13 @@ static struct gui_window_2 *ami_menu_layout(struct gui_window_2 *gwin)
 	return gwin;
 }
 
-#ifndef __amigaos4__
-void ami_menu_free_os3(struct gui_window_2 *gwin)
+void ami_menu_free(struct gui_window_2 *gwin)
 {
-	FreeMenus(gwin->menu_os3);
+	FreeMenus(gwin->imenu);
 	FreeVisualInfo(gwin->vi);
 }
 
-struct Menu *ami_menu_create_os3(struct gui_window_2 *gwin, struct NewMenu *newmenu)
-{
-	gwin->vi = GetVisualInfo(scrn, TAG_DONE);
-	gwin->menu_os3 = CreateMenus(newmenu, TAG_DONE);
-	LayoutMenus(gwin->menu_os3, gwin->vi,
-		GTMN_NewLookMenus, TRUE, TAG_DONE);
-
-	return gwin->menu_os3;
-}
-#endif
-
-struct NewMenu *ami_create_menu(struct gui_window_2 *gwin)
+struct Menu *ami_menu_create(struct gui_window_2 *gwin)
 {
 	gwin->menu = ami_misc_allocvec_clear(sizeof(struct NewMenu) * (AMI_MENU_AREXX_MAX + 1), 0);
 	ami_init_menulabs(gwin);
@@ -935,11 +925,19 @@ struct NewMenu *ami_create_menu(struct gui_window_2 *gwin)
 	if(nsoption_bool(background_images) == true)
 		gwin->menu[M_IMGBACK].nm_Flags |= CHECKED;
 
-	return(gwin->menu);
+	gwin->vi = GetVisualInfo(scrn, TAG_DONE);
+	gwin->imenu = CreateMenus(gwin->menu, TAG_DONE);
+	LayoutMenus(gwin->imenu, gwin->vi,
+		GTMN_NewLookMenus, TRUE, TAG_DONE);
+
+	/**\todo do we even need to store/keep gwin->menu? **/
+
+	return gwin->imenu;
 }
 
 void ami_menu_arexx_scan(struct gui_window_2 *gwin)
 {
+	/**\todo Rewrite this to not use ExAll() **/
 	int item = AMI_MENU_AREXX;
 	BPTR lock = 0;
 	UBYTE *buffer;
@@ -1079,8 +1077,8 @@ void ami_menu_update_disabled(struct gui_window *g, hlcache_handle *c)
 #ifdef WITH_PDF_EXPORT
 		OnMenu(win,AMI_MENU_SAVEAS_PDF);
 #endif
-		if(browser_window_get_editor_flags(g->bw) & BW_EDITOR_CAN_COPY)
-		{
+#if 0
+		if(browser_window_get_editor_flags(g->bw) & BW_EDITOR_CAN_COPY) {
 			OnMenu(win,AMI_MENU_COPY);
 			OnMenu(win,AMI_MENU_CLEAR);
 		} else {
@@ -1097,7 +1095,12 @@ void ami_menu_update_disabled(struct gui_window *g, hlcache_handle *c)
 			OnMenu(win,AMI_MENU_PASTE);
 		else
 			OffMenu(win,AMI_MENU_PASTE);
-
+#else
+		OnMenu(win,AMI_MENU_CUT);
+		OnMenu(win,AMI_MENU_COPY);
+		OnMenu(win,AMI_MENU_PASTE);
+		OnMenu(win,AMI_MENU_CLEAR);
+#endif
 		OnMenu(win,AMI_MENU_SELECTALL);
 		OnMenu(win,AMI_MENU_FIND);
 		OffMenu(win,AMI_MENU_SAVEAS_IFF);

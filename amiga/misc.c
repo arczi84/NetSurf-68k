@@ -22,6 +22,10 @@
 #include <proto/exec.h>
 #include <proto/utility.h>
 
+#ifndef __amigaos4__
+#include <proto/intuition.h> // for EasyRequest
+#endif
+
 #include "utils/corestrings.h"
 #include "utils/log.h"
 #include "utils/file.h"
@@ -39,11 +43,50 @@ void *ami_misc_allocvec_clear(int size, UBYTE value)
 #ifdef __amigaos4__
 	return AllocVecTags(size, AVT_ClearWithValue, value, TAG_DONE);
 #else
-	void *mem = AllocVec(size, MEMF_CLEAR | MEMF_ANY);
-	if (mem && (value != 0)) {
-		memset(mem, value, size);
-	}
+	void *mem = AllocVec(size, MEMF_ANY);
+	if (mem) memset(mem, value, size);
 	return mem;
+#endif
+}
+
+APTR ami_misc_itempool_create(int size)
+{
+#ifdef __amigaos4__
+	return AllocSysObjectTags(ASOT_ITEMPOOL,
+		ASOITEM_MFlags, MEMF_PRIVATE,
+		ASOITEM_ItemSize, size,
+		ASOITEM_GCPolicy, ITEMGC_AFTERCOUNT,
+		ASOITEM_GCParameter, 100,
+		TAG_DONE);
+#else
+	return CreatePool(MEMF_ANY, 20 * size, size);
+#endif
+}
+
+void ami_misc_itempool_delete(APTR pool)
+{
+#ifdef __amigaos4__
+	FreeSysObject(ASOT_ITEMPOOL, pool);
+#else
+	DeletePool(pool);
+#endif
+}
+
+APTR ami_misc_itempool_alloc(APTR pool, int size)
+{
+#ifdef __amigaos4__
+	return ItemPoolAlloc(pool);
+#else
+	return AllocPooled(pool, size);
+#endif
+}
+
+void ami_misc_itempool_free(APTR pool, APTR item, int size)
+{
+#ifdef __amigaos4__
+	ItemPoolFree(pool, item);
+#else
+	FreePooled(pool, item, size);
 #endif
 }
 
@@ -61,7 +104,15 @@ static LONG ami_misc_req(const char *message, uint32 type)
 		TDR_Window, cur_gw ? cur_gw->shared->win : NULL,
 		TAG_DONE);
 #else
-	printf("%s\n", message);
+	struct EasyStruct easyreq = {
+		sizeof(struct EasyStruct),
+		0,
+		messages_get("NetSurf"),
+		message,
+		messages_get("OK"),
+	};
+
+	ret = EasyRequest(cur_gw ? cur_gw->shared->win : NULL, &easyreq, NULL);
 #endif
 	return ret;
 }
@@ -86,7 +137,7 @@ void warn_user(const char *warning, const char *detail)
 int32 ami_warn_user_multi(const char *body, const char *opt1, const char *opt2, struct Window *win)
 {
 	int res = 0;
-#ifdef __amigaos4__
+
 	char *utf8text = ami_utf8_easy(body);
 	char *utf8gadget1 = ami_utf8_easy(messages_get(opt1));
 	char *utf8gadget2 = ami_utf8_easy(messages_get(opt2));
@@ -94,18 +145,28 @@ int32 ami_warn_user_multi(const char *body, const char *opt1, const char *opt2, 
 	free(utf8gadget1);
 	free(utf8gadget2);
 
+#ifdef __amigaos4__
 	res = TimedDosRequesterTags(TDR_ImageType, TDRIMAGE_WARNING,
 		TDR_TitleString, messages_get("NetSurf"),
 		TDR_FormatString, utf8text,
 		TDR_GadgetString, utf8gadgets,
 		TDR_Window, win,
 		TAG_DONE);
+#else
+	struct EasyStruct easyreq = {
+		sizeof(struct EasyStruct),
+		0,
+		messages_get("NetSurf"),
+		utf8text,
+		utf8gadgets,
+	};
+
+	res = EasyRequest(win, &easyreq, NULL);
+#endif
 
 	if(utf8text) free(utf8text);
 	if(utf8gadgets) FreeVec(utf8gadgets);
-#else
-#warning write this for os3
-#endif	
+
 	return res;
 }
 

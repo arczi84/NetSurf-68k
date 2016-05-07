@@ -97,6 +97,9 @@ typedef struct html_content {
 	/** Whether a layout (reflow) is in progress */
 	bool reflowing;
 
+	/** Whether scripts are enabled for this content */
+	bool enable_scripting;
+
 	/* Title element node */
 	dom_node *title;
 
@@ -178,8 +181,6 @@ typedef struct html_content {
 
 /** Render padding and margin box outlines in html_redraw(). */
 extern bool html_redraw_debug;
-
-void html_set_status(html_content *c, const char *extra);
 
 void html__redraw_a_box(html_content *html, struct box *box);
 
@@ -351,6 +352,14 @@ nserror html_object_free_objects(html_content *html);
 nserror html_object_close_objects(html_content *html);
 nserror html_object_open_objects(html_content *html, struct browser_window *bw);
 nserror html_object_abort_objects(html_content *html);
+
+/* Events */
+/**
+ * Construct an event and fire it at the DOM
+ *
+ */
+bool fire_dom_event(dom_string *type, dom_node *target,
+		    bool bubbles, bool cancelable);
 
 /* Useful dom_string pointers */
 struct dom_string;

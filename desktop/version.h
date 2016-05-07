@@ -28,7 +28,7 @@
 /**
  * User friendly version string.
  */
-extern const char * const netsurf_version;
+extern const char * netsurf_version;
 
 /**
  * NetSuf browser major version number.

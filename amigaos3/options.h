@@ -25,20 +25,32 @@
 #include "utils/nsoption.h"
 
 /***** Amiga options *****/
+
 NSOPTION_INTEGER(scale_aga, 74)
-NSOPTION_INTEGER(fullscreen, -1)
+NSOPTION_INTEGER(browser_dpi, 84)
 NSOPTION_INTEGER(window_depth, 0)
-NSOPTION_INTEGER(gui_font_bold, -1)
 NSOPTION_INTEGER(mobile_mode, -1)
-NSOPTION_INTEGER(priority, 5)
-NSOPTION_BOOL(warp_mode, true)
+NSOPTION_INTEGER(priority, 1)
+NSOPTION_INTEGER(gui_font_size, 12)
+
+NSOPTION_BOOL(warp_mode, false)
+NSOPTION_BOOL(fullscreen, false)
+NSOPTION_BOOL(bitmap_fonts, false)
+NSOPTION_BOOL(autodetect_depth, true)
+NSOPTION_BOOL(module_autoplay, false)
 NSOPTION_BOOL(youtube_autoplay, false)
+NSOPTION_BOOL(accept_lang_locale, true)
+
+NSOPTION_STRING(youtube_handler, NULL)
+NSOPTION_STRING(screen_modeid, NULL)
 NSOPTION_STRING(download_manager, NULL)
 NSOPTION_STRING(download_path, NULL)
 NSOPTION_STRING(def_search_bar, NULL)
 NSOPTION_STRING(text_editor, NULL)
 NSOPTION_STRING(net_player, NULL)
+NSOPTION_STRING(module_player, NULL)
 NSOPTION_STRING(theme, NULL)
+NSOPTION_STRING(cache_dir, "PROGDIR:Resources/Cache")
 NSOPTION_STRING(favicon_source, NULL)
 
 /***** toolkit options *****/
@@ -72,7 +84,6 @@ NSOPTION_STRING(fb_face_fantasy, NULL) /**< fantasy face */
 
 /***** favourite options *****/
 
-NSOPTION_STRING(lastpage_url, NULL)	
 NSOPTION_STRING(favourite_1_url, NULL)
 NSOPTION_STRING(favourite_2_url, NULL)
 NSOPTION_STRING(favourite_3_url, NULL)

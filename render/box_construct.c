@@ -36,8 +36,9 @@
 #include "utils/config.h"
 #include "content/content_protected.h"
 #include "css/css.h"
-#include "css/utils.h"
+#include "css/hints.h"
 #include "css/select.h"
+#include "css/utils.h"
 #include "utils/nsoption.h"
 #include "utils/corestrings.h"
 #include "utils/locale.h"
@@ -65,7 +66,7 @@ struct box_construct_ctx {
 
 	box_construct_complete_cb cb;	/**< Callback to invoke on completion */
 
-	int *bctx;                      /**< talloc context */
+	int *bctx;			/**< talloc context */
 };
 
 /**
@@ -851,10 +852,6 @@ bool box_construct_element(struct box_construct_ctx *ctx,
 				props.node_is_root)];
 	}
 
-	/* Handle the :before pseudo element */
-	box_construct_generate(ctx->n, ctx->content, box,
-			box->styles->styles[CSS_PSEUDO_ELEMENT_BEFORE]);
-
 	err = dom_node_get_node_name(ctx->n, &s);
 	if (err != DOM_NO_ERR || s == NULL)
 		return false;
@@ -871,6 +868,12 @@ bool box_construct_element(struct box_construct_ctx *ctx,
 		if (element->convert(ctx->n, ctx->content, box,
 				convert_children) == false)
 			return false;
+	}
+
+	/* Handle the :before pseudo element */
+	if (!(box->flags & IS_REPLACED)) {
+		box_construct_generate(ctx->n, ctx->content, box,
+				box->styles->styles[CSS_PSEUDO_ELEMENT_BEFORE]);
 	}
 
 	if (box->type == BOX_NONE || (css_computed_display(box->style,
@@ -1064,7 +1067,7 @@ void box_construct_element_after(dom_node *n, html_content *content)
 			box->inline_end = inline_end;
 			inline_end->inline_end = box;
 		}
-	} else {
+	} else if (!(box->flags & IS_REPLACED)) {
 		/* Handle the :after pseudo element */
 		box_construct_generate(n, content, box,
 				box->styles->styles[CSS_PSEUDO_ELEMENT_AFTER]);
@@ -1476,7 +1479,7 @@ bool box_a(BOX_SPECIAL_PARAMS)
 
 	err = dom_element_get_attribute(n, corestring_dom_href, &s);
 	if (err == DOM_NO_ERR && s != NULL) {
-		ok = box_extract_link(dom_string_data(s),
+		ok = box_extract_link(content, dom_string_data(s),
 				content->base_url, &url);
 		dom_string_unref(s);
 		if (!ok)
@@ -1590,7 +1593,7 @@ bool box_image(BOX_SPECIAL_PARAMS)
 	if (err != DOM_NO_ERR || s == NULL)
 		return true;
 
-	if (box_extract_link(dom_string_data(s), content->base_url,
+	if (box_extract_link(content, dom_string_data(s), content->base_url,
 			&url) == false) {
 		dom_string_unref(s);
 		return false;
@@ -1602,6 +1605,7 @@ bool box_image(BOX_SPECIAL_PARAMS)
 		return true;
 
 	/* start fetch */
+	box->flags |= IS_REPLACED;
 	ok = html_fetch_object(content, url, box, image_types,
 			content->base.available_width, 1000, false);
 	nsurl_unref(url);
@@ -1627,7 +1631,7 @@ bool box_image(BOX_SPECIAL_PARAMS)
 bool box_noscript(BOX_SPECIAL_PARAMS)
 {
 	/* If scripting is enabled, do not display the contents of noscript */
-	if (nsoption_bool(enable_javascript))
+	if (content->enable_scripting)
 		*convert_children = false;
 
 	return true;
@@ -1691,7 +1695,7 @@ bool box_object(BOX_SPECIAL_PARAMS)
 	 * (codebase is the base for the other two) */
 	err = dom_element_get_attribute(n, corestring_dom_codebase, &codebase);
 	if (err == DOM_NO_ERR && codebase != NULL) {
-		if (box_extract_link(dom_string_data(codebase),
+		if (box_extract_link(content, dom_string_data(codebase),
 				content->base_url,
 				&params->codebase) == false) {
 			dom_string_unref(codebase);
@@ -1704,8 +1708,8 @@ bool box_object(BOX_SPECIAL_PARAMS)
 
 	err = dom_element_get_attribute(n, corestring_dom_classid, &classid);
 	if (err == DOM_NO_ERR && classid != NULL) {
-		if (box_extract_link(dom_string_data(classid), params->codebase,
-				&params->classid) == false) {
+		if (box_extract_link(content, dom_string_data(classid),
+				params->codebase, &params->classid) == false) {
 			dom_string_unref(classid);
 			return false;
 		}
@@ -1714,8 +1718,8 @@ bool box_object(BOX_SPECIAL_PARAMS)
 
 	err = dom_element_get_attribute(n, corestring_dom_data, &data);
 	if (err == DOM_NO_ERR && data != NULL) {
-		if (box_extract_link(dom_string_data(data), params->codebase,
-				&params->data) == false) {
+		if (box_extract_link(content, dom_string_data(data),
+				params->codebase, &params->data) == false) {
 			dom_string_unref(data);
 			return false;
 		}
@@ -1878,6 +1882,7 @@ bool box_object(BOX_SPECIAL_PARAMS)
 	box->object_params = params;
 
 	/* start fetch (MIME type is ok or not specified) */
+	box->flags |= IS_REPLACED;
 	if (!html_fetch_object(content,
 			params->data ? params->data : params->classid,
 			box, CONTENT_ANY, content->base.available_width, 1000,
@@ -2134,7 +2139,7 @@ bool box_create_frameset(struct content_html_frames *f, dom_node *n,
 			url = NULL;
 			err = dom_element_get_attribute(c, corestring_dom_src, &s);
 			if (err == DOM_NO_ERR && s != NULL) {
-				box_extract_link(dom_string_data(s),
+				box_extract_link(content, dom_string_data(s),
 						content->base_url, &url);
 				dom_string_unref(s);
 			}
@@ -2217,6 +2222,11 @@ bool box_create_frameset(struct content_html_frames *f, dom_node *n,
 		}
 	}
 
+	/* If the last child wasn't a frame, we still need to unref it */
+	if (c != NULL) {
+		dom_node_unref(c);
+	}
+
 	return true;
 }
 
@@ -2265,7 +2275,7 @@ bool box_iframe(BOX_SPECIAL_PARAMS)
 	err = dom_element_get_attribute(n, corestring_dom_src, &s);
 	if (err != DOM_NO_ERR || s == NULL)
 		return true;
-	if (box_extract_link(dom_string_data(s), content->base_url,
+	if (box_extract_link(content, dom_string_data(s), content->base_url,
 			&url) == false) {
 		dom_string_unref(s);
 		return false;
@@ -2351,6 +2361,7 @@ bool box_iframe(BOX_SPECIAL_PARAMS)
 	/* box */
 	assert(box->style);
 	box->flags |= IFRAME;
+	box->flags |= IS_REPLACED;
 
 	/* Showing iframe, so don't show alternate content */
 	if (convert_children)
@@ -2409,6 +2420,7 @@ bool box_input(BOX_SPECIAL_PARAMS)
 	if (gadget == NULL)
 		goto no_memory;
 	box->gadget = gadget;
+	box->flags |= IS_REPLACED;
 	gadget->box = box;
 	gadget->html = content;
 
@@ -2548,6 +2560,7 @@ bool box_button(BOX_SPECIAL_PARAMS)
 
 	gadget->html = content;
 	box->gadget = gadget;
+	box->flags |= IS_REPLACED;
 	gadget->box = box;
 
 	box->type = BOX_INLINE_BLOCK;
@@ -2670,6 +2683,7 @@ bool box_select(BOX_SPECIAL_PARAMS)
 
 	box->type = BOX_INLINE_BLOCK;
 	box->gadget = gadget;
+	box->flags |= IS_REPLACED;
 	gadget->box = box;
 
 	inline_container = box_create(NULL, 0, false, 0, 0, 0, 0, content->bctx);
@@ -2791,6 +2805,7 @@ bool box_textarea(BOX_SPECIAL_PARAMS)
 	if (box->gadget == NULL)
 		return false;
 
+	box->flags |= IS_REPLACED;
 	box->gadget->html = content;
 	box->gadget->box = box;
 
@@ -2838,7 +2853,7 @@ bool box_embed(BOX_SPECIAL_PARAMS)
 	err = dom_element_get_attribute(n, corestring_dom_src, &src);
 	if (err != DOM_NO_ERR || src == NULL)
 		return true;
-	if (box_extract_link(dom_string_data(src), content->base_url,
+	if (box_extract_link(content, dom_string_data(src), content->base_url,
 			&params->data) == false) {
 		dom_string_unref(src);
 		return false;
@@ -2924,6 +2939,7 @@ bool box_embed(BOX_SPECIAL_PARAMS)
 	box->object_params = params;
 
 	/* start fetch */
+	box->flags |= IS_REPLACED;
 	return html_fetch_object(content, params->data, box, CONTENT_ANY,
 			content->base.available_width, 1000, false);
 }
@@ -2991,7 +3007,8 @@ bool box_get_attribute(dom_node *n, const char *attribute,
  * \return  true on success, false on memory exhaustion
  */
 
-bool box_extract_link(const char *rel, nsurl *base, nsurl **result)
+bool box_extract_link(const html_content *content,
+		const char *rel, nsurl *base, nsurl **result)
 {
 	char *s, *s1, *apos0 = 0, *apos1 = 0, *quot0 = 0, *quot1 = 0;
 	unsigned int i, j, end;
@@ -3019,7 +3036,7 @@ bool box_extract_link(const char *rel, nsurl *base, nsurl **result)
 	}
 	s[j] = 0;
 
-	if (nsoption_bool(enable_javascript) == false) {
+	if (content->enable_scripting == false) {
 		/* extract first quoted string out of "javascript:" link */
 		if (strncmp(s, "javascript:", 11) == 0) {
 			apos0 = strchr(s, '\'');

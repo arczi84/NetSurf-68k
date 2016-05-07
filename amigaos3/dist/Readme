@@ -1,0 +1,116 @@
+
+Version:      3.5  (29.04.2016)
+Architecture: m68k-amigaos >= 3.0.0
+
+NetSurf CSS capable web browser for AmigaOS 3.x ported by Artur Jarosik
+
+Original authors: NetSurf contributors 
+Email:  arturjarosik gmail/com
+
+NetSurf is the only CSS capable web browser on AmigaOS 3.x also available
+for many other platforms including RiscOS, Linux, Haiku and Atari.
+It is based on sdl framebuffer frontend but adds more functions to GUI.
+The 68k code is not related to NetSurf for OS4 and is not representative of 
+the user interface of NetSurf on any other platform.
+
+Please report any bugs or requests to my e-mail. Any feedback is appreciated.
+NetSurf 68k homepage: http://ami-soft.blogspot.com
+You can get older versions here if current one isn't working 
+or get latest for testing.
+
+68k sources  http://aminet.net/package/comm/www/NetSurf-m68k-sources   
+Original sources  http://git.netsurf-browser.org/
+There is official m68k toolchain available for building netsurf on linux:
+http://ci.netsurf-browser.org/builds/toolchains
+
+If you had any problem with compiling sources 
+please contact with me, I will surely help. 
+
+ Requirements:
+ =============
+
+  * AmigaOS 3.x
+  * Picasso / CGX compatible graphic card or AGA.
+  * 32 MB Ram (64MB for complex sites).
+  * 68020+ CPU with FPU, for usable speed fast 68060 is required.
+  * MUI 3.8+ for Preferences
+  * Copy contents of env folder to envarc: for wallget profile
+  * AmiTCP: assign and usergroup.library from AmiTCP (included)
+  
+    Optional:
+    --------
+    * FFplay in C for youtube
+    * Amplifier or other capable of audio streaming program
+    * Hipoplayer, Eagleplayer, DeliTracket2.
+    * OpenURL for mailto:
+
+ Features:
+ =========
+
+  * Web standards: HTML 4.01 and CSS 2.1
+  * HTTPS for secure online transactions
+  * Local history trees
+  * Hotlist manager (bookmarks)
+  * Themes
+  * Favourite buttons
+  * Unicode text
+  * Video/audio streaming & youtube playback
+  * Save pages complete with images
+  * Quick search bar
+  * Web page thumbnailing
+  * Fast, lightweight layout and rendering engine
+  * Three download managers (wallget, wget, httpresume)
+  * MUI Preferences
+
+ Usage:
+ ======
+  * Go back and forward with ctrl/alt + left/right or 6 and 7 mouse button..
+  * Move to top or bottom with ctrl/alt + up/down.
+  * F4 - Play youtube video on current site. 
+  * F5 - Refresh.
+  * F6 - Restart.
+  * F7 - Restart to current page.
+  * Delete links from bookmarks - move over link and press Delete key.
+  * Copy/paste link of current website buttons are  placed
+     on the right side under searchbar.
+  * Play videos from youtube with ffplay - open site with
+     video you want to watch and press third button from the right.
+     Use youtube_autoplay:1 option to enable autoplay after download. 
+     Video is saved to ram:video.mp4.
+  * Set currently open page as homepage - small button with home.
+  * Change current search engine - button placed next to search bar.
+  * Download page - button with down arrow.
+  * To change theme use 'theme' option. Use name of theme folder. 
+     Path is "PROGDIR:Resources/theme/<name here>".   
+
+Amiga options:
+
+window_depth:              change bpp according to your desktop (32)
+mobile_mode:               open site in mobile mode if available (0)
+youtube_autoplay:        play yt video automatically (1)
+download_path:             default is SYS:Internet/Downloads/
+download_manager:       choose betwen: wallget, wget or httpresume (wallget)
+def_search_bar:             set dafault search engine (google)
+text_editor:                   open Options file in text_editor (sys:c/ed)
+net_player:                   click on link to stream audio/video file (c:ffplay)
+accept_charset:            set charset according to your country (ISO-8859-2)
+theme:                         change theme of buttons  (default)
+
+Non Amiga options are explained in Docs/Options.
+
+Defaults are in brackets. Options set to default are not visible in Options file.   
+
+
+Thanks to Bernd Roesch for his bugfixed/improved SDL libraries and 
+big endian rendering fix.
+Ken Lester Jr. and Martin Merz for icons.
+Alper Sönmez for installer script.
+Chris Raynor for SDL AGA.
+NetSurf team.
+
+See http://www.netsurf-browser.org for more information about NetSurf.
+Visit http://artishq.wordpress.com for my  68k game ports.
+
+Working on NetSurf takes a lot of time.
+Support NetSurf 68k to paypal arturjarosik gmail com.
+Thanks :)

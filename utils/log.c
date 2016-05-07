@@ -98,7 +98,7 @@ nserror nslog_init(nslog_ensure_t *ensure, int *pargc, char **argv)
 
 	/* sucessfull logging initialisation so log system info */
 	if (ret == NSERROR_OK) {
-		LOG("NetSurf version '%s'", netsurf_version);
+		//LOG("NetSurf version '%s'", netsurf_version);
 		if (uname(&utsname) < 0) {
 			LOG("Failed to extract machine information");
 		} else {

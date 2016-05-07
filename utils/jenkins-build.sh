@@ -30,7 +30,6 @@
 # TARGET is set to the frontend target to build
 # HOST is set to the identifier of the toolchain doing the building
 # CC is the compiler (gcc or clang)
-# BUILD_JS is the javascript type (json or jsoff)
 # BUILD_NUMBER is the CI build number
 
 #####
@@ -107,6 +106,10 @@ case ${TARGET} in
 
     "cocoa")
 	case ${HOST} in
+	    "x86_64-apple-darwin14.5.0")
+		PATH=/opt/local/bin:/opt/local/sbin:${PATH}
+		;;
+
 	    "i686-apple-darwin10")
 		;;
 
@@ -179,6 +182,9 @@ case ${TARGET} in
 	    "arm-linux-gnueabihf")
 		;;
 
+	    "aarch64-linux-gnu")
+		;;
+
 	    amd64-unknown-openbsd*)
 		MAKE=gmake
 		;;
@@ -207,6 +213,9 @@ case ${TARGET} in
 		;;
 
 	    arm-linux-gnueabihf)
+		;;
+
+	    "aarch64-linux-gnu")
 		;;
 
 	    "i686-apple-darwin10")
@@ -264,20 +273,8 @@ case ${TARGET} in
 
 
     "monkey")
-	# monkey target can be built on most of the supported architectures
+	# monkey target can be built anywhere
 	case ${HOST} in
-	    "x86_64-linux-gnu")
-		;;
-
-	    arm-linux-gnueabihf)
-		;;
-
-	    "i686-apple-darwin10")
-		;;
-
-	    "powerpc-apple-darwin9")
-		;;
-
 	    amd64-unknown-openbsd*)
 		MAKE=gmake
 		;;
@@ -289,6 +286,9 @@ case ${TARGET} in
 	    "arm-unknown-riscos")
 		export GCCSDK_INSTALL_ENV=/opt/netsurf/${HOST}/env
 		export GCCSDK_INSTALL_CROSSBIN=/opt/netsurf/${HOST}/cross/bin
+		# headers and compiler combination throw these warnings
+		export CFLAGS="-Wno-redundant-decls -Wno-parentheses"
+                export LDFLAGS=-lcares
 		;;
 
 	    "m68k-atari-mint")
@@ -313,8 +313,7 @@ case ${TARGET} in
 		;;
 
 	    *)
-		echo "Target \"${TARGET}\" cannot be built on \"${HOST})\""
-		exit 1
+		echo "Target \"${TARGET}\" generic build on \"${HOST})\""
 		;;
 
 	esac
@@ -346,36 +345,29 @@ if [ "${CC}" = "clang" ];then
 fi
 
 # convert javascript parameters
-if [ "${BUILD_JS}" = "json" ];then
-    case ${HOST} in
-        "arm-unknown-riscos")
-	    BUILD_MOZJS=NO
-	    BUILD_JS=NO
-	    #BUILD_JS=YES
-            BUILD_DUKTAPE=YES
-	    ;;
-
-        "amd64-unknown-openbsd5.4")
-	    BUILD_MOZJS=NO
-	    BUILD_JS=NO
-	    #BUILD_JS=YES
-            BUILD_DUKTAPE=YES
-            ;;
-
-	*)
-	    #BUILD_MOZJS=YES
-	    BUILD_MOZJS=NO
-	    BUILD_JS=NO
-            BUILD_DUKTAPE=YES
+case ${HOST} in
+    "arm-unknown-riscos")
+        BUILD_MOZJS=NO
+	BUILD_JS=NO
+	#BUILD_JS=YES
+        BUILD_DUKTAPE=YES
 	;;
 
-    esac
+    "amd64-unknown-openbsd5.4")
+        BUILD_MOZJS=NO
+	BUILD_JS=NO
+	#BUILD_JS=YES
+        BUILD_DUKTAPE=YES
+        ;;
 
-else
-    BUILD_JS=NO
-    BUILD_MOZJS=NO
-    BUILD_DUKTAPE=NO
-fi
+    *)
+	#BUILD_MOZJS=YES
+	BUILD_MOZJS=NO
+	BUILD_JS=NO
+        BUILD_DUKTAPE=YES
+	;;
+
+esac
 
 ########### Use distcc if present ######
 

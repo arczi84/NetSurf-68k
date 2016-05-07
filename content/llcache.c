@@ -120,6 +120,8 @@ typedef struct {
 
 	uint32_t redirect_count;	/**< Count of redirects followed */
 
+	uint32_t retries_remaining;     /**< Number of times to retry on timeout */
+
 	bool tried_with_auth;		/**< Whether we've tried with auth */
 
 	bool tried_with_tls_downgrade;	/**< Whether we've tried TLS <= 1.0 */
@@ -226,6 +228,9 @@ struct llcache_s {
 
 	/** The target upper bound for the RAM cache size */
 	uint32_t limit;
+
+	/** The number of fetch attempts we make when timing out */
+	uint32_t fetch_attempts;
 
 	/** Whether or not our users are caught up */
 	bool all_caught_up;
@@ -909,6 +914,7 @@ static nserror llcache_object_fetch(llcache_object *object, uint32_t flags,
 	object->fetch.referer = referer_clone;
 	object->fetch.post = post_clone;
 	object->fetch.redirect_count = redirect_count;
+	object->fetch.retries_remaining = llcache->fetch_attempts;
 
 	return llcache_object_refetch(object);
 }
@@ -927,7 +933,8 @@ static nserror llcache_object_destroy(llcache_object *object)
 {
 	size_t i;
 
-	LLCACHE_LOG("Destroying object %p", object);
+	LLCACHE_LOG("Destroying object %p, %s", object,
+			nsurl_access(object->url));
 
 	if (object->source_data != NULL) {
 		if (object->store_state == LLCACHE_STATE_DISC) {
@@ -1232,7 +1239,7 @@ llcache_serialise_metadata(llcache_object *object,
 	datasize -= use;
 
 	/* object size */
-	use = snprintf(op, datasize, "%zu", object->source_len);
+	use = snprintf(op, datasize, "%" PRIsizet, object->source_len);
 	if (use < 0) {
 		goto operror;
 	}
@@ -1267,7 +1274,7 @@ llcache_serialise_metadata(llcache_object *object,
 	datasize -= use;
 
 	/* number of headers */
-	use = snprintf(op, datasize, "%zu", object->num_headers);
+	use = snprintf(op, datasize, "%" PRIsizet, object->num_headers);
 	if (use < 0) {
 		goto operror;
 	}
@@ -1335,7 +1342,6 @@ llcache_process_metadata(llcache_object *object)
 	size_t metadatalen = 0;
 	nsurl *metadataurl;
 	unsigned int line;
-	uint8_t *end;
 	char *ln;
 	int lnsize;
 
@@ -1356,8 +1362,6 @@ llcache_process_metadata(llcache_object *object)
 	if (res != NSERROR_OK) {
 		return res;
 	}
-
-	end = metadata + metadatalen;
 
 	LOG("Processing retrived data");
 
@@ -1382,7 +1386,8 @@ llcache_process_metadata(llcache_object *object)
 		 * by simply skipping caching of this object.
 		 */
 
-		LOG("Got metadata for %s instead of %s", nsurl_access(metadataurl), nsurl_access(object->url));
+		LOG("Got metadata for %s instead of %s",
+		    nsurl_access(metadataurl), nsurl_access(object->url));
 
 		nsurl_unref(metadataurl);
 
@@ -1398,7 +1403,7 @@ llcache_process_metadata(llcache_object *object)
 	ln += lnsize + 1;
 	lnsize = strlen(ln);
 
-	if ((lnsize < 1) || (sscanf(ln, "%zu", &source_length) != 1)) {
+	if ((lnsize < 1) || (sscanf(ln, "%" PRIsizet, &source_length) != 1)) {
 		res = NSERROR_INVALID;
 		goto format_error;
 	}
@@ -1439,7 +1444,7 @@ llcache_process_metadata(llcache_object *object)
 	ln += lnsize + 1;
 	lnsize = strlen(ln);
 
-	if ((lnsize < 1) || (sscanf(ln, "%zu", &num_headers) != 1)) {
+	if ((lnsize < 1) || (sscanf(ln, "%" PRIsizet, &num_headers) != 1)) {
 		res = NSERROR_INVALID;
 		goto format_error;
 	}
@@ -1558,7 +1563,8 @@ llcache_object_retrieve_from_cache(nsurl *url,
 	llcache_object *obj, *newest = NULL;
 
 	LLCACHE_LOG("Searching cache for %s flags:%x referer:%s post:%p",
-	     nsurl_access(url), flags, referer==NULL?"":nsurl_access(referer), post);
+			nsurl_access(url), flags,
+			referer==NULL?"":nsurl_access(referer), post);
 
 	/* Search for the most recently fetched matching object */
 	for (obj = llcache->cached_objects; obj != NULL; obj = obj->next) {
@@ -1753,11 +1759,12 @@ llcache_object_retrieve(nsurl *url,
 		scheme = nsurl_get_component(defragmented_url, NSURL_SCHEME);
 
 		if (lwc_string_caseless_isequal(scheme, corestring_lwc_http,
-						&match) == lwc_error_ok &&
-		    (match == false)) {
-			if (lwc_string_caseless_isequal(scheme,	corestring_lwc_https,
-							&match) == lwc_error_ok &&
-			    (match == false)) {
+				&match) == lwc_error_ok &&
+				(match == false)) {
+			if (lwc_string_caseless_isequal(scheme,
+					corestring_lwc_https, &match) ==
+					lwc_error_ok &&
+					(match == false)) {
 				uncachable = true;
 			}
 		}
@@ -1841,8 +1848,8 @@ static nserror llcache_object_add_user(llcache_object *object,
  * \param replacement  Pointer to location to receive replacement object
  * \return NSERROR_OK on success, appropriate error otherwise
  */
-static nserror llcache_fetch_redirect(llcache_object *object, const char *target,
-		llcache_object **replacement)
+static nserror llcache_fetch_redirect(llcache_object *object,
+		const char *target, llcache_object **replacement)
 {
 	nserror error;
 	llcache_object *dest;
@@ -2327,7 +2334,8 @@ build_candidate_list(struct llcache_object ***lst_out, int *lst_len_out)
 	for (object = llcache->cached_objects; object != NULL; object = next) {
 		next = object->next;
 
-		remaining_lifetime = llcache_object_rfc2616_remaining_lifetime(&object->cache);
+		remaining_lifetime = llcache_object_rfc2616_remaining_lifetime(
+				&object->cache);
 
 		/* cacehable objects with no pending fetches, not
 		 * already on disc and with sufficient lifetime to
@@ -2454,7 +2462,7 @@ static void llcache_persist_slowcheck(void *p)
 		total_bandwidth = (llcache->total_written * 1000) / llcache->total_elapsed;
 
 		if (total_bandwidth < llcache->minimum_bandwidth) {
-			LOG("Current bandwidth %"PRIu64" less than minimum %zd",
+			LOG("Current bandwidth %" PRIu64 " less than minimum %" PRIsizet,
 			    total_bandwidth, llcache->minimum_bandwidth);
 			guit->llcache->finalise();
 		}
@@ -2521,9 +2529,10 @@ static void llcache_persist(void *p)
 				 *  Schedule a check in the future to see if
 				 *  overall performance is too slow to be useful.
 				 */
-				guit->browser->schedule(llcache->time_quantum * 100,
-							llcache_persist_slowcheck,
-							NULL);
+				guit->browser->schedule(
+						llcache->time_quantum * 100,
+						llcache_persist_slowcheck,
+						NULL);
 				break;
 			} else {
 				if (total_bandwidth > llcache->maximum_bandwidth) {
@@ -2653,6 +2662,18 @@ static void llcache_fetch_callback(const fetch_msg *msg, void *p)
 		break;
 
 	/* Out-of-band information */
+	case FETCH_TIMEDOUT:
+		/* Timed out while trying to fetch. */
+		/* The fetch has already been cleaned up by the fetcher but
+		 * we would like to retry if we can. */
+		if (object->fetch.retries_remaining > 1) {
+			object->fetch.retries_remaining--;
+			error = llcache_object_refetch(object);
+			break;
+		}
+		/* Otherwise fall through to error, setting the message to
+		 * a timeout
+		 */
 	case FETCH_ERROR:
 		/* An error occurred while fetching */
 		/* The fetch has has already been cleaned up by the fetcher */
@@ -2754,7 +2775,8 @@ static void llcache_fetch_callback(const fetch_msg *msg, void *p)
  * \param handle  External cache handle to search for
  * \return Pointer to corresponding user, or NULL if not found
  */
-static llcache_object_user *llcache_object_find_user(const llcache_handle *handle)
+static llcache_object_user *llcache_object_find_user(
+		const llcache_handle *handle)
 {
 	llcache_object_user *user;
 
@@ -2871,7 +2893,8 @@ static nserror llcache_object_notify_users(llcache_object *object)
 				emitted_notify = true;
 			}
 
-			LOG("User %p state: %d Object state: %d", user, handle->state, objstate);
+			LOG("User %p state: %d Object state: %d", user,
+					handle->state, objstate);
 		}
 #endif
 
@@ -3168,7 +3191,8 @@ void llcache_clean(bool purge)
 	     object = next) {
 		next = object->next;
 
-		remaining_lifetime = llcache_object_rfc2616_remaining_lifetime(&object->cache);
+		remaining_lifetime = llcache_object_rfc2616_remaining_lifetime(
+				&object->cache);
 
 		if ((object->users == NULL) &&
 		    (object->candidate_count == 0) &&
@@ -3176,7 +3200,9 @@ void llcache_clean(bool purge)
 		    (object->fetch.outstanding_query == false) &&
 		    (remaining_lifetime <= 0)) {
 			/* object is stale */
-			LLCACHE_LOG("discarding stale cacheable object with no users or pending fetches (%p) %s", object, nsurl_access(object->url));
+			LLCACHE_LOG("discarding stale cacheable object with no "
+					"users or pending fetches (%p) %s",
+					object, nsurl_access(object->url));
 
 				llcache_object_remove_from_list(object,
 						&llcache->cached_objects);
@@ -3240,7 +3266,8 @@ void llcache_clean(bool purge)
 		    (object->fetch.outstanding_query == false) &&
 		    (object->store_state == LLCACHE_STATE_DISC) &&
 		    (object->source_data == NULL)) {
-			LLCACHE_LOG("discarding backed object len:%zd age:%d (%p) %s",
+			LLCACHE_LOG("discarding backed object len:%zd "
+				     "age:%d (%p) %s",
 				     object->source_len,
 				     time(NULL) - object->last_used,
 				     object,
@@ -3284,7 +3311,7 @@ void llcache_clean(bool purge)
 		}
 	}
 
-	LLCACHE_LOG("Size: %u", llcache_size);
+	LLCACHE_LOG("Size: %u (limit: %u)", llcache_size, limit);
 }
 
 /* Exported interface documented in content/llcache.h */
@@ -3303,6 +3330,7 @@ llcache_initialise(const struct llcache_parameters *prm)
 	llcache->minimum_bandwidth = prm->minimum_bandwidth;
 	llcache->maximum_bandwidth = prm->maximum_bandwidth;
 	llcache->time_quantum = prm->time_quantum;
+	llcache->fetch_attempts = prm->fetch_attempts;
 	llcache->all_caught_up = true;
 
 	LOG("llcache initialising with a limit of %d bytes", llcache->limit);
@@ -3368,7 +3396,10 @@ void llcache_finalise(void)
 			llcache->total_elapsed;
 	}
 
-	LOG("Backing store wrote %"PRIu64" bytes in %"PRIu64" ms ""(average %"PRIu64" bytes/second)", llcache->total_written, llcache->total_elapsed, total_bandwidth);
+	LOG("Backing store wrote %"PRIu64" bytes in %"PRIu64" ms "
+			"(average %"PRIu64" bytes/second)",
+			llcache->total_written, llcache->total_elapsed,
+			total_bandwidth);
 
 	free(llcache);
 	llcache = NULL;

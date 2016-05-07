@@ -22,12 +22,14 @@
 #include <sys/types.h>
 #include <dos/dos.h>
 #include <proto/dos.h>
+#include <proto/exec.h>
 #include <sys/time.h>
+#include <ctype.h>
 
 #include "utils/config.h"
 #include "utils/log.h"
 #include "utils/utils.h"
-#include <amigaos3/misc.h>
+#include "amigaos3/misc.h"
 #include "utils/nsoption.h"
 
 #include <proto/timer.h>
@@ -41,6 +43,113 @@ float ceilf(float x)
 	return ceil(x);
 }
 */
+
+void SSLv2_client_method()
+{
+	
+};
+
+static void
+reverse(char *s)
+{
+	int i, j, c;
+
+	for (i = 0, j = strlen(s) - 1; i < j; i++, j--) {
+		c = s[i];
+		s[i] = s[j];
+		s[j] = c;
+	}
+}
+
+#ifdef JS
+void __show_error(char *msg);
+
+void __show_error(char *msg)
+{
+		Printf(msg);
+}
+#endif
+
+void PrintG(char *str)
+{
+	if (strlen(str) > 0)
+	{
+		char *cmd = malloc(strlen(str) + (strlen("RequestChoice TITLE=\"NetSurf\" BODY=\" \" GADGETS=\"OK"))+20);
+		
+		strcpy(cmd, "RequestChoice TITLE=\"NetSurf\" BODY=\"");
+		strcat(cmd, str);
+		strcat(cmd,"\" GADGETS=\"OK\" ");
+		
+		Execute(cmd,0,0);
+		
+		free(cmd);
+	}
+}
+
+/* DOS */
+int64_t GetFileSize(BPTR fh)
+{
+	int32_t size = 0;
+	struct FileInfoBlock *fib = AllocVec(sizeof(struct FileInfoBlock), MEMF_ANY);
+	if(fib == NULL) return 0;
+
+	ExamineFH(fh, fib);
+	size = fib->fib_Size;
+
+	FreeVec(fib);
+	return (int64_t)size;
+}
+
+char * RemoveSpaces(char * source, char * target)
+{
+     while(*source++ && *target)
+     {
+        if (!isspace(*source)) 
+             *target++ = *source;
+     }
+	 *target = 0;
+	 
+     return target;
+}
+
+
+#ifdef NO_FPU
+typedef float DFtype __attribute__ ((mode (DF)));
+typedef float SFtype __attribute__ ((mode (SF)));
+
+typedef unsigned int USItype __attribute__ ((mode (SI)));
+typedef int SItype __attribute__ ((mode (SI)));
+
+DFtype __floatunsidf (USItype u);
+SFtype __floatunsisf (USItype u);
+
+DFtype
+__floatunsidf (USItype u)
+{
+  SItype s = (SItype) u;
+  DFtype r = (DFtype) s;
+  if (s < 0)
+    r += (DFtype)2.0 * (DFtype) ((USItype) 1
+				 << (sizeof (USItype) * __CHAR_BIT__ - 1));
+  return r;
+}
+
+SFtype
+__floatunsisf (USItype u)
+{
+  SItype s = (SItype) u;
+  if (s < 0)
+    {
+      /* As in expand_float, compute (u & 1) | (u >> 1) to ensure
+	 correct rounding if a nonzero bit is shifted out.  */
+      return (SFtype) 2.0 * (SFtype) (SItype) ((u & 1) | (u >> 1));
+    }
+  else
+    return (SFtype) s;
+}
+
+#endif
+
 ULONG __timerunit = UNIT_MICROHZ;
 
 long __gmtoffset;
@@ -114,112 +223,6 @@ int scandir(const char *dir, struct dirent ***namelist,
 	/*\todo stub function, needs writing, preferably into clib2 */
 	return 0;
 }
-#endif
-
-#if 0
-// reverses a string 'str' of length 'len'
-void reverse(char *str, int len)
-{
-    int i=0, j=len-1, temp;
-    while (i<j)
-    {
-        temp = str[i];
-        str[i] = str[j];
-        str[j] = temp;
-        i++; j--;
-    }
-}
-
- // Converts a given integer x to string str[].  d is the number
- // of digits required in output. If d is more than the number
- // of digits in x, then 0s are added at the beginning.
-int intToStr(int x, char str[], int d)
-{
-    int i = 0;
-	
-	if (x < 100)
-		x=x*10;
-		
-    while (x)
-    {
-        str[i++] = (x%10) + '0';
-        x = x/10;
-    }
- 
-    // If number of digits required is more, then
-    // add 0s at the beginning
-    while (i < d)
-        str[i++] = '0';
- 
-    reverse(str, i);
-    str[i] = '\0';
-    return i;
-}
-
-char *substring(char *string, int position, int length) 
-{
-   char *pointer;
-   int c;
- 
-   pointer = malloc(length+1);
- 
-   if( pointer == NULL )
-       return 0;
- 
-   for( c = 0 ; c < length ; c++ ) 
-      *(pointer+c) = *((string+position-1)+c);       
- 
-   *(pointer+c) = '\0';
- 
-   return pointer;
-}
-
-char *insert_dot(char *a)
-{
-   char *f, *e;
-   int length;
-   char *b = strdup(".");
-
-   length = strlen(a);
-   int position = length - 1;
- 
-   f = substring(a, 1, position - 1 );      
-   e = substring(a, position, length-position+1);
- 
-   strcpy(a, "");
-   strcat(a, f);
-   free(f);
-   strcat(a, b);
-   strcat(a, e);
-   
-   free(e);
-   free(b);
-   strlcpy(a,a,length+1);
- 
-   return a;
-   
-}
-
-char *addpoint(int i, char res[])
-{
-    char *string = malloc(6);
-	res[6];
-	
-	if (i < 100)	
-		i = i*10;
-		
-	intToStr(i, string, 0);	
-	int length = strlen(string);
-	
-	//res = strdup(insert_dot(string));
-	strcpy(res,insert_dot(string));
-
-	free(string);
-	
-	//return res;	
-	
-	//printf("\n\"%s\"\n", string);
-}; 
 #endif
 
 void warn_user(const char *warning, const char *detail)

@@ -235,14 +235,26 @@ void html_mouse_track(struct content *c, struct browser_window *bw,
 	html_mouse_action(c, bw, mouse, x, y);
 }
 
-/** Helper for file gadgets to store their filename unencoded on the
- * dom node associated with the gadget.
+/**
+ * Helper for file gadgets to store their filename.
+ *
+ * Stores the filename unencoded on the dom node associated with the
+ * gadget.
  *
  * \todo Get rid of this crap eventually
+ *
+ * \param operation DOM operation
+ * \param key DOM node key being considerd
+ * \param _data The data assocated with the key
+ * \param src The source DOM node.
+ * \param dst The destination DOM node.
  */
-static void html__image_coords_dom_user_data_handler(dom_node_operation operation,
-		dom_string *key, void *_data, struct dom_node *src,
-		struct dom_node *dst)
+static void
+html__image_coords_dom_user_data_handler(dom_node_operation operation,
+					 dom_string *key,
+					 void *_data,
+					 struct dom_node *src,
+					 struct dom_node *dst)
 {
 	struct image_input_coords *oldcoords, *coords = _data, *newcoords;
 
@@ -254,13 +266,20 @@ static void html__image_coords_dom_user_data_handler(dom_node_operation operatio
 	switch (operation) {
 	case DOM_NODE_CLONED:
 		newcoords = calloc(1, sizeof(*newcoords));
-		*newcoords = *coords;
-		if (dom_node_set_user_data(dst,
-					   corestring_dom___ns_key_image_coords_node_data,
-					   newcoords, html__image_coords_dom_user_data_handler,
-					   &oldcoords) == DOM_NO_ERR) {
-			free(oldcoords);
+		if (newcoords != NULL) {
+			*newcoords = *coords;
+			if (dom_node_set_user_data(dst,
+				 corestring_dom___ns_key_image_coords_node_data,
+				 newcoords,
+				 html__image_coords_dom_user_data_handler,
+				 &oldcoords) == DOM_NO_ERR) {
+				free(oldcoords);
+			}
 		}
+		break;
+
+	case DOM_NODE_DELETED:
+		free(coords);
 		break;
 
 	case DOM_NODE_RENAMED:
@@ -268,9 +287,6 @@ static void html__image_coords_dom_user_data_handler(dom_node_operation operatio
 	case DOM_NODE_ADOPTED:
 		break;
 
-	case DOM_NODE_DELETED:
-		free(coords);
-		break;
 	default:
 		LOG("User data operation not handled.");
 		assert(0);
@@ -300,6 +316,8 @@ void html_mouse_action(struct content *c, struct browser_window *bw,
 	enum { ACTION_NONE, ACTION_SUBMIT, ACTION_GO } action = ACTION_NONE;
 	const char *title = 0;
 	nsurl *url = 0;
+	char *url_s = NULL;
+	size_t url_l = 0;
 	const char *target = 0;
 	char status_buffer[200];
 	const char *status = 0;
@@ -317,7 +335,6 @@ void html_mouse_action(struct content *c, struct browser_window *bw,
 	hlcache_handle *object = NULL;
 	struct box *html_object_box = NULL;
 	struct browser_window *iframe = NULL;
-	struct box *next_box;
 	struct box *drag_candidate = NULL;
 	struct scrollbar *scrollbar = NULL;
 	plot_font_style_t fstyle;
@@ -525,9 +542,7 @@ void html_mouse_action(struct content *c, struct browser_window *bw,
 	 * text_box - text box
 	 * text_box_x - text_box
 	 */
-	while ((next_box = box_at_point(box, x, y, &box_x, &box_y)) != NULL) {
-		box = next_box;
-
+	do {
 		if ((box->style != NULL) && 
 		    (css_computed_visibility(box->style) == 
 		     CSS_VISIBILITY_HIDDEN)) {
@@ -633,10 +648,11 @@ void html_mouse_action(struct content *c, struct browser_window *bw,
 			text_box = box;
 			text_box_x = box_x;
 		}
-	}
+	} while ((box = box_at_point(box, x, y, &box_x, &box_y)) != NULL);
 
 	/* use of box_x, box_y, or content below this point is probably a
 	 * mistake; they will refer to the last box returned by box_at_point */
+	assert(node != NULL);
 
 	if (scrollbar) {
 		status = scrollbar_mouse_status_to_message(
@@ -814,12 +830,26 @@ void html_mouse_action(struct content *c, struct browser_window *bw,
 					y - html_object_pos_y);
 		}
 	} else if (url) {
+		if (nsoption_bool(display_decoded_idn) == true) {
+			if (nsurl_get_utf8(url, &url_s, &url_l) != NSERROR_OK) {
+				/* Unable to obtain a decoded IDN.  This is not a fatal error.
+				 * Ensure the string pointer is NULL so we use the encoded version. */
+				url_s = NULL;
+			}
+		}
+
 		if (title) {
 			snprintf(status_buffer, sizeof status_buffer, "%s: %s",
-					nsurl_access(url), title);
-			status = status_buffer;
-		} else
-			status = nsurl_access(url);
+					url_s ? url_s : nsurl_access(url), title);
+		} else {
+			snprintf(status_buffer, sizeof status_buffer, "%s",
+					url_s ? url_s : nsurl_access(url));
+		}
+
+		status = status_buffer;
+
+		if (url_s != NULL)
+			free(url_s);
 
 		pointer = get_pointer_shape(url_box, imagemap);
 
@@ -910,7 +940,6 @@ void html_mouse_action(struct content *c, struct browser_window *bw,
 				}
 
 			} else if (mouse & BROWSER_MOUSE_PRESS_1) {
-				union html_selection_owner sel_owner;
 				sel_owner.none = true;
 				selection_clear(&html->sel, true);
 			}
@@ -990,9 +1019,8 @@ void html_mouse_action(struct content *c, struct browser_window *bw,
 	}
 
 	/* fire dom click event */
-	if ((mouse & BROWSER_MOUSE_CLICK_1) ||
-	    (mouse & BROWSER_MOUSE_CLICK_2)) {
-		js_fire_event(html->jscontext, "click", html->document, node);
+	if (mouse & BROWSER_MOUSE_CLICK_1) {
+		fire_dom_event(corestring_dom_click, node, true, true);
 	}
 
 	/* deferred actions that can cause this browser_window to be destroyed

@@ -1,5 +1,5 @@
 /*
- * Copyright 2008-2014 Chris Young <chris@unsatisfactorysoftware.co.uk>
+ * Copyright 2008-2015 Chris Young <chris@unsatisfactorysoftware.co.uk>
  *
  * This file is part of NetSurf, http://www.netsurf-browser.org/
  *
@@ -18,15 +18,16 @@
 
 #ifndef AMIGA_GUI_H
 #define AMIGA_GUI_H
-
+#include <stdbool.h>
 #include <graphics/rastport.h>
-#include "amiga/object.h"
 #include <intuition/classusr.h>
 #include <dos/dos.h>
 #include <devices/inputevent.h>
+#include "amiga/menu.h"
+#include "amiga/object.h"
 #include "amiga/os3support.h"
 #include "amiga/plotters.h"
-#include "amiga/menu.h"
+#include "desktop/gui_window.h"
 
 #ifdef __amigaos4__
 #define HOOKF(ret,func,type,ptr,msgtype) static ret func(struct Hook *hook, type ptr, msgtype msg)
@@ -116,7 +117,7 @@ struct gui_window_2 {
 	UBYTE *menutype;
 	struct NewMenu *menu;
 	ULONG hotlist_items;
-	char *hotlist_toolbar_lab[AMI_GUI_TOOLBAR_MAX];
+	Object *hotlist_toolbar_lab[AMI_GUI_TOOLBAR_MAX];
 	struct List hotlist_toolbar_list;
 	struct List *web_search_list;
 	Object *search_bm;
@@ -131,15 +132,16 @@ struct gui_window_2 {
 	struct DiskObject *dobj; /* iconify appicon */
 	struct Hook favicon_hook;
 	struct Hook throbber_hook;
+	struct Hook *ctxmenu_hook;
+	Object *history_ctxmenu[2];
+	Object *clicktab_ctxmenu;
 	gui_drag_type drag_op;
 	struct IBox *ptr_lock;
 	struct AppWindow *appwin;
-	struct MinList shared_pens;
+	struct MinList *shared_pens;
 	gui_pointer_shape mouse_pointer;
-#ifndef __amigaos4__
-	struct NewMenu *menu_os3;
-	struct VisualInfo *vi;
-#endif
+	struct Menu *imenu; /* Intuition menu */
+	struct VisualInfo *vi; /* For GadTools menu */
 };
 
 struct gui_window
@@ -160,19 +162,21 @@ struct gui_window
 	hlcache_handle *favicon;
 	bool throbbing;
 	char *tabtitle;
+	APTR deferred_rects_pool;
 	struct MinList *deferred_rects;
 	struct browser_window *bw;
 	float scale;
 };
 
 void ami_get_msg(void);
-void ami_close_all_tabs(struct gui_window_2 *gwin);
 void ami_try_quit(void);
 void ami_quit_netsurf(void);
 void ami_schedule_redraw(struct gui_window_2 *gwin, bool full_redraw);
 STRPTR ami_locale_langs(void);
 int ami_key_to_nskey(ULONG keycode, struct InputEvent *ie);
 bool ami_text_box_at_point(struct gui_window_2 *gwin, ULONG *x, ULONG *y);
+bool ami_mouse_to_ns_coords(struct gui_window_2 *gwin, int *x, int *y,
+	int mouse_x, int mouse_y);
 BOOL ami_gadget_hit(Object *obj, int x, int y);
 void ami_gui_history(struct gui_window_2 *gwin, bool back);
 void ami_gui_hotlist_update_all(void);
@@ -183,6 +187,21 @@ nserror ami_gui_new_blank_tab(struct gui_window_2 *gwin);
 char *ami_gui_get_cache_favicon_name(nsurl *url, bool only_if_avail);
 int ami_gui_count_windows(int window, int *tabs);
 void ami_gui_set_scale(struct gui_window *gw, float scale);
+
+
+/**
+ * Close a window and all tabs attached to it.
+ *
+ * @param gwin gui_window_2 to act upon.
+ */
+void ami_gui_close_window(struct gui_window_2 *gwin);
+
+/**
+ * Close all tabs in a window except the active one.
+ *
+ * @param gwin gui_window_2 to act upon.
+ */
+void ami_gui_close_inactive_tabs(struct gui_window_2 *gwin);
 
 /**
  * Compatibility function to get space.gadget render area.
@@ -220,6 +239,5 @@ struct MsgPort *sport;
 struct gui_window *cur_gw;
 struct gui_globals browserglob;
 BOOL ami_autoscroll;
-BOOL popupmenu_lib_ok;
 #endif
 
