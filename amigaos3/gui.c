@@ -66,7 +66,7 @@
 #include "content/hlcache.h"
 #include "content/backing_store.h"
 
-//static const __attribute__((used)) char *stack_cookie = "\0$STACK:196608\0";
+static const __attribute__((used)) char *stack_cookie = "\0$STACK:10000000\0";
 
 /* Integral type definitions */
 typedef int32_t int32;
@@ -520,18 +520,27 @@ process_cmdline(int argc, char** argv)
 
 	
 #ifdef RTG
-	/*if (nsoption_int(window_depth) == 0) 
-	{ nsoption_int(window_depth) = 32;
-	  nsoption_write(options, NULL, NULL);}*/
+	if (nsoption_int(window_depth) == 0) 
+		{ nsoption_int(window_depth) = 32;
+		nsoption_write(options, NULL, NULL);}
+	  
 	fewidth = nsoption_int(window_width);
 	feheight = nsoption_int(window_height);
-	febpp =  nsoption_int(window_depth);
+
 	if (fewidth < 640)
 		fewidth = 640;
 	if (feheight < 480)
 		feheight = 480;
-	if ((febpp != 8) && (febpp != 16) && (febpp != 24) && (febpp != 32))  
+
+	if (nsoption_bool(autodetect_depth))
+		febpp = detect_screen();
+	else
+		febpp = nsoption_int(window_depth);
+	
+	if ((febpp != 8) && (febpp != 16) && (febpp != 24) && (febpp != 32)) 
 		febpp = 32;
+	
+	Bpp = febpp;
 #else
 	febpp = 8;
 	fewidth = 640;
@@ -616,11 +625,11 @@ static nserror set_defaults(struct nsoption_s *defaults)
 	nsoption_setnull_charp(cookie_jar, strdup("PROGDIR:Resources/Cookies"));
 	nsoption_charp(accept_language) = strndup(nsoption_charp(accept_language),2);
 #ifdef RTG	
-	scale_cp = nsoption_int(scale);
+	//nsoption_int(scale);
 	nsoption_charp(fb_toolbar_layout) = strdup("blfsrhuvaqetk123456789xwzgdmyop");
 #else
 	scale_cp = nsoption_int(scale);
-	nsoption_int(scale) = nsoption_int(scale_aga);	
+	nsoption_int(scale) = nsoption_int(scale_aga);
 	nsoption_charp(fb_toolbar_layout) = strdup("blfrcuvaqetk12345gdyop");
 #endif
 #ifdef JS
@@ -753,7 +762,10 @@ static void framebuffer_run(void)
 static void gui_quit(void)
 {
 	LOG("gui_quit");
+	#ifdef AGA
 	nsoption_int(scale) = scale_cp;
+	nsoption_write(options, NULL, NULL);
+	#endif
 	urldb_save_cookies(nsoption_charp(cookie_jar));
 	
 	framebuffer_finalise();
@@ -5296,13 +5308,8 @@ main(int argc, char** argv)
 	options = strdup("PROGDIR:Resources/Options");
 	nsoption_read(options, nsoptions);
 	
-#ifdef RTG
-	if (nsoption_bool(autodetect_depth))
-		febpp = detect_screen();
-	else
-		febpp = nsoption_int(window_depth);
-#else
-	febpp = 8;
+#ifdef AGA
+	nsoption_int(scale) = nsoption_int(scale_aga);
 #endif
     if (Bpp == 24)
 		nsoption_bool(fullscreen) = true;
