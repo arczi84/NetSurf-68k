@@ -514,16 +514,11 @@ static int sdl_set_geometry(nsfb_t *nsfb, int width, int height,
 
 		if (nsfb->surface_priv != NULL) {
 #ifdef AGA
-			Bpp = 8;
 			sdl_screen = SDL_SetVideoMode(640,
                                   512,
-                                  Bpp,
+                                  8,
                                   SDL_SWSURFACE | SDL_FULLSCREEN);		
-#else	
-			Bpp = nsoption_int(window_depth);
-			if ((Bpp != 8) && (Bpp != 16) && (Bpp != 24) && (Bpp != 32))  
-				Bpp = nsoption_int(window_depth)= 32;
-		
+#else
 			sdl_screen = SDL_SetVideoMode(width,
 										  height,
 										  Bpp,
@@ -576,20 +571,18 @@ static int sdl_initialise(nsfb_t *nsfb)
     }
 
 #ifdef RTG
-	Bpp = nsoption_int(window_depth);
-	if ((Bpp != 8) && (Bpp != 16) && (Bpp != 24) && (Bpp != 32))  
-		Bpp = 32;//SDL_VideoModeOK(nsfb->width,nsfb->height, 32, SDL_HWSURFACE);		
-	//Bpp = nsoption_int(window_depth)= 32;	
-	
-    if  (nsoption_int(fullscreen))
+	if  (nsoption_int(fullscreen))
 		{flags = SDL_HWSURFACE | SDL_FULLSCREEN;}
     else
 #if !defined NOVA_SDL 
 	 	flags = SDL_HWSURFACE | SDL_RESIZABLE;
-#else		
+	if (Bpp == 24) {
+		flags = SDL_HWSURFACE | SDL_FULLSCREEN;
+		Bpp = 16;}		
+#else
 		flags = SDL_SWSURFACE | SDL_RESIZABLE;
 #endif			
-	
+
     sdl_screen = SDL_SetVideoMode(nsfb->width,
                                   nsfb->height,
                                   Bpp,
@@ -708,12 +701,9 @@ static bool sdl_input(nsfb_t *nsfb, nsfb_event_t *event, int timeout)
 
     nsfb = nsfb; /* unused */
 
-	if (nsoption_bool(warp_mode)) //{
+	if (nsoption_bool(warp_mode)) 
 		timeout = 0;
-/*	} else {
-		if (timeout != 0)
-			timeout = TimeOut;
-	}*/
+	
 #ifdef NO_TIMER
 		timeout = 0;
 #endif		
