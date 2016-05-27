@@ -12,9 +12,7 @@
 #define PALETTE_H 1
 
 #include <stdint.h>
-#include <limits.h>  // not necessary as should be included in stdint.h
-#include <stdbool.h> // C99 bool does not exist without this include!
-#include <string.h>  // defines NULL
+#include <limits.h>
 
 #include "libnsfb.h"
 #include "libnsfb_plot.h"
@@ -24,7 +22,8 @@ int Bpp;
 enum nsfb_palette_type_e {
 	NSFB_PALETTE_EMPTY,     /**< empty palette object */
 	NSFB_PALETTE_NSFB_8BPP, /**< libnsfb's own 8bpp palette */
-	NSFB_PALETTE_OTHER      /**< any other palette  */
+	NSFB_PALETTE_OTHER,      /**< any other palette  */
+	NSFB_PALETTE_CUBE_676   /**< palette with 6x7x6 + 3 colors */	/**< any other palette  */
 };
 
 struct nsfb_palette_s {
@@ -57,71 +56,63 @@ void nsfb_palette_dither_fini(struct nsfb_palette_s *palette);
 /** Generate libnsfb 8bpp default palette. */
 void nsfb_palette_generate_nsfb_8bpp(struct nsfb_palette_s *palette);
 
+
 static inline bool nsfb_palette_dithering_on(struct nsfb_palette_s *palette)
 {
         return palette->dither;
 }
+
+
 /** Find best palette match for given colour. */
 static inline uint8_t nsfb_palette_best_match(struct nsfb_palette_s *palette,
 		nsfb_colour_t c, int *r_error, int *g_error, int *b_error)
 {
-	uint8_t best_col = 0;  // return variable
-  
-	uint_fast8_t col;
-	nsfb_colour_t palent;  // uint32_t
-	uint_fast32_t cr, cg, cb;  // color components of c
-	int_fast32_t dr, dg, db; /* delta red, green, blue values */
-	uint_fast32_t tmp_r, tmp_g, tmp_b;
+	uint8_t best_col = 0;
 
-	int_fast32_t cur_distance;
-	int_fast32_t best_distance = INT_FAST32_MAX;
+	nsfb_colour_t palent;
+	int col;
+	int dr, dg, db; /* delta red, green blue values */
 
-	uint_fast32_t tmp_c = (uint_fast32_t)c;
-	cr = (tmp_c & 0xff);
-	tmp_c >>= 8;
-	cg = (tmp_c & 0xff);
-	tmp_c >>= 8;
-	cb = (tmp_c & 0xff);
+	int cur_distance;
+	int best_distance = INT_MAX;
+
+	int r = ( c        & 0xFF);
+	int g = ((c >>  8) & 0xFF);
+	int b = ((c >> 16) & 0xFF);
 
 	switch (palette->type) {
 	case NSFB_PALETTE_NSFB_8BPP:
 		/* Index into colour cube part */
-		tmp_r = (cr * 5 + 128) / 256;
-		tmp_g = (cg * 7 + 128) / 256;
-		tmp_b = (cb * 4 + 128) / 256;
-		col = 40 * tmp_r + 5 * tmp_g + tmp_b;
+		dr = ((r * 5) + 128) / 256;
+		dg = ((g * 7) + 128) / 256;
+		db = ((b * 4) + 128) / 256;
+		col = 40 * dr + 5 * dg + db;
 
 		palent = palette->data[col];
-		uint_fast32_t tmp_palent = palent;
-		dr = cr - (tmp_palent & 0xff);
-		tmp_palent >>= 8;
-		dg = cg - (tmp_palent & 0xff);
-		tmp_palent >>= 8;
-		db = cb - (tmp_palent & 0xff);
+		dr = r - ( palent        & 0xFF);
+		dg = g - ((palent >>  8) & 0xFF);
+		db = b - ((palent >> 16) & 0xFF);
 		cur_distance = (dr * dr) + (dg * dg) + (db * db);
 
-		best_distance = cur_distance;
 		best_col = col;
-		*r_error = (int)dr;
-		*g_error = (int)dg;
-		*b_error = (int)db;
+		best_distance = cur_distance;
+		*r_error = dr;
+		*g_error = dg;
+		*b_error = db;
 
 		/* Index into grayscale part */
-		col = (cr + cg + cb + (45 / 2)) / (15 * 3) - 1 + 240;
+		col = (r + g + b + (45 / 2)) / (15 * 3) - 1 + 240;
 		palent = palette->data[col];
-		tmp_palent = palent;
-		dr = cr - (tmp_palent & 0xff);
-		tmp_palent >>= 8;
-		dg = cg - (tmp_palent & 0xff);
-		tmp_palent >>= 8;
-		db = cb - (tmp_palent & 0xff);
+
+		dr = r - (palent & 0xFF);
+		dg = g - (palent & 0xFF);
+		db = b - (palent & 0xFF);
 		cur_distance = (dr * dr) + (dg * dg) + (db * db);
 		if (cur_distance < best_distance) {
-			// best_distance = cur_distance;
 			best_col = col;
-			*r_error = (int)dr;
-			*g_error = (int)dg;
-			*b_error = (int)db;
+			*r_error = dr;
+			*g_error = dg;
+			*b_error = db;
 		}
 		break;
 
@@ -129,19 +120,17 @@ static inline uint8_t nsfb_palette_best_match(struct nsfb_palette_s *palette,
 		/* Try all colours in palette */
 		for (col = 0; col <= palette->last; col++) {
 			palent = palette->data[col];
-			uint_fast32_t tmp_palent = palent;
-			dr = cr - (tmp_palent & 0xff);
-			tmp_palent >>= 8;
-			dg = cg - (tmp_palent & 0xff);
-			tmp_palent >>= 8;
-			db = cb - (tmp_palent & 0xff);
+
+			dr = r - ( palent        & 0xFF);
+			dg = g - ((palent >>  8) & 0xFF);
+			db = b - ((palent >> 16) & 0xFF);
 			cur_distance = (dr * dr) + (dg * dg) + (db * db);
 			if (cur_distance < best_distance) {
 				best_distance = cur_distance;
 				best_col = col;
-				*r_error = (int)dr;
-				*g_error = (int)dg;
-				*b_error = (int)db;
+				*r_error = dr;
+				*g_error = dg;
+				*b_error = db;
 			}
 		}
 		break;
@@ -153,17 +142,16 @@ static inline uint8_t nsfb_palette_best_match(struct nsfb_palette_s *palette,
         return best_col;
 }
 
+
+/** Find best palette match for given colour, with error diffusion. */
 static inline uint8_t nsfb_palette_best_match_dither(
 		struct nsfb_palette_s *palette, nsfb_colour_t c)
 {
-
-	uint8_t best_col_index;  // return variable
-
-	uint_fast32_t cr, cg, cb;  // color components of c
-	int_fast32_t r, g, b;
+	int r, g, b;
 	int current;
 	int error;
 	int width = palette->dither_ctx.width;
+	uint8_t best_col_index;
 
 	if (palette == NULL)
 		return 0;
@@ -173,23 +161,10 @@ static inline uint8_t nsfb_palette_best_match_dither(
 
 	current = palette->dither_ctx.current;
 
-	uint_fast32_t tmp_c = (uint_fast32_t)c;
-	cr = (tmp_c & 0xff);
-	tmp_c >>= 8;
-	cg = (tmp_c & 0xff);
-	tmp_c >>= 8;
-	cb = (tmp_c & 0xff);
-
 	/* Get RGB components of colour, and apply error */
-	r = cr + palette->dither_ctx.data[current];
-	palette->dither_ctx.data[current] = 0;
-	current++;
-	g = cg + palette->dither_ctx.data[current];
-	palette->dither_ctx.data[current] = 0;
-	current++;
-	b = cb + palette->dither_ctx.data[current];
-	palette->dither_ctx.data[current] = 0;
-	current++;
+	r = ( c        & 0xFF) + palette->dither_ctx.data[current    ];
+	g = ((c >>  8) & 0xFF) + palette->dither_ctx.data[current + 1];
+	b = ((c >> 16) & 0xFF) + palette->dither_ctx.data[current + 2];
 
 	/* Clamp new RGB components to range */
 	if (r <   0) r =   0;
@@ -199,16 +174,19 @@ static inline uint8_t nsfb_palette_best_match_dither(
 	if (b <   0) b =   0;
 	if (b > 255) b = 255;
 
+	/* Reset error diffusion slots to 0 */
+	palette->dither_ctx.data[current    ] = 0;
+	palette->dither_ctx.data[current + 1] = 0;
+	palette->dither_ctx.data[current + 2] = 0;
+
 	/* Rebuild colour from modified components */
-	c = b;
-	c <<= 8;
-	c = c | g;
-	c <<= 8;
-	c = c | r;  // faster than c = (b << 16) | (g << 8) | r;
+	c = r + (g << 8) + (b << 16);
 
 	/* Get best match for pixel, and find errors for each component */
 	best_col_index = nsfb_palette_best_match(palette, c, &r, &g, &b);
 
+	/* Advance one set of error diffusion slots */
+	current += 3;
 	if (current >= width)
 		current = 0;
 	palette->dither_ctx.current = current;
@@ -224,9 +202,9 @@ static inline uint8_t nsfb_palette_best_match_dither(
 	/* Error for [N] (next) */
 	if (error != 0) {
 		/* The pixel exists */
-		palette->dither_ctx.data[error    ] += (int)((int_fast16_t)r * 7 / 16);
-		palette->dither_ctx.data[error + 1] += (int)((int_fast16_t)g * 7 / 16);
-		palette->dither_ctx.data[error + 2] += (int)((int_fast16_t)b * 7 / 16);
+		palette->dither_ctx.data[error    ] += r * 7 / 16;
+		palette->dither_ctx.data[error + 1] += g * 7 / 16;
+		palette->dither_ctx.data[error + 2] += b * 7 / 16;
 	}
 
 	error += width - 2 * 3;
@@ -235,18 +213,18 @@ static inline uint8_t nsfb_palette_best_match_dither(
 	/* Error for [l] (below, left) */
 	if (error >= 0 && error != 3) {
 		/* The pixel exists */
-		palette->dither_ctx.data[error    ] += (int)((int_fast16_t)r * 3 / 16);
-		palette->dither_ctx.data[error + 1] += (int)((int_fast16_t)g * 3 / 16);
-		palette->dither_ctx.data[error + 2] += (int)((int_fast16_t)b * 3 / 16);
+		palette->dither_ctx.data[error    ] += r * 3 / 16;
+		palette->dither_ctx.data[error + 1] += g * 3 / 16;
+		palette->dither_ctx.data[error + 2] += b * 3 / 16;
 	}
 
 	error += 3;
 	if (error >= width)
 		error -= width;
 	/* Error for [m] (below, middle) */
-	palette->dither_ctx.data[error    ] += (int)((int_fast16_t)r * 5 / 16);
-	palette->dither_ctx.data[error + 1] += (int)((int_fast16_t)g * 5 / 16);
-	palette->dither_ctx.data[error + 2] += (int)((int_fast16_t)b * 5 / 16);
+	palette->dither_ctx.data[error    ] += r * 5 / 16;
+	palette->dither_ctx.data[error + 1] += g * 5 / 16;
+	palette->dither_ctx.data[error + 2] += b * 5 / 16;
 
 	error += 3;
 	if (error >= width)
@@ -254,13 +232,12 @@ static inline uint8_t nsfb_palette_best_match_dither(
 	/* Error for [r] (below, right) */
 	if (error != 0) {
 		/* The pixel exists */
-		palette->dither_ctx.data[error    ] += (int)((int_fast16_t)r / 16);
-		palette->dither_ctx.data[error + 1] += (int)((int_fast16_t)g / 16);
-		palette->dither_ctx.data[error + 2] += (int)((int_fast16_t)b / 16);
+		palette->dither_ctx.data[error    ] += r / 16;
+		palette->dither_ctx.data[error + 1] += g / 16;
+		palette->dither_ctx.data[error + 2] += b / 16;
 	}
 
 	return best_col_index;
 }
-
 
 #endif /* PALETTE_H */
