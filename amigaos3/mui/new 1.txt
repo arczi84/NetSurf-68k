@@ -1,2 +1,0 @@
-		MUIA_List_Active, TRUE,
-		MUIA_List_Title, TRUE,

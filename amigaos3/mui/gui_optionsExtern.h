@@ -14,4 +14,3 @@ long FavDestructor (struct Ulubione *ulubione reg(a1), APTR mempool reg(a2));
 long FavDisplayer (struct Ulubione *ulubione reg(a1), char **teksty reg(a2));
 void ModifyFav(struct Hook *h, Object *o);
 void Proxy(struct Hook *h, Object *o);
-
