@@ -38,55 +38,17 @@ static inline nsfb_colour_t pixel_to_colour(nsfb_t *nsfb, uint8_t pixel)
 /** Find best palette match for given colour. */
 static uint8_t colour_to_pixel(nsfb_t *nsfb, nsfb_colour_t c)
 {
-#if defined AGA676
-	register int r, g, b;
-
-	b = c & 0xFFFFFF;
-	g = 0xFF;
-	r = b & g;
-	b = b >> 8;
-	g = b & g;
-	b = b >> 8;
-
-	if (r > 250)
-		if (g > 250)
-			if (b > 250) return 3; /* 100 %  white */
-				 
-	if (g == b)
-		if (g == r) /* this color is gray */
-			if (g > 0x79) 
-				if (g < 0xE2) {
-					if (g < 0x85)
-						return 0; /* 50 % gray */
-					if (g > 0xD6)
-						return 2; /* 86 % gray */
-					if (g > 0xAD)
-					    if (g < 0xB9)
-						return 1; /* 70 % gray */
-				}
+	if (nsfb->palette == NULL)
+			return 0;
 				
-	if (dither676) {
-		if (pushRGBlevel = ~pushRGBlevel) { /* push up every 2. pixel  */
-			r += 22;
-			g += 19;
-			b += 22;
-		}
+	if (dither_low_quality)
+		{
+			return nsfb_palette_best_match_dither676(c);
 	}
-	else {
-			r += 11;
-			g +=  9;
-			b += 11;
+	else
+		{
+			return nsfb_palette_best_match_dither(nsfb->palette,c);		
 	}
-
-    return table_for_cube_676[r+556] + table_for_cube_676[g+278] + table_for_cube_676[b];
-	
-#else
-        if (nsfb->palette == NULL)
-                return 0;
-
-			
-		return nsfb_palette_best_match_dither(nsfb->palette,c);		
-#endif
 }
 
 #define PLOT_TYPE uint8_t

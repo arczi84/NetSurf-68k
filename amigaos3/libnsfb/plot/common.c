@@ -21,7 +21,18 @@
 #include "palette.h"
 
 #define SIGN(x)  ((x<0) ?  -1  :  ((x>0) ? 1 : 0))
-#define UNUSED __attribute__((unused)) 
+#define UNUSED __attribute__((unused))
+
+
+#ifdef __BIG_ENDIAN_BGRA__
+
+static __inline__ Uint32 Swap32(Uint32 x)
+{
+		__asm__ __volatile (
+		"rorw #8, %0; swap %0; rorw #8, %0" : "=d" (x) : "0" (x));
+		
+		return x;
+}
 
 static inline nsfb_colour_t nsfb_plot_ablend_be16(nsfb_colour_t pixel,nsfb_colour_t  scrpixel)
 {
@@ -51,31 +62,8 @@ static inline uint16_t colour_be_to_pixel(UNUSED nsfb_t *nsfb, nsfb_colour_t c)
 	    return ((c & 0xF8000000) >> 16) | ((c & 0xFC0000) >> (16-3)) | ((c & 0xF800) >> 11  );
 }
 
-#ifdef __BIG_ENDIAN_BGRA__
-// this funcs are need because bitmaps have diffrent format (rgba)when get from netsurf.
-//if your SDL surface work in rgba mode(seem in SDL_SWSURFACE done), you need diffrent funcs.
-static inline nsfb_colour_t nsfb_plot_ablend_rgba(nsfb_colour_t pixel,nsfb_colour_t  scrpixel)
-{
-	  int opacity = pixel & 0xFF;
-	  int transp = 0x100 - opacity;
-          uint32_t rb, g; 
-	  pixel >>= 8;
-	  scrpixel >>= 8;
-	  rb = ((pixel & 0xFF00FF) * opacity +
-          (scrpixel & 0xFF00FF) * transp) >> 8;
-          g  = ((pixel & 0x00FF00) * opacity +
-          (scrpixel & 0x00FF00) * transp) >> 8;
 
-    return ((rb & 0xFF00FF) | (g & 0xFF00)) << 8; 
-}
 
-static inline uint32_t colour_rgba_to_pixel_bgra(UNUSED nsfb_t *nsfb, nsfb_colour_t c)
-{
-	   
-		return (((c & 0xFF00) << 16 ) |
-                ((c & 0xFF0000) ) |
-                ((c & 0xFF000000) >> 16) );
-}
 static inline nsfb_colour_t pixel_bgra_to_colour_rgba(UNUSED nsfb_t *nsfb, uint32_t pixel)
 {
 
@@ -380,100 +368,41 @@ static bool bitmap_scaled(nsfb_t *nsfb, const nsfb_bbox_t *loc,
 				abpixel = pixel[yoff + xoff];
 #ifdef __BIG_ENDIAN_BGRA__	
 				
-if ((Bpp == 8) || (Bpp == 32)) {	
-#ifdef AGA676	
-	/* enable dithering  */
-	dither676 = true;
-#endif
-								if ((abpixel & 0x000000FF) != 0) {
+		if ((dither_low_quality) && (Bpp == 8)) {
+				/* enable dithering  */
+			dither676 = true;}
+							if ((abpixel & 0x000000FF) != 0) {
 								/* pixel is not transparent; have to
 								 * plot something */
-								if ((abpixel & 0xFF000000) != 
-										0xFF000000) {
+								if ((Bpp == 8) || (Bpp == 32)) 	{					 
+									if ((abpixel & 0xFF000000) != 0xFF000000) {
 									/* pixel is not opaque; need to
-									 * blend */	//not scaled		
-									abpixel = nsfb_plot_ablend(
-											SDL_Swap32(abpixel),
-											pixel_to_colour(
-											nsfb, 
-											*(pvideo +
-											xloop)));
+									 * blend */	// scaled		 
+										abpixel = nsfb_plot_ablend(Swap32(abpixel),
+											pixel_to_colour(nsfb, *(pvideo +xloop)));
+											
+										*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);	
+										}
+									else
+										*(pvideo + xloop) = colour_to_pixel(nsfb, Swap32(abpixel));	
 								}
-#ifdef RTG
-								if ((abpixel & 0xFF000000) != 
-										0xFF000000) {
-								/* plot pixel */
-									*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);
-									}
-								else
-									*(pvideo + xloop) = colour_to_pixel(nsfb, SDL_Swap32(abpixel));
-#else
-								*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);
-#endif
-							}
-			}
-else if (Bpp == 16) {
-						if ((abpixel & 0x000000FF) != 0) {
-						/* pixel is not transparent; have to
-						 * plot something */								
-							if ((abpixel & 0x000000FF) != 
-									0x000000FF) {
-								/* pixel is not opaque; need to
-								 * blend */									
-								abpixel = nsfb_plot_ablend_be16(
-											abpixel,
-											pixel_be_to_colour(
-											nsfb, 
-											*(pvideo
-											+ xloop)));
+								else if (Bpp == 16) {
+									if ((abpixel & 0x000000FF) != 0x000000FF)
+										abpixel = nsfb_plot_ablend_be16(abpixel,									
+											pixel_be_to_colour(nsfb, *(pvideo+ xloop)));
+									
+									/* plot pixel */
+										*(pvideo + xloop) = colour_be_to_pixel(nsfb, abpixel);									
+								}									
+								else {
+										abpixel = nsfb_plot_ablend(abpixel,
+												pixel_to_colour(nsfb, *(pvideo+ xloop)));
+												
+										*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);	
 								}
-								/* pixel is not opaque; need to
-								 * blend */								
-								*(pvideo + xloop) = colour_be_to_pixel(
-										nsfb, abpixel);			
-
 							}	
-		}					
-else if (Bpp == 0320) 
-		{
-						if ((abpixel & 0x000000FF) != 0) {
-							/* pixel is not transparent; have to
-							 * plot something */
-							if ((abpixel & 0x000000FF) != 
-									0x000000FF) {
-								/* pixel is not opaque; need to
-								 * blend */
-								abpixel = nsfb_plot_ablend_rgba(
-										abpixel,
-										pixel_bgra_to_colour_rgba(
-										nsfb, 
-										*(pvideo 
-										+ xloop)));
-								}
-							/* plot pixel */						
-							*(pvideo + xloop) = colour_rgba_to_pixel_bgra(
-									nsfb, abpixel);
-							}	
-		}							
-else /*Bpp */ {
-						if ((abpixel & 0xFF000000) != 0) {
-							/* pixel is not transparent; have to
-							 * plot something */
-							if ((abpixel & 0xFF000000) !=
-									0xFF000000) {
-								/* pixel is not opaque; need to
-								 * blend */
-								abpixel = nsfb_plot_ablend(
-										abpixel,
-										pixel_to_colour(
-										nsfb, 
-										*(pvideo +
-										xloop)));
-							}
-							/* plot pixel */
-							*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);
-						}
-	}					
+								
+						
 #endif /*__BIG_ENDIAN_BGRA__ */
 				/* handle horizontal interpolation */
 				xoff += dx;
@@ -502,21 +431,16 @@ else /*Bpp */ {
 				/* get value of source pixel in question */
 				abpixel = pixel[yoff + xoff];
 				/* plot pixel */
-#ifdef __BIG_ENDIAN_BGRA__	
-	if (Bpp == 8) {
-				*(pvideo + xloop) = colour_to_pixel(nsfb, SDL_Swap32(abpixel));
-	}
-	else if (Bpp == 16)
-				*(pvideo + xloop) = colour_be_to_pixel(nsfb, abpixel);
-	else if (Bpp == 32)
-                //*(pvideo + xloop) = colour_rgba_to_pixel_bgra(nsfb, abpixel);
-				*(pvideo + xloop) = colour_to_pixel(nsfb, SDL_Swap32(abpixel));	
-	else
-				*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);	
+#ifdef __BIG_ENDIAN_BGRA__
+	if 			((Bpp == 8) || (Bpp == 32))
+						*(pvideo + xloop) = colour_to_pixel(nsfb, Swap32(abpixel));
+	else 	if  (Bpp == 16)
+						*(pvideo + xloop) = colour_be_to_pixel(nsfb, abpixel);
+	else	
+	 					*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);
 #else
 				*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);
 #endif
-
 				/* handle horizontal interpolation */
 				xoff += dx;
 				rx += dxr;
@@ -534,13 +458,11 @@ else /*Bpp */ {
 			}
 		}
 	}
-#ifdef AGA676		
-	if ((Bpp == 8) || (Bpp == 32)) {
+	if ((dither_low_quality) && (Bpp == 8)) {	
 		/* reset dithering to defaults */
 		dither676 = false;
 		pushRGBlevel = 0;
-	}
-#endif	
+	}	
 	if (nsfb->palette != NULL) {
 		nsfb_palette_dither_fini(nsfb->palette);
 	}
@@ -607,142 +529,79 @@ bitmap(nsfb_t *nsfb,
                         for (xloop = 0; xloop < width; xloop++) {
                                 abpixel = pixel[yloop + xloop + xoff];
 #ifdef __BIG_ENDIAN_BGRA__	
-			if ((Bpp == 8) || (Bpp == 32)) {	
-#ifdef AGA676	
-			/* enable dithering  */
-			dither676 = true;
-#endif			
-								if ((abpixel & 0x000000FF) != 0) {
-								/* pixel is not transparent; have to
-								 * plot something */
-								if ((abpixel & 0xFF000000) != 
-										0xFF000000) {
-									/* pixel is not opaque; need to
-									 * blend */	//not scaled		
-									abpixel = nsfb_plot_ablend(
-											SDL_Swap32(abpixel),
-											pixel_to_colour(
-											nsfb, 
-											*(pvideo +
-											xloop)));
-								}
-if (Bpp == 32) {
-								if ((abpixel & 0xFF000000) != 
-										0xFF000000) {
-								/* plot pixel */
-									*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);
-									}
-								else
-									*(pvideo + xloop) = colour_to_pixel(nsfb, SDL_Swap32(abpixel));
-				}
-else
-								*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);
-							}
-			}
-			else if (Bpp == 16) {
-							if ((abpixel & 0x000000FF) != 0) {
-							/* pixel is not transparent; have to
-							 * plot something */								
-								if ((abpixel & 0x000000FF) != 
-										0x000000FF) {
-									/* pixel is not opaque; need to
-									 * blend */									
-									abpixel = nsfb_plot_ablend_be16(
-												abpixel,
-												pixel_be_to_colour(
-												nsfb, 
-												*(pvideo
-												+ xloop)));
-									}
-									/* pixel is not opaque; need to
-									 * blend */								
-									*(pvideo + xloop) = colour_be_to_pixel(
-											nsfb, abpixel);			
 
-								}	
-			}				
-			else if (Bpp == 0320) {
+		if ((dither_low_quality) && (Bpp == 8)) {
+				/* enable dithering  */
+			dither676 = true;}
+			
 							if ((abpixel & 0x000000FF) != 0) {
 								/* pixel is not transparent; have to
 								 * plot something */
-								if ((abpixel & 0x000000FF) != 
-										0x000000FF) {
+								if ((Bpp == 8) || (Bpp == 32)) 	{					 
+									if ((abpixel & 0xFF000000) != 0xFF000000) {
 									/* pixel is not opaque; need to
-									 * blend */	
-									abpixel = nsfb_plot_ablend_rgba(
-											abpixel,
-											pixel_bgra_to_colour_rgba(
-											nsfb, 
-											*(pvideo 
-											+ xloop)));
-									}
-								/* plot pixel */						
-								*(pvideo + xloop) = colour_rgba_to_pixel_bgra(
-										nsfb, abpixel);
-							}
-			}			
-			else /*BPP */  {
-							if ((abpixel & 0xFF000000) != 0) {
-								/* pixel is not transparent; have to
-								 * plot something */
-								if ((abpixel & 0xFF000000) !=
-										0xFF000000) {
-									/* pixel is not opaque; need to
-									 * blend */
-									abpixel = nsfb_plot_ablend(
-											abpixel,
-											pixel_to_colour(
-											nsfb, 
-											*(pvideo +
-											xloop)));
+									 * blend */	//not scaled		 
+										abpixel = nsfb_plot_ablend(Swap32(abpixel),
+											pixel_to_colour(nsfb, *(pvideo +xloop)));
+											
+										*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);	
+										}
+									else
+										*(pvideo + xloop) = colour_to_pixel(nsfb, Swap32(abpixel));	
 								}
-								/* plot pixel */
-								*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);
+								else if (Bpp == 16) {
+									if ((abpixel & 0x000000FF) != 0x000000FF)
+										abpixel = nsfb_plot_ablend_be16(abpixel,									
+											pixel_be_to_colour(nsfb, *(pvideo+ xloop)));
+									
+									/* plot pixel */
+										*(pvideo + xloop) = colour_be_to_pixel(nsfb, abpixel);									
+								}									
+								else {
+										abpixel = nsfb_plot_ablend(abpixel,
+												pixel_to_colour(nsfb, *(pvideo+ xloop)));
+												
+										*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);	
+								}
 							}
-				}			
+									
 #endif /*__BIG_ENDIAN_BGRA__ */
                         }
                         pvideo += PLOT_LINELEN(nsfb->linelen);
                 }
-        } else {
+        }else {
                 for (yloop = yoff; yloop < height; yloop += bmp_stride) {
                         for (xloop = 0; xloop < width; xloop++) {
                                 abpixel = pixel[yloop + xloop + xoff];
 #ifdef __BIG_ENDIAN_BGRA__
-	if (Bpp == 32)				
-								*(pvideo + xloop) = colour_rgba_to_pixel_bgra(nsfb, abpixel);		
-
-	else 	if (Bpp == 16)
-								*(pvideo + xloop) = colour_be_to_pixel(nsfb, abpixel);
+	if 			(Bpp == 32)
+						*(pvideo + xloop) = colour_to_pixel(nsfb, Swap32(abpixel));					
+	else 	if  (Bpp == 16)
+						*(pvideo + xloop) = colour_be_to_pixel(nsfb, abpixel);
 	else {
-#if 1
 			if ((abpixel & 0xFF000000) != 0)
 						/* plot pixel */
-								*(pvideo + xloop) = colour_to_pixel(nsfb, SDL_Swap32(abpixel));
-								else									
-								*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);
-		 }
-#else	
-	 								*(pvideo + xloop) = colour_to_pixel(nsfb, SDL_Swap32(abpixel)); }
-#endif
+						*(pvideo + xloop) = colour_to_pixel(nsfb, Swap32(abpixel));
+			else									
+						*(pvideo + xloop) = colour_to_pixel(nsfb, abpixel);
+	}
 #endif
                         }
                         pvideo += PLOT_LINELEN(nsfb->linelen);
                 }
         }
-#ifdef AGA676		
-		if ((Bpp == 8) || (Bpp == 32)) {
-			/* reset dithering to defaults */
-			dither676 = false;
-			pushRGBlevel = 0;
-		}
-#endif			
+		if ((dither_low_quality) && (Bpp == 8)) {	
+				/* reset dithering to defaults */
+				dither676 = false;
+				pushRGBlevel = 0;
+		}			
         if (nsfb->palette != NULL) {
                 nsfb_palette_dither_fini(nsfb->palette);
         }
 
         return true;
 }
+
 
 static bool
 bitmap_tiles(nsfb_t *nsfb,
@@ -762,11 +621,13 @@ bitmap_tiles(nsfb_t *nsfb,
 	int height = loc->y1 - loc->y0;
 	bool ok = true;
 	bool set_dither = false; /* true iff we enabled dithering here */
-#ifdef AGA676
-	if ((Bpp == 8) || (Bpp == 32)) {	
+	
+	if ((dither_low_quality) && (Bpp == 8)) {
 			/* enable dithering  */
-			dither676 = true;}
-#endif	
+			dither676 = true; 
+			//set_dither = true;
+		}	
+			
 	/* Avoid pointless rendering */
 	if (width == 0 || height == 0)
 		return true;
@@ -822,13 +683,11 @@ bitmap_tiles(nsfb_t *nsfb,
 			tloc.y1 += height;
 		}
 	}
-#ifdef AGA676		
-	if ((Bpp == 8) || (Bpp == 32)) {
+	if ((dither_low_quality) && (Bpp == 8)) {
 			/* reset dithering to defaults */
 			dither676 = false;
 			pushRGBlevel = 0;
-		}
-#endif		
+	}	
 	if (set_dither) {
 		nsfb_palette_dither_fini(nsfb->palette);
 	}
