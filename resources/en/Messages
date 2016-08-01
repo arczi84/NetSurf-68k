@@ -1,0 +1,585 @@
+NetSurf:NetSurf
+NetSurfCopyright:Copyright © 2003 - 2015 The NetSurf Developers
+NetSurfDesc:Small as a mouse, fast as a cheetah and available for free. NetSurf is a multi-platform web browser.
+Info:Info
+Open:Open
+Choices:Choices...
+Quit:Quit
+OpenURL:Open URL
+Page:Page
+Object:Object
+Navigate:Navigate
+View:Display
+Utilities:Utilities
+Export:Export
+SaveURL:Save location
+PDF:PDF
+LinkText:Text
+ObjInfo:Info
+ObjSave:Save
+ObjPrint:Print
+ObjReload:Reload
+Sprite:Sprite
+ObjDraw:Draw
+LinkSave:Save
+LinkDload:Download target
+LinkNew:New window
+SelSave:Save
+Home:Home page
+Back:Back one page
+Forward:Forward one page
+UpLevel:Up one level
+Stop:Stop loading this page
+Images:Images
+Toolbars:Toolbars
+Render:Render
+OptDefault:Save as default
+ForeImg:Foreground images
+BackImg:Background images
+ToolButtons:Buttons
+ToolAddress:Address bar
+ToolThrob:Throbber
+ToolStatus:Status bar
+RenderAnims:Buffer animations
+RenderAll:Buffer all rendering
+Hotlist:Hotlist
+History:History
+Cookies:Cookies
+Window:Window
+HotlistAdd:Add to hotlist
+ShowCookies:Show cookies...
+DeleteCookies:Delete all cookies
+WindowSave:Set as default position
+WindowStagr:Stagger window position
+WindowSize:Copy window position
+WindowReset:Reset default position
+HelpCredits:Credits
+HelpLicence:Licence
+Toolbar:Toolbar
+EditToolbar:Edit toolbar
+Selection:Selection
+Edit:Edit
+ResetUsage:Reset statistics
+New:New
+Expand:Expand
+Collapse:Collapse
+Tree:Tree
+TreeExport:Export...
+Folder:Directory
+Link:Address
+All:All
+Folders:Directories
+Links:Addresses
+Domains:Domains
+URLSuggest:Recent URLs
+Languages:Language
+ProxyType:Proxy type
+ProxyNone:No proxy
+ProxyNoAuth:Simple proxy
+ProxyBasic:Basic authentication
+ProxyNTLM:NTLM authentication
+Fonts:Fonts
+DefaultFonts:Font Families
+Display:Display
+ImgStyle0:Use OS
+ImgStyle1:Direct to screen
+ImgStyle2:Dithered
+ImgStyle3:Error diffused
+Project:Project
+NewWindowNS:New window
+NewTab:New tab
+CloseTab:Close tab
+CloseWindow:Close window
+SaveAsNS:Save as
+Source:Source...
+TextNS:Text...
+SaveCompNS:Complete...
+PDFNS:PDF...
+IFF:IFF...
+OpenFile:Open local file...
+About:About
+PrintNS:Print...
+CutNS:Cut
+CopyNS:Copy
+PasteNS:Paste
+SelectAllNS:Select all
+ClearNS:Clear selection
+Undo:Undo
+Redo:Redo
+Browser:Browser
+HistGlobalNS:Show global history
+HistLocalNS:Show local history
+ShowCookiesNS:Show cookies
+FindTextNS:Find text...
+Redraw:Redraw page
+ScaleNS:Scale
+ScaleInc:Increase
+ScaleDec:Decrease
+ScaleNorm:Normal
+HotlistShowNS:Show hotlist
+SettingsEdit:Edit preferences
+Settings:Settings
+SnapshotWindow:Snapshot window
+SettingsSave:Save settings
+ARexx:ARexx
+ARexxExecute:Execute script...
+Link:Link
+LinkNewTab:Open in new tab
+LinkNewWin:Open in new window
+CopyURL:Copy URL to clipboard
+CopyClip:Copy to clipboard
+SaveAs:Save as...
+SaveIFF:Save as IFF...
+SaveComplete:Save complete...
+Close:Close
+ObjShow:Show object
+Frame:Frame
+FrameNewWin:Show in new window
+FrameNewTab:Show in new tab
+FrameOnly:Show only this frame
+SelectFile:Select file...
+ExternalApp:Open in external application
+TreeAdded:Added: %s
+TreeLast:Last visited: %s
+TreeVisited:Visited: %s
+TreeVisits:Visits: %i
+TreeUnknown:Unknown
+TreeValue:Value: %s
+TreeComment:Comment: %s
+TreeDomain:Domain: %s%s
+TreePath:Path: %s%s
+TreeExpires:Expires: %s
+TreeLastUsed:Last used: %s
+TreeSecure:Secure hosts only: %s
+TreeVersion:Version: %s
+TreePersistent:Persistent: %s
+TreeHeaders: (from headers)
+TreeVersion0:Netscape
+TreeVersion1:RFC 2109
+TreeVersion2:RFC 2965
+TreeSession:Session end
+TreeUnused:Unused
+TreeImport:Imported URL
+TreeNewLink:New address
+TreeNewFolder:New directory
+TreeLaunch:Visit URL
+TreeDelete:Delete
+TreeDefault:Set as default
+TreeClear:Clear default
+TreeEdit:Edit title
+TreeviewLabelTitle:Title
+TreeviewLabelURL:URL
+TreeviewLabelLastVisit:Last visit
+TreeviewLabelVisits:Visits
+TreeviewLabelPeriod:Period
+TreeviewLabelName:Name
+TreeviewLabelContent:Content
+TreeviewLabelDomain:Domain
+TreeviewLabelPath:Path
+TreeviewLabelExpires:Expires
+TreeviewLabelLastUsed:Last used
+TreeviewLabelRestrictions:Restrictions
+TreeviewLabelVersion:Version
+TreeviewLabelPersistent:Persistent
+TreeviewLabelDomainFolder:Domain folder
+TreeviewLabelSerial:Serial
+TreeviewLabelType:Type
+TreeviewLabelValidUntil:Valid until
+TreeviewLabelValidFrom:Valid from
+TreeviewLabelIssuer:Issuer
+TreeviewLabelFolder:Folder
+CookieManagerHTTPS:Secure hosts via https only
+CookieManagerSecure:Secure hosts only
+CookieManagerHTTP:HTTP connections only
+HotlistDefaultFolderName:Unsorted entries
+NewFolderName:New folder
+NoTitle:<No title>
+TreeHotlist:NetSurf hotlist
+NewLink:Create new address
+NewFolder:Create new directory
+EditTitle:Edit title
+EditLink:Edit address
+EditFolder:Rename directory
+HotlistHomepage:NetSurf homepage
+HotlistDocumentation:Documentation
+HotlistContact:Contact the NetSurf developers
+HotlistDownloads:Download the latest version
+HotlistMenu:Hotlist menu
+HotlistToolbar:Hotlist toolbar
+GlobalHistory:Global history
+DomainAll:(All domains)
+DateToday:Today
+DateYesterday:Yesterday
+Date2Days:Two days ago
+Date3Days:Three days ago
+Date4Days:Four days ago
+Date5Days:Five days ago
+Date6Days:Six days ago
+Date1Week:A week ago
+Date2Week:Two weeks ago
+Date3Week:Three weeks ago
+Sunday:Sunday
+Monday:Monday
+Tuesday:Tuesday
+Wednesday:Wednesday
+Thursday:Thursday
+Friday:Friday
+Saturday:Saturday
+Download:%s of %s  •  %s/s  •  %s remaining
+DownloadU:%s of unknown  •  %s/s  •  %s total
+Downloaded:%s complete  •  average %s/s  •  %s total
+Unwritten:Writing data to file failed.
+Abort:Abort
+amiDownload:%ld of %ld bytes downloaded
+amiDownloadU:%ld bytes downloaded
+amiDownloadComplete:NetSurf: Download completed
+amiSizeExisting:Existing file size:
+amiSizeNew:New file size:
+PrintSheetFilled:sheet is filled
+PrintSheetsFilled:sheets are filled
+Printer:Printer
+Copies:Copies
+Printing:Printing page
+NotFound:Not found
+Next:Next
+Prev:Previous
+ShowAll:Show All
+CaseSens:Case Sensitive
+Host:Host
+Realm:Realm
+Username:Username
+Password:Password
+Login:Login
+Cancel:Cancel
+SSLCerts:SSL certificates
+SSLError:NetSurf failed to verify the authenticity of an SSL certificate. Please verify the details presented below.
+SSL_Certificate_Subject:Subject: %s
+SSL_Certificate_Issuer:Issuer: %s
+SSL_Certificate_Version:Version: %ld
+SSL_Certificate_ValidFrom:Valid from: %s
+SSL_Certificate_ValidTo:Valid until: %s
+SSL_Certificate_Type:Type: %i
+SSL_Certificate_Serial:Serial: %ld
+SSL_Certificate_Accept:Accept
+SSL_Certificate_Reject:Reject
+Form_Submit:Submit
+Form_Reset:Reset
+Form_None:
+Form_Many:(Many)
+Form_Drop:Click or drop file here
+FormSelect:Click to choose a form item
+FormCheckbox:Click to check this option
+FormRadio:Click to choose this option
+FormSubmit:Send form to %s
+FormBadSubmit:Warning: form can not be submitted
+FormButton:Warning: button can not be activated
+FormTextarea:Click to edit the text
+FormTextbox:Click to edit this field
+FormReset:Reset form (not implemented)
+FormFile:Drop a file here to upload it
+SelectMenu:Select
+DrawTitle:%s (Draw image %lux%lu pixels)
+GIFTitle:%s (GIF image %lux%lu pixels)
+BMPTitle:%s (BMP image %lux%lu pixels)
+ICOTitle:%s (ICO image %lux%lu pixels)
+JPEGTitle:%s (JPEG image %lux%lu pixels)
+PNGTitle:%s (PNG image %lux%lu pixels)
+JNGTitle:%s (JNG image %lux%lu pixels)
+MNGTitle:%s (MNG image %lux%lu pixels)
+WebPTitle:%s (WebP image %lux%lu pixels)
+SpriteTitle:%s (Sprite image %lux%lu pixels)
+ArtWorksTitle:%s (ArtWorks image %lux%lu pixels)
+DataTypesTitle:%s (%s image %lux%lu pixels)
+Encoding0:from HTTP headers
+Encoding1:detected
+Encoding2:from <meta>
+EncodingUnk:Unknown
+FileIndex:Index of %s
+FileParent:^ Up to parent directory
+FileDirectory:Directory
+FileName:Name
+FileSize:Size
+FileDate:Date
+FileTime:Time
+FileType:Type
+Selecting:Selecting
+FrameDrag:Resizing frames
+Not2xx:Server returned an error
+InvalidURL:The address <em>%s</em> could not be understood.
+ErrorPage:<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><title>Page error</title></head><body><h1>Sorry, NetSurf was unable to display this page</h1><p><strong>%s</strong></p></body></html>
+PathToURL:An error occurred converting the file path to an URL:
+SaveError:The file could not be saved due to an error:
+LoadError:The file could not be loaded due to an error:
+MenuError:An error occurred when opening the menu:
+DragError:An error occurred when dragging the icon:
+TbarError:An error occurred when constructing the toolbar:
+WimpError:An unexpected Window Manager error occurred:
+DownloadWarn:This download may not complete:
+MiscError:An unexpected error occurred:
+FileError:File does not exist:
+PrintError:An error occurred when printing:
+NoMemory:NetSurf is running out of memory. Please free some memory and try again.
+NoDiscSpace:Not enough space available on disc.
+HotlistSaveError:The hotlist was unable to be correctly saved.
+TreeLoadError:The tree was unable to be correctly loaded.
+NoDirError:%s is not a directory
+NoNameError:Please enter a name
+NoURLError:Please enter a URL
+URIError:NetSurf was unable to parse this URI file due to a syntax error.
+EmptyError:file is empty.
+SearchError:Invalid Search.
+PrintErrorRO2:It appears that the printer is busy.
+EncNotRec:Encoding type not recognised.
+FileOpenError:could not open file '%s'
+DirectoryError:directory '%s' already exists
+LowDiscWriteBandwidth:Disc cache write bandwidth is too low: the cache will be disabled. If this occurs frequently the cache should be disabled by setting the configured size to 0.
+CompError:Unable to open
+MultiTabClose:Are you sure you want to close multiple tabs?
+TCPIPShutdown:The TCP/IP stack has signalled that it is about to shutdown and NetSurf must exit.  NetSurf will quit in 5 seconds unless this shutdown is aborted.
+AbortShutdown:Abort shutdown
+AbortDownload:Are you sure you wish to abort this download?
+QuitDownload:One or more downloads are still in progress. Are you sure you wish to quit?
+OverwriteFile:A file with that name already exists and would be lost.
+RemoveHotlist:Are you sure you wish to remove this address from the hotlist?
+Progress:%s of %s
+ProgressU:%s
+RecPercent:Received %s (%u%%)
+Received:Received %s
+Redirecting:Redirecting...
+Loading:Loading
+Fetching:Fetching data
+Processing:Processing
+Formatting:Formatting
+Done:Done
+Stopped:Stopped
+BadRedirect:Bad redirect URL
+FetchFailed:Unable to fetch document
+NotCSS:Warning: stylesheet is not CSS
+NotFavIco:Favicon not supported
+BadObject:Warning: bad object type
+ObjError:Error loading object: %s
+ParsingFail:Parsing the document failed.
+CSSGeneric:Error processing CSS
+CSSBase:Base stylesheet failed to load
+BadGIF:Reading GIF failed.
+BadBMP:Reading BMP failed.
+BadICO:Reading ICO failed.
+PNGError:Error converting PNG.
+MNGError:Error converting MNG/PNG/JNG: %i
+BadSprite:Invalid or corrupt Sprite data.
+HTTP0:OK
+HTTP200:OK
+HTTP201:Created
+HTTP202:Accepted
+HTTP203:Non-authoritative information
+HTTP204:No content
+HTTP205:Reset content
+HTTP206:Partial content
+HTTP300:Multiple choices
+HTTP301:Moved permanently
+HTTP302:Found
+HTTP303:See other
+HTTP304:Not modified
+HTTP305:Use proxy
+HTTP307:Temporary redirect
+HTTP400:Bad request
+HTTP401:Unauthorized
+HTTP402:Payment required
+HTTP403:Forbidden
+HTTP404:Not found
+HTTP405:Method not allowed
+HTTP406:Not acceptable
+HTTP407:Proxy authentication required
+HTTP408:Request timeout
+HTTP409:Conflict
+HTTP410:Gone
+HTTP411:Length required
+HTTP412:Precondition failed
+HTTP413:Request entity too large
+HTTP414:Request-URI too long
+HTTP415:Unsupported media type
+HTTP416:Requested range not satisfiable
+HTTP417:Expectation failed
+HTTP500:Internal server error
+HTTP501:Not implemented
+HTTP502:Bad gateway
+HTTP503:Service unavailable
+HTTP504:Gateway timeout
+HTTP505:HTTP version not supported
+ScrollUp:Click the arrow to scroll up
+ScrollPUp:Click to scroll up one page
+ScrollV:Drag the bar to scroll vertically
+ScrollPDown:Click to scroll down one page
+ScrollDown:Click the arrow to scroll down
+ScrollLeft:Click the arrow to scroll left
+ScrollPLeft:Click to scroll left one page
+ScrollH:Drag the bar to scroll horizontally
+ScrollPRight:Click to scroll right one page
+ScrollRight:Click the arrow to scroll right
+ScrollBoth:Move your mouse while keeping the button pressed to scroll the content
+SelectClick:Click on entry to select it
+SelectMClick:Click on entry to select it, multiple options can be selected
+SelectClose:Click to close the select menu
+SaveSource:Source
+SaveDraw:Webpage
+SaveText:Webpage
+SaveObject:Object
+SaveLink:Link
+SaveSelection:Selection
+ThemeInstActive:A theme is currently being downloaded or installed. Please wait for it to finish or cancel it before installing more themes.
+ThemeInstDown:Please wait for the theme to download.
+ThemeInvalid:The downloaded theme is invalid or requires a newer version of NetSurf.
+ThemeInstall:Would you like to install the theme '%s' by %s?
+ThemeInstallErr:An error occurred whilst trying to install the downloaded theme.
+ThemeApplyErr:An error occurred whilst trying to apply the downloaded theme.
+Bytes: B
+kBytes: kB
+MBytes: MB
+GBytes: GB
+Yes:Yes
+No:No
+Replace:Replace file
+DontReplace:Don't replace
+Remove:Remove address
+DontRemove:Don't remove
+obj:object
+objs:objects
+styl:stylesheet
+styls:stylesheets
+OK:OK
+HelpToolbarBack:Back\nLMB: Steps back one page\nRMB: Display a menu of recent pages
+HelpToolbarForward:Forward\nLMB: Steps forward one page
+HelpToolbarStop:Stop\nLMB: Stops loading the page
+HelpToolbarReload:Reload\nLMB: Reloads the page\nShift+LMB: Reloads the page and all objects
+HelpToolbarHome:Home\nLMB: Goes to the homepage
+HelpToolbarURL:URL bar\nType a URL and press Return\nSuggestions can be selected with up/down
+HelpToolbarWebSearch:Web search bar\nType text and press Return to search using your default search provider
+HelpToolbarAddTab:Add tab\nLMB: Adds a new blank tab
+con_cache:Cache
+con_connect:Connection
+con_content:Content
+con_fonts:Fonts
+con_home:Home page
+con_image:Images
+con_inter:Interface
+con_lang:Language
+con_memory:Memory
+con_secure:Security
+con_theme:Themes
+con_general:General
+con_rendering:Rendering
+con_advanced:Advanced
+Preferences:Preferences
+Use:Use
+HomePageURL:URL
+HomePageDefault:Use default page
+HomePageCurrent:Use current page
+HomePageBlank:Use blank page
+ContentBlocking:Content blocking
+BlockAds:Hide advertisements
+ContentLanguage:Content language
+LocaleLang:Get from Locale prefs
+HistoryAge:Keep history for
+Days:days
+Scripting:Scripting
+EnableJS:Enable JavaScript
+Miscellaneous:Miscellaneous
+Privacy:Privacy
+SendReferer:Send site referral information
+DoNotTrack:Send header to tell websites not to track
+FastScrolling:Fast scrolling
+Screen:Screen
+ScreenOwn:Own screen
+ScreenWB:Workbench
+ScreenPublic:Public screen
+SimpleRefresh:Simple refresh
+Theme:Theme
+MousePointers:Mouse pointers
+TrueColour:True colour
+OSPointers:Use OS mouse pointers when possible
+NeedRestart:These options will not take effect until the next time NetSurf is started
+Proxy:HTTP proxy
+ProxyBypass:Bypass proxy for
+Fetching:Fetching
+FetchesMax:Maximum fetches
+FetchesHost:Connexions par hôte
+FetchesCached:Cached connections
+CacheNative:Cache native versions
+ScaleQuality:Higher quality scaling
+DitherQuality:Dither quality
+Low:Low
+Medium:Medium
+High:High
+Animations:Animations
+AnimSpeedLimit:Limit speed to
+AnimSpeedFrames:seconds between frames
+AnimDisable:Disable animations
+None:None
+Scaled:Scaled
+Resolution:Resolution
+ResolutionY:Vertical resolution
+ResolutionX:Horizontal resolution
+DPI:DPI
+FontFamilies:Font families
+FontSans:Sans-serif
+FontSerif:Serif
+FontMono:Monospaced
+FontCursive:Cursive
+FontFantasy:Fantasy
+FontFallback:Preferred fallback
+Default:Default
+FontSize:Font size
+Minimum:Minimum
+Pt:pt
+FontAntialiasing:Use anti-aliasing (when possible)
+FontScanning:Scanning fonts...
+FontGlyphs:%ld unique glyphs found
+CacheMemory:Memory cache
+CacheDisc:Disc cache
+Size:Size
+Duration:Duration
+Tabs:Tabs
+TabbedBrowsing:Tabbed browsing
+TabActive:Open new tabs in background
+TabMiddle:Middle mouse button opens tabs
+TabLast:Open new tabs after all existing tabs
+TabClose:Warn when closing multiple tabs
+TabAlways:Always show tabs
+Downloads:Downloads
+ConfirmOverwrite:Request confirmation when overwriting
+DownloadDir:Initial download location
+DownloadNotify:Notify on completion
+SearchWeb:Web search
+SearchURL:Search from URL bar
+SearchProvider:Search provider
+OptionDocky:Show in AmiDock
+Clipboard:Clipboard
+ClipboardUTF8:Write text as UTF-8
+ContextMenu:Context menu
+Enable:Enable
+Sticky:Sticky
+Behaviour:Behaviour
+OptionNoWindow:Do not open window on startup
+OptionNoQuit:Do not quit when last window closed
+Margins:Margins
+Top:Top
+Left:Left
+Right:Right
+Bottom:Bottom
+MM:mm
+Scaling:Scaling
+Scale:Scale
+Appearance:Appearance
+SuppressImages:Suppress images
+RemoveBackground:Remove background
+FitPage:Fit page
+CompressPDF:Compress PDF
+SetPassword:Set password
+TreeHistory:NetSurf history
+SaveSelect:Save
+ExportAs:Export as
+AnimImg:Animations
+DitherImg:Dither images
+FilterImg:Smooth images
+RenderText:Blend text to background
+GetURL:Save current of content URL

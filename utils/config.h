@@ -21,6 +21,8 @@
 
 #include <stddef.h>
 
+#define HAVE_POSIX_INET_HEADERS
+
 /* Try to detect which features the target OS supports */
 
 #if (defined(_GNU_SOURCE) && !defined(__APPLE__) || defined(__amigaos4__) || defined(__HAIKU__) || (defined(_POSIX_C_SOURCE) && ((_POSIX_C_SOURCE - 0) >= 200809L)) && !defined(__riscos__))

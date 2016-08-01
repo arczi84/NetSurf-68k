@@ -1,0 +1,588 @@
+﻿NetSurf:NetSurf
+NetSurfCopyright:Prawa autorskie 2003 - 2016 Programiści przeglądarki NetSurf.
+NetSurfDesc:Mała jak mysz, szybka jak gepard i dostępna za darmo. NetSurf jest przeglądarką wieloplatformową.
+Info:Informacje
+Open:Otwórz
+Choices:Opcje
+Quit:Zamknij
+OpenURL:Open URL
+Page:Strona
+Object:Obiekt
+Navigate:Przejdź
+View:Pokaż
+Utilities:Media
+Export:Eksport
+SaveURL:Zapisz lokalizację strony
+PDF:PDF
+Linktext:Tekst
+ObjInfo:Informacje
+ObjSave:Zapisz
+ObjPrint:Drukuj
+ObjReload:Odśwież
+Sprite:Sprite
+ObjDraw:Rysuj
+LinkSave:Zapisz
+LinkDload:Zapisz element docelowy jako...
+LinkNew:Nowe okno
+SelSave:Zapisz
+Home:Strona główna (domowa).
+Back:Jedną stronę wstecz w historii.
+Forward:Do przodu o jedną stronę w historii.
+Uplevel:Poziom w górę.
+Stop:Zatrzymaj wczytywanie strony.
+Images:Obrazki
+Toolbars:Paski narzędzi
+Render:Renderuj
+OptDefault:Zapisz jako domyślne
+ForeImg:Pierwszoplanowe obrazki
+BackImg:Obrazki w tle
+ToolButtons:Przyciski
+ToolAddress:Pasek adresu
+ToolThrob:Animacja aktywności w tle
+ToolStatus:Pasek stanu
+RenderAnims:Animacje buforowane
+RenderAll:Buforuj wszystkie świadczenia
+Hotlist:Lista gorących.
+History:Historia.
+Cookies:Ciasteczka
+Window:Okno
+HotlistAdd:Dodaj do listy gorących.
+ShowCookies:Wyświetl ciasteczka ...
+DeleteCookies:Usuń wszystkie pliki cookie
+WindowSave:Ustaw jako domyślną pozycję
+WindowStagr:Pozycja okna Stagger
+WindowSize:Rozmiar okna
+WindowReset:Przywróć domyślne położenie
+HelpCredits:Uznanie dla
+HelpLicence:Licencja
+Toolbar:Pasek narzędzi
+EditToolbar:Edytuj pasek narzędzi
+Selection:Zaznaczenie
+Edit:Edycja
+ResetUsage:Resetowanie statystyk
+New:Nowy
+Expand:Rozwiń
+Collapse:Zwiń
+Tree:Drzewko
+TreeExport:Eksport ...
+Folder:Katalog
+Link:Adres
+All:Wszystkie
+Folders:Katalogi
+Links:Adresy
+Domains:Domeny
+URLSuggest:Aktualne adresy URL
+Languages:Języki
+ProxyType:Typ pośrednika
+ProxyNone:Bez pośrednika
+ProxyNoAuth:Prosty pośrednik
+ProxyBasic:Uwierzytelnianie podstawowe
+ProxyNTLM:Uwierzytelnianie NTLM
+Fonts:Czcionki
+DefaultFonts:Rodzina czcionek
+Display:Wyświetlacz
+ImgStyle0:Użyj OS
+ImgStyle1:Bezpośrednie do ekranu
+ImgStyle2:Wygładzony
+ImgStyle3:Błąd rozproszenia
+Project:Projekt
+NewWindowNS:Nowe okno
+Newtab:Nowa zakładka
+CloseTab:Zamknij kartę
+CloseWindow:Zamknij okno
+SaveAsNS:Zapisz jako...
+Source:Źródło ...
+TextNS:Tekst ...
+SaveCompNS:Pełna ...
+PDFNS:PDF ...
+IFF:MFF ...
+OpenFile:Otwórz plik lokalny ...
+About:O programie...
+PrintNS:Drukuj ...
+CutNS:Wytnij
+CopyNS:Kopiuj
+PasteNS:Wklej
+SelectAllNS:Zaznacz wszystko
+ClearNS:Wyczyść zaznaczenie
+Undo:Cofnij
+Redo:Przywróć
+Przeglądarka:Przeglądarka
+HistGlobalNS:Pokaż globalną historię
+HistLocalNS:Pokaż historię lokalną
+ShowCookiesNS:Pokaż pliki cookie
+FindTextNS:Znajdź tekst ...
+Redraw:Odśwież stronę.
+ScaleNS:Skala
+ScaleInc:Wzrost
+ScaleDec:Zmniejszenie
+ScaleNorm:Normalna
+HotlistShowNS:Pokaż listę gorących.
+SettingsEdit:Edytuj ustawienia.
+Settings:Ustawienia
+SnapshotWindow:Zapisz pozycję okna
+SettingsSave:Zapisz ustawienia
+ARexx:Port ARexx'a
+ARexxExecute:Wykonaj skrypt ...
+LinkNewTab:Otwórz w nowej karcie
+LinkNewWin:Otwórz w nowym oknie
+CopyURL:Kopiuj adres URL do schowka.
+CopyClip:Kopiuj do schowka
+SaveAs:Zapisz jako ...
+SaveIFF:Zapisz jako IFF...
+SaveComplete:Zapisz kompletną stronę...
+Close:Zamknij
+ObjShow:Pokaż obiekt
+Frame:Ramka
+FrameNewWin:W nowym oknie
+FrameNewTab:Wystawa w nowej karcie
+FrameOnly:Pokaż tylko ramkę
+SelectFile:Wybierz plik ...
+ExternalApp:Otwórz w aplikacji zewnętrznej
+TreeAdded:Dodano: %s
+TreeLast:ostatnie kroki: %s
+TreeVisited:Data wizyty: %s
+TreeVisits:Wizyt: %i
+TreeUnknown:Nieznany
+TreeValue:Wartość: %s
+TreeComment:Komentarz: %s
+TreeDomain:Domena: %s%s
+TreePath:Ścieżka: %s%s
+TreeExpires:Wygasa: %s
+TreeLastUsed:Ostatnio używane: %s
+TreeSecure:Bezpieczne gospodarze tylko: %s
+TreeVersion:Wersja: %s
+TreePersistent:Trwałe: %s
+TreeHeaders:(z nagłówkami)
+TreeVersion0:Netscape
+TreeVersion1:RFC 2109
+TreeVersion2:RFC 2965
+TreeSession:Koniec sesji
+TreeUnused:Niewykorzystane
+TreeImport:Sprowadzone adresy URL
+TreeNewLink:Nowy adres
+TreeNewFolder:Nowy katalog
+TreeLaunch:Odwiedź URL
+TreeDelete:Usuń
+TreeDefault:Ustaw jako domyślny
+TreeClear:Wyczyść domyślne
+TreeEdit:Zmień tytuł
+TreeviewLabelTitle:Etykieta
+TreeviewLabelURL:Adres URL
+TreeviewLabelLastVisit:Ostatnia wizyta
+TreeviewLabelVisits:Wizyty
+TreeviewLabelPeriod:Okres
+TreeviewLabelName:Nazwa
+TreeviewLabelContent:Zawartość
+TreeviewLabelDomain:Domena
+TreeviewLabelPath:Ścieżka
+TreeviewLabelExpires:Wygasa
+TreeviewLabelLastUsed:Ostatnio używane
+TreeviewLabelRestrictions:Ograniczenia
+TreeviewLabelVersion:Wersja
+TreeviewLabelPersistent:Trwałe
+TreeviewLabelDomainFolder:Katalog domeny
+TreeviewLabelSerial:Numer seryjny
+TreeviewLabelType:Rodzaj
+TreeviewLabelValidUntil:Ważna do
+TreeviewLabelValidFrom:Ważny od
+TreeviewLabelIssuer:Emitent
+TreeviewLabelFolder:Katalog
+CookieManagerHTTPS:Bezpieczne ciasteczka tylko za pośrednictwem protokołu HTTPS
+CookieManagerSecure:Tylko bezpieczne ciasteczka 
+CookieManagerHTTP:Tylko ciasteczka z połączenia HTTP
+HotlistDefaultFolderName:Niesortowane wpisy
+NewFolderName:Nowy Katalog
+NoTitle:<Bez tytułu>
+TreeHotlist:Lista gorących programu NetSurf
+NewLink:Utwórz nowy adres
+Newfolder:Tworzenie nowego katalogu
+EditTitle:Zmień tytuł
+EditLink:Edytuj adres
+EditFolder:Zmień nazwę katalogu
+HotlistHomepage:NetSurf strona główna
+HotlistDocumentation:Dokumentacja
+HotlistContact:Skontaktuj się z twórcami NetSurf
+HotlistDownloads:Pobierz najnowszą wersję
+HotlistMenu:Menu listy gorących
+HotlistToolbar:Pasek listy gorących
+GlobalHistory:Globalna historia
+DomainAll:(wszystkie domeny)
+DateToday:Dziś
+DateYesterday:Wczoraj
+Date2Days:Dwa dni temu
+Date3Days:Trzy dni temu
+Date4Days:Cztery dni temu
+Date5Days:Pięć dni temu
+Date6Days:Sześć dni temu
+Date1Week:Tydzień temu
+Date2Week:Dwa tygodnie temu
+Date3Week:Trzy tygodnie temu
+Sunday:niedziela
+Monday:poniedziałek
+Tuesday:wtorek
+Wednesday:Środa
+Thursday:czwartek
+Friday:piątek
+Saturday:sobota
+Download: %s z %s  â€_  %s/s  â€_  %s Pozostałe
+DownloadU: %s nieznany  â€_  %s/s  â€_  %s łączna
+Downloaded: %s kompletne â€_ średnio %s/s  â€_  %s łączna
+Unwritten:Zapisywanie danych do pliku nie powiodło się.
+Abort:Przerwij
+amiDownload:%ld z %ld bajtów pobranych
+amiDownloadU:%ld pobranych bajtów%
+amiDownloadComplete:Pobieranie zakończone.
+amiSizeExisting:Istniejący rozmiar pliku:
+amiSizeNew:Nowy rozmiar pliku:
+PrintSheetFilled:Arkusz jest wypełniony
+PrintSheetsFilled:Arkusze są wypełnione
+Printer:Drukarka
+Copies:Kopie
+Printing:Drukowanie strony
+NotFound:Nie znaleziono
+Next:Następny
+Prev:Poprzedni
+ShowAll:Pokaż wszystkie
+CaseSens:Rozróżniaj wielkość znaków
+Host:Host
+Realm:Dziedzina
+Username:Nazwa użytkownika:
+Password:Hasło:
+Login:Login
+Cancel:Anuluj
+SSLCerts:Certyfikaty SSL
+SSLError:NetSurf nie może sprawdzić autentyczności certyfikatu SSL. Proszę sprawdzić szczegóły przedstawione poniżej.
+SSL_Certificate_Subject:Temat: %s
+SSL_Certificate_Issuer:Emitent: %s
+SSL_Certificate_Version:Wersja:% ld
+SSL_Certificate_ValidFrom:Obowiązuje od: %s
+SSL_Certificate_ValidTo:Ważna do: %s
+SSL_Certificate_Type:Rodzaj: %i
+SSL_Certificate_Serial:Numer seryjny:% ld
+SSL_Certificate_Accept:Akceptuj
+SSL_Certificate_Reject:Odrzuć
+Form_Submit:Zatwierdź
+Form_Reset:Resetuj
+Form_None:(Żaden)
+Form_Many:(Wiele)
+Form_Drop:Kliknij tutaj lub usunąć plik.
+FormSelect:Kliknij, aby wybrać pozycję formularz.
+FormCheckbox:Kliknij, aby sprawdzić tę opcję.
+FormRadio:Kliknij, aby wybrać tę opcję,
+FormSubmit:Wyślij formularz do %s.
+FormBadSubmit:Ostrzeżenie:Formularz nie może być złożony.
+FormButton:Uwaga:Przycisk nie może być aktywowany.
+FormTextarea:Kliknij, aby edytować tekst.
+FormTextbox:Kliknij, aby edytować to pole.
+FormReset:Resetuj formularz  (nie zrealizowany).
+FormFile:Upuść plik tutaj, aby go przesłać.
+SelectMenu:Wybierz
+DrawTitle: %s (Narysuj obraz% lux% lu pikseli)
+GIFTitle: %s (GIF% lux% lu pikseli)
+BMPTitle: %s (BMP obrazu% lux% lu pikseli)
+ICOTitle: %s (ICO obrazu% lux% lu pikseli)
+JPEGTitle: %s (JPEG% lux% lu pikseli)
+PNGTitle: %s (PNG% lux% lu pikseli)
+JNGTitle: %s (% lux obraz JNG% lu pikseli)
+MNGTitle: %s (MNG obrazu% lux% lu pikseli)
+WebPTitle: %s (% lux obraz WebP% lu pikseli)
+SpriteTitle: %s (% lux obraz Sprite% lu pikseli)
+ArtWorksTitle: %s (% lux obraz ArtWorks% lu pikseli)
+DataTypesTitle: %s (%s obraz% lux% lu pikseli)
+Encoding0:z nagłówków HTTP
+Encoding1:wykryty
+Encoding2:od <meta>
+EncodingUnk:Nieznany
+FileIndex:Indeks %s
+FileParent:^ Do katalogu nadrzędnego
+FileDirectory:Katalog pliku
+FileName:Nazwa pliku
+FileSize:Wielkość pliku
+FileDate:Data
+FileTime:Czas
+FileType:Rodzaj
+Selecting:Wybór
+FrameDrag:Zmiana rozmiaru ramki
+Not2xx:Serwer zwrócił błąd
+InvalidURL:adres <em>%s </ em> nie może być rozumiane.
+ErrorPage:<! DOCTYPE HTML PUBLIC "- // W3C // DTD HTML 4.01 // EN" "http://www.w3.org/TR/html4/strict.dtd"><html><head><meta http -equiv = "Content-Type" content = "text / html; charset = UTF-8"> <title> Błąd Page </ title> </ head> <body> <h1> Niestety, NetSurf nie był w stanie wyświetlić tej strony </ h1> <p> <strong>%s </ strong> </ p> </ body> </ html>
+PathToURL:Wystąpił błąd konwersji ścieżki pliku do adresu URL:
+SaveError:plik nie mógł być zapisany z powodu błędu:
+LoadError:Plik nie może być ładowany z powodu błędu:
+MenuError:Wystąpił błąd podczas otwierania menu:
+DragError:Wystąpił błąd podczas przeciągania ikony:
+TbarError:Wystąpił błąd podczas budowy pasek narzędzi:
+WimpError:Wystąpił nieoczekiwany błąd menedżera okien:
+DownloadWarn:Nie mogę zakończyć pobierania:
+MiscError:Wystąpił nieoczekiwany błąd:
+FileError:Plik nie istnieje:
+PrintError:Wystąpił błąd podczas drukowania:
+NoMemory:NetSurf ma za mało pamięci. Zwolnij trochę pamięci i spróbuj ponownie.
+NoDiscSpace:Za mało dostępnego miejsca na dysku.
+HotlistSaveError:Lista gorących nie mogła być zapisana.
+TreeLoadError:Drzewka nie mogły być prawidłowo załadowane.
+NoDirError: %s nie jest katalogiem
+NoNameError:Proszę podać nazwę
+NoURLError:Proszę wprowadzić adres URL.
+URIError:NetSurf nie był w stanie przetworzyć tego pliku URI z powodu błędu składni.
+EmptyError:%s plik jest pusty.
+SearchError:Błąd podczas wyszukiwania.
+PrintErrorRO2:Wydaje się, że drukarka jest zajęta.
+EncNotRec:Typ kodowania nie jest rozpoznany.
+FileOpenError:Nie można otworzyć pliku '%s'.
+DirectoryError:katalog '%s' już istnieje
+LowDiscWriteBandwidth:Przepustowość zapisu pamięci dyskowej jest zbyt niska: zostanie ona wyłączona. W takim przypadku często należy wyłączyć ją ustawiając skonfigurowany rozmiar na 0.
+CompError:Nie można otworzyć
+MultiTabClose:Czy na pewno chcesz zamknąć wiele kart?
+TCPIPShutdown:Stos TCP / IP zasygnalizował, że jest to temat do zamknięcia i musi opuścić NetSurf. NetSurf zamknie się za 5 sekund, chyba że wyłączanie zostanie przerywane.
+AbortShutdown:Przerwij wyłączanie
+AbortDownload:Czy na pewno chcesz przerwać pobieranie?
+QuitDownload:Pobieranie jednego lub więcej plików jest nadal w toku. Czy na pewno chcesz zakończyć?
+OverwriteFile:Plik o tej nazwie już istnieje i będzie zastąpiony.
+RemoveHotlist:Czy na pewno chcesz usunąć ten adres z listy gorących?
+Progress: %s %s
+ProgressU: %s
+RecPercent:Odebrano %s (%u %%).
+Received:Odebrano %s.
+Redirecting:Przekierowywanie ...
+Loading:Ładowanie
+Fetching:Pobieranie danych
+Processing:przetwarzanie...
+Formatting:Formatowanie...
+Done:Gotowe.
+Stopped:Zatrzymany.
+BadRedirect:Błędne przekierowanie adresu URL.
+FetchFailed:Nie można pobrać dokumentu.
+NotCSS:Uwaga:To nie jest arkusz stylów CSS.
+NotFavIco:Ikona strony nie jest obsługiwana.
+BadObject:Ostrzeżenie:Zły typ obiektu.
+ObjError:Błąd podczas ładowania obiektu: %s.
+ParsingFail:Przetwarzanie dokumentu nie powiodło się.
+CSSGeneric:Błąd podczas przetwarzania CSS.
+CSSBase:Nie udało się załadować bazy arkusza stylów.
+BadGIF:Odczytanie GIF nie powiodło się.
+BadBMP:Odczytanie BMP nie powiodło się.
+BadICO:Odczytanie ICO nie powiodło się.
+PNGError:Błąd konwersji PNG.
+MNGError:Błąd konwersji MNG / PNG / JNG: %i
+BadSprite:Nieprawidłowe lub uszkodzone dane sprite'a.
+HTTP0:Ok
+HTTP200:Ok
+HTTP201:Utworzono
+HTTP202:Przyjęte.
+HTTP203:Nieautorytatywne informacje.
+HTTP204:Brak treści.
+HTTP205:Reset zawartość.
+HTTP206:Częściowa zawartość.
+HTTP300:Wiele opcji.
+HTTP301:Przeniesiony na stałe.
+HTTP302:Znaleziony.
+HTTP303:Zobacz inne.
+HTTP304:Niemodyfikowane.
+HTTP305:Użyj pośrednika.
+HTTP307:Tymczasowe przekierowanie.
+HTTP400:Zły wniosek.
+HTTP401:Nieautoryzowany.
+HTTP402:Wymagana płatność.
+HTTP403:Zakazane.
+HTTP404:Nie znaleziono.
+HTTP405:Metoda nie jest dozwolona.
+HTTP406:Nie do przyjęcia.
+HTTP407:Wymagane uwierzytelnienie pośrednika.
+HTTP408:Przekroczono limit czasu óądania.
+HTTP409:Konflikt.
+HTTP410:Przeminęło.
+HTTP411:Długość wymagana.
+HTTP412:Warunek nie spełniony.
+HTTP413:Żądana jednostka zbyt duża.
+HTTP414:Żądanie URI zbyt długie.
+HTTP415:Nieobsługiwany typ nośnika.
+HTTP416:Żądany zakres nie jest satysfakcjonujący.
+HTTP417:Błąd podczas oczekiwania.
+HTTP500:Wewnętrzny błąd serwera.
+HTTP501:Nie zaimplementowane.
+HTTP502:Zła bramę.
+HTTP503:Usługa niedostępna.
+HTTP504:Przekroczono limit czasu dla bramy...
+HTTP505:Ta wersja HTTP nie jest obsługiwana.
+ScrollUp:Kliknij na strzałkę, aby przewinąć w górę.
+ScrollPUp:Kliknij, aby przewinąć w górę o jedną stronę.
+ScrollV:Przeciągnij pasek do przewijania w pionie.
+ScrollPDown:Kliknij, aby przewinąć w dół o jedną stronę.
+Scrolldown:Kliknij na strzałkę, aby przewinąć w dół.
+ScrollLeft:Kliknij na strzałkę, aby przewinąć w lewo.
+ScrollPLeft:Kliknij, aby przewinąć w lewo jedną stronę.
+ScrollH:Przeciągnij pasek przewijania w poziomie.
+ScrollPRight:Kliknij, aby przewinąć w prawo o jedną stronę.
+ScrollRight:Kliknij na strzałkę w prawo, aby przewinąć.
+ScrollBoth:Najedó myszką zachowując wciśnięty przycisk, aby przewinąć zawartość.
+SelectClick:Kliknij na pozycji, aby ją wybrać.
+SelectMClick:Kliknij na pozycji, aby ją wybrać. Można wybrać wiele opcji.
+SelectClose:Kliknij, aby zamknąć menu wyboru.
+SaveSource:Zapisz źródło
+SaveDraw:Strona internetowa
+SaveText:Strona internetowa
+SaveObject:Zapisz objekt
+SaveLink:Link
+SaveSelection:Zapisz wybór
+ThemeInstActive:Motyw jest obecnie pobierany lub instalowany. Proszę czekać na zakończenie pobierania lub anuluj instalowanie.
+ThemeInstDown:Poczekaj na ściągnięcie motywu.
+ThemeInvalid:Pobrany motyw jest nieprawidłowy lub wymaga nowszej wersji NetSurf.
+ThemeInstall:Czy chcesz zainstalować motyw '%s' %s?
+ThemeInstallErr:Wystąpił błąd podczas próby instalacji pobranego motywu.
+ThemeApplyErr:Wystąpił błąd podczas próby zastosowania pobranego motywu.
+Bytes: B
+kBytes: kB
+MBytes: MB
+GBytes: GB
+Yes:Tak
+No:Nie
+Replace:Zastąp plik
+DontReplace:Nie należy zastąpić
+Remove:Usuń adres
+DontRemove:Nie usuwać
+obj:obiekt
+OBJS:obiekty
+styl:arkusz stylów
+styls:arkusze stylów
+OK:Ok
+HelpToolbarBack:Powrót \n LPM:Krok wstecz o jedną stronę.\n PPM:Wyświetla menu z listą ostatnich stron.
+HelpToolbarForward:W przód. \n LPM:Kroki do przodu o jedną stronę internetową.
+HelpToolbarStop:Zatrzymaj. \n LPM:Zatrzymanie ładowania strony.
+HelpToolbarReload:Odśwież. \n LPM:ponowne załadowanie strony. \n Shift + LPM:odświeża stronę i wszystkie obiekty na niej.
+HelpToolbarHome:Strona główna. \n LPM:Przejście na stronę główną
+HelpToolbarURL:Pasek adresu URL. \n Wprowadó adres URL i naciśnij ENTER. \n Sugestia: można wybrać w górę / w dół.
+HelpToolbarWebSearch:Pasek wyszukiwania w sieci. \n Wprowadó tekst i naciśnij klawisz ENTER, aby wyszukać za pomocą domyślnego dostawcy wyszukiwania.
+HelpToolbarAddTab:Dodaje zakładkę. \n LPM:Dodaje nową pustą zakładkę.
+con_cache:Bufor
+con_connect:Połączenie
+con_content:Zawartość
+con_fonts:Czcionki
+con_home:Strona główna
+con_image:Obrazy
+con_inter:Interfejs
+con_lang:Język
+con_memory:Pamięć
+con_secure:Bezpieczeństwo
+con_theme:Motywy
+con_general:Generalne
+con_rendering:Rendering
+con_advanced:Zaawansowane
+Preferences:Ustawienia
+Use:Użyj
+HomePageURL:URL
+HomePageDefault:Użyj domyślnej strony
+HomePageCurrent:Użyj bieżącej strony.
+HomePageBlank:Użyj pustej strony
+ContentBlocking:Blokowanie zawartości
+BlockAds:Blokuj reklamy
+ContentLanguage:Język zawartości
+LocaleLang:Korzystaj z lokalnych ustawień
+HistoryAge:Przechowuj w historii
+Days:Dni
+Scripts:Skrypty
+EnableJS:Włącz obsługę skryptów Java.
+Miscellaneous:Pozostałe
+Privacy:Prywatność
+SendReferer:Wyślij odnośnik
+DoNotTrack:Wyślij nagłówek z żądaniem nie śledzenia stron internetowych
+FastScrolling:Szybkie przewijanie
+Screen:Ekran
+ScreenOwn:Własny ekran
+ScreenWB:Workbench
+ScreenPublic:Ekran publiczny
+SimpleRefresh:Proste odświeżanie
+Theme:Motyw
+MousePointers:Wskaźniki myszy
+Truecolour:Wysokokolorowy
+OSPointers:Użyj systemowego wskaźnika myszy, gdy to możliwe
+NeedRestart:Opcje te wymagają ponownego uruchomienia programu.
+Proxy:Pośrednik HTTP
+ProxyBypass:Omiń pośrednika dla:
+Fetches:Połączenia
+FetchesMax:Maksymalna ilość połączeń
+FetchesHost:Połączenia na host
+FetchesCached:Połączenia buforowane
+CacheNative:Buforuj rodzime wersje
+ScaleQuality:Jakość skalowania
+DitherQuality:Jakość roztrząsania
+Low:Niska
+Medium:Średna
+High:Wysoka
+Animacje:Animacje
+AnimSpeedLimit:Limit prędkości do
+AnimSpeedFrames:sekund między klatkami
+AnimDisable:Wyłącz animacje
+None:Brak
+Scaled:Skalowane
+Resolution:Rozdzielczość
+ResolutionY:Rozdzielczość w pionie
+ResolutionX:Rozdzielczość w poziomie
+DPI:DPI
+FontFamilies:Rodziny czcionek
+FontSans:Sans-serif
+FontSerif:Serif
+FontMono:Monospaced
+FontCursive:Kursywa
+FontFantasy:Fantasy
+FontFallback:Preferowana awaryjna czcionka
+Default:Domyślnie
+FontSize:Rozmiar czcionki
+Minimum:Minimalny
+Pt:punktów
+FontAntialiasing:Użyj wygładzania (jeśli to możliwe)
+FontScanning:Skanowanie czcionek ...
+FontGlyphs:% ld unikalne glify znalezione
+CacheMemory:Pamięć podręczna w RAM
+CacheDisc:Pamięć podręczna na dysku
+Size:Rozmiar
+Duration:Czas trwania
+Tabs:Zakładki
+TabbedBrowsing:Przeglądanie w kartach
+TabActive:Otwierania nowych kart w tle
+TabMiddle:Środkowy przycisk myszy otwiera karty
+TabLast:Otwieranie nowych kart po wszystkich istniejących zakładkach
+TabClose:Informuj o zamykaniu wielu kart
+TabAlways:Zawsze pokazuj karty
+Downloads:Pliki do pobrania
+ConfirmOverwrite:Żądaj potwierdzenia przy zastępowaniu
+DownloadDir:Lokalizacja katalogu pobierań
+DownloadNotify:Powiadom o zakończeniu
+SearchWeb:Przeszukaj bieżącą stronę internetową
+SearchURL:Szukaj także z paska adresu
+SearchProvider:Wyszukiwarka internetowa.
+OptionDocky:Pokaż w AmiDock
+Clipboard:Schowek
+ClipboardUTF8:Skopiuj tekst do schowka jako UTF-8
+ContextMenu:Menu kontekstowe
+Enable:Włącz
+Sticky:Przyklejony
+Behaviour:Zachowanie
+OptionNoWindow:Nie otwieraj okna przy uruchomieniu
+OptionNoQuit:Nie zamykaj ostatniego okna
+Margins:Marginesy
+Top:Góra
+Left:Lewo
+Right:Prawo
+Down:Dół
+MM:mm
+Scaling:Skalowanie
+Scale:Skala
+Appearance:Wygląd
+SuppressImages:Nie wyświetlaj obrazków
+RemoveBackground:Usuń tło
+FitPage:Dopasuj stronę
+CompressPDF:Kompresja PDF
+SetPassword:Ustaw hasło
+TreeHistory:Historia NetSurf
+SaveSelect:Zapisz zaznaczenie
+ExportAs:Eksportuj jako...
+AnimImg:Animacje
+DitherImg:Roztrząsaj obrazki
+FilterImg:Filtruj obrazki
+RenderText:Mieszanka tekstu na tle
+PasteURL:Wklej i otwórz adres URL ze schowka.
+PlayYouTube:Odtwórz filmik z YouTube.
+FavouriteAdd:Dodaj do ulubionych.
+GetURL:Zapisz zawartość bierzącego adresu URL.
+Favourite:Zakładka

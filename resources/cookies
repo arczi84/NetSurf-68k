@@ -1,0 +1,61 @@
+# >PROGDIR:Resources/cookies
+# NetSurf cookies file.
+#
+# Lines starting with a '#' are comments, blank lines are ignored.
+#
+# All lines prior to "Version:	102" are discarded.
+#
+# Version	Domain	Domain from Set-Cookie	Path	Path from Set-Cookie	Secure	HTTP-Only	Expires	Last used	No destroy	Name	Value	Value was quoted	Scheme	URL	Comment
+Version:	102
+0	.polishexpress.co.uk	1	/	1	0	1	1498974878	1467446098	0	__cfduid	dfce6614cf0a513e514f6c073dc73d6a01467438878	0	unused	unused	
+0	.bbc.co.uk	1	/	1	0	0	1594912116	1469962214	0	BBC-UID	9527b83b69cf9783f2a59914d1597c2544245f08b8d0dcd1368e6656c025c7980NetSurf/3.5%20(AmigaOS%2cm68k)	0	unused	unused	
+0	.bbc.co.uk	1	/	1	0	0	1626448117	1469962214	0	s1	92.28.68578B9F7500C7310265A1862985	0	unused	unused	
+0	news.bbc.co.uk	0	/	1	0	0	1500304115	1469962211	0	BBC-UID	9577087b092f47035e796e46b17288a0a002d9fd4e8803c923457a4d1c2ba4700NetSurf%2f3%2e5%20%28AmigaOS%2cm68k%29	0	http	http://news.bbc.co.uk/	
+0	www.ppa.pl	0	/	1	0	1	1499645785	1470003244	0	ppa_auth_cookie	MzIwMjo4MzY4MjE5MjljYjAyYWFkZTUwNzJhZWMwYzFhYTkzYw%3D%3D%7C1468102565%7C0687849078bdc2bc438193a1d02968f0	0	http	http://www.ppa.pl/	
+0	www.ppa.pl	0	/	1	0	1	1501539070	1470003244	0	ppa_last_visit	1469995867	0	http	http://www.ppa.pl/	
+0	www.ppa.pl	0	/	1	0	0	1470006670	1470003244	0	ads_frq	5	0	http	http://www.ppa.pl/	
+0	.google.pl	1	/	1	0	1	1481966934	1468744882	0	NID	80=BZNxdk_aJkfb7Woaeh1YkuxC75NAU85caXOGH9fX-7yctS81tmqMXLl7KlbODlX_B6NjbgDIGtbfILebojq3D7oK-HzKkj9_8vHtz2eu7AzILLTLKa3J1A4cp8rLPqud	0	unused	unused	
+0	www.modules.pl	0	/	0	0	0	1497786665	1469960949	0	LAYOUT	8	0	http	http://www.modules.pl/	
+0	.wykop.pl	1	/	1	0	0	1500027608	1468498820	0	lastVisitDate	2016-07-14+12%3A20%3A08	0	unused	unused	
+0	en.wikipedia.org	0	/	1	1	1	1471608000	1468851774	0	WMF-Last-Access	18-Jul-2016	0	http	http://en.wikipedia.org/w/index.php?title=Special:Search&search=amiga	
+0	www.amiga.org	0	/	1	0	0	1501492319	1469963520	0	aolastvisit	1465755539	0	http	http://www.amiga.org/index.php	
+0	www.amiga.org	0	/	1	0	0	1501492319	1469963520	0	aolastactivity	0	0	http	http://www.amiga.org/index.php	
+0	.www.altervista.org	1	/	1	0	1	1500273662	0	0	__cfduid	d0a38617d60510c1e702b31085c2a713e1468737662	0	unused	unused	
+0	.im.altervista.org	1	/	1	0	1	1500273662	0	0	__cfduid	dd0a9993ed5c6b8ecbe4f0c385558828b1468737662	0	unused	unused	
+0	remix.kwed.org	0	/	0	0	0	2145913200	1469836586	0	Last_Visit	1469829334	0	http	http://remix.kwed.org/	
+0	remix.kwed.org	0	/	0	0	0	2145913200	1469836586	0	Visit_No	6	0	http	http://remix.kwed.org/	
+0	.abime.net	1	/	1	0	0	1498916981	1469960945	0	eablastvisit	1467108333	0	unused	unused	
+0	.abime.net	1	/	1	0	0	1498916981	1469960945	0	eablastactivity	0	0	unused	unused	
+0	.abime.net	1	/	1	0	1	1498916981	1469960945	0	eabuserid	12132	0	unused	unused	
+0	.abime.net	1	/	1	0	1	1498916981	1469960945	0	eabpassword	d7858abbf89c34b4f55c549217e81d1c	0	unused	unused	
+0	.pouet.net	1	/	1	0	0	1497302945	1469960942	0	POUETSESS3	cf66c2487d06354861f610f327dc70a6	0	unused	unused	
+0	amigaworld.net	0	/	0	0	0	1498838831	1470001554	0	NewBBLastVisit	1467302831	0	http	http://amigaworld.net/	
+0	amigaworld.net	0	/modules/newbb	0	0	0	1501530351	0	0	NewBBLastVisit	1469994351	0	http	http://amigaworld.net/modules/newbb/viewtopic.php?topic_id=41161&forum=25	
+0	amigaworld.net	0	/modules/news	0	0	0	1499717508	1469982309	0	NewBBLastVisit	1468181508	0	http	http://amigaworld.net/modules/news/article.php?storyid=7569	
+0	www.amigaworld.net	0	/	0	0	0	1501530322	0	0	NewBBLastVisit	1469994322	0	http	http://www.amigaworld.net/	
+0	www.amigafuture.de	0	/	1	0	0	1497298619	1469982663	0	amigafuture_data	a%3A2%3A%7Bs%3A11%3A%22autologinid%22%3Bs%3A0%3A%22%22%3Bs%3A6%3A%22userid%22%3Bi%3A-1%3B%7D	0	http	http://www.amigafuture.de/	
+0	muidev.de	0	/	1	0	1	1475127180	1467358619	0	trac_session	1a4fcfd0efa2aef5d34de997	0	http	http://muidev.de/downloads/	
+0	.online-convert.com	1	/	1	0	1	1470006614	1469401815	0	OC_PHPSESSID	c2j7u3cn3rmlpslomg3vr4thmfsh32fc	0	unused	unused	
+0	.online-convert.com	1	/	1	0	1	1500930614	1469401815	0	__cfduid	d23810d69d6810a1ef0e1161c774b49881469394614	0	unused	unused	
+0	.codinghorror.com	1	/	1	0	1	1499768334	1469982150	0	__cfduid	da58d3e3bd4927a1687a46ca2f3b363031468232334	0	unused	unused	
+0	.google.com	1	/	1	0	1	1482052393	1469961293	0	NID	80=LPtDgC-dxAuQctR51FrH0KY3xnkOP_OApYIyyWAHd8ZmfLQco3C1sTQWiDKFSGFCgoQ2nIZuBlugnbP38zvYeDaVIA2RHfbzhLFf4CvFWZtmOobxKEju2ll2-z25hUfssU4BkTPnJg	0	unused	unused	
+0	accounts.google.com	0	/	1	1	1	1531158311	1468093532	0	GAPS	1:h1-S3A948ifaq1LjPWdgpYPnoqeU-w:A8qUJWdeON6b5GpC	0	https	https://accounts.google.com/ServiceLogin?service=mail&passive=true&rm=false&continue=https://mail.google.com/mail/?tab%3Dwm&scc=1&ltmpl=default&ltmplcache=2&emr=1&osid=1	
+0	.youtube.com	1	/	1	0	0	1486797766	1469920931	0	PREF	f1=50000000	0	unused	unused	
+0	.youtube.com	1	/	1	0	1	1486797766	1469920931	0	VISITOR_INFO1_LIVE	cHWwVevgEd4	0	unused	unused	
+0	.youtube.com	1	/	1	0	0	2147483647	1469920931	0	CONSENT	PENDING.254f7d	0	unused	unused	
+0	.facebook.com	1	/	1	0	1	1475183411	1469832852	0	fr	1yYTqLx7DgFhK0yKc.AWW0sbUoJqQu2YH67QJmgIg6psE.BXXbaf.mH.AAA.1.0.BXdsAE.AWUK2oR0	0	unused	unused	
+0	.facebook.com	1	/	1	1	1	1530479410	1469832852	0	sb	P7ddV_VBo0rF0t9h8SLaEy90	0	unused	unused	
+0	.facebook.com	1	/	1	1	1	1530479411	1469832852	0	lu	ghposRvK421xjAhSTehcCH5w	0	unused	unused	
+0	.facebook.com	1	/	1	0	1	1528838780	1469832852	0	datr	Z7ddV6MxWWGFYKSj4LaD8UVp	0	unused	unused	
+0	.facebook.com	1	/	1	1	0	1475183411	1469832852	0	c_user	100001811026107	0	unused	unused	
+0	.facebook.com	1	/	1	1	1	1475183411	1469832852	0	xs	225%3A_WxmMMkSXgPU_A%3A2%3A1467400196%3A6392	0	unused	unused	
+0	.facebook.com	1	/	1	0	0	1475183411	1469832852	0	csm	2	0	unused	unused	
+0	.facebook.com	1	/	1	1	1	1475183411	1469832852	0	s	Aa4fwI96mT8WxUct.BXdsAF	0	unused	unused	
+0	.facebook.com	1	/	1	1	1	1475183410	1469832852	0	pl	n	0	unused	unused	
+0	.youtubeinmp3.com	1	/	1	0	1	1498388484	1467369670	0	__cfduid	dc97252951b63e04795c430e175bd647b1466852484	0	unused	unused	
+0	www.youtubeinmp3.com	0	/	1	0	0	1498898404	1467369621	0	language_code	en	0	http	http://www.youtubeinmp3.com/download/?video=http://www.youtube.com/watch?v=ED9roEOjHT4	
+0	.onlinevideoconverter.com	1	/	1	0	0	1500938113	0	0	siteLang	en	0	unused	unused	
+0	adsrv.onlinevideoconverter.com	0	/	1	0	0	1500194485	0	0	OAID	a2d306e091b1791eb8d2f0b9746d90bd	0	http	http://adsrv.onlinevideoconverter.com/revive/www/delivery/avw.php?zoneid=17&cb=INSERT_RANDOM_NUMBER_HERE&n=ac19f84c	
+0	.nytimes.com	1	/	1	0	0	1501313224	1469784441	0	RMID	007f010108f2579b0548000a	0	unused	unused	
+0	.nytimes.com	1	/	1	0	0	1501313227	0	0	nyt-a	93be9517a9fe547d311200956f0e146f	0	unused	unused	
+0	.fileformat.info	1	/	1	0	1	1500024469	1468495691	0	__cfduid	d3cea365bcb6f431804c504fe229b6df71468488469	0	unused	unused	

@@ -311,11 +311,13 @@ else
 endif
 
 # compiler versioning to adjust warning flags
-CC_VERSION := $(shell $(CC) -dumpversion)
+#CC_VERSION := $(shell $(CC) -dumpversion)
+CC_VERSION := 3.4.0
+
 CC_MAJOR := $(word 1,$(subst ., ,$(CC_VERSION)))
 CC_MINOR := $(word 2,$(subst ., ,$(CC_VERSION)))
 define cc_ver_ge
-$(shell expr $(CC_MAJOR) \>= $(1) \& $(CC_MINOR) \>= $(2))
+#$(shell expr $(CC_MAJOR) \>= $(1) \& $(CC_MINOR) \>= $(2))
 endef
 
 # CCACHE
@@ -406,8 +408,8 @@ define pkg_config_find_and_add
       endif
   else
     ifneq ($(MAKECMDGOALS),clean)
-      $$(info PKG.CNFG: $(2) ($(1))	failed)
-      $$(error Unable to find library for: $(2) ($(1)))
+     # $$(info PKG.CNFG: $(2) ($(1))	failed)
+      #$$(error Unable to find library for: $(2) ($(1)))
     endif
   endif
 endef
@@ -419,7 +421,7 @@ endef
 # 3: Human-readable name for the feature
 define pkg_config_find_and_add_enabled
   ifeq ($$(PKG_CONFIG),)
-    $$(error pkg-config is required to auto-detect feature availability)
+   # $$(error pkg-config is required to auto-detect feature availability)
   endif
 
   NETSURF_FEATURE_$(1)_AVAILABLE := $$(shell $$(PKG_CONFIG) --exists $(2) && echo yes)
@@ -507,36 +509,32 @@ $(eval $(call feature_switch,LIBICONV_PLUG,glibc internal iconv,-DLIBICONV_PLUG,
 $(eval $(call feature_switch,DUKTAPE,Javascript (Duktape),,,,,))
 
 # Common libraries with pkgconfig
-$(eval $(call pkg_config_find_and_add,libcss,CSS))
-$(eval $(call pkg_config_find_and_add,libdom,DOM))
-$(eval $(call pkg_config_find_and_add,libnsutils,nsutils))
-$(eval $(call pkg_config_find_and_add,libutf8proc,utf8proc))
-$(eval $(call pkg_config_find_and_add,openssl,OpenSSL))
+#$(eval $(call pkg_config_find_and_add,libcss,CSS))
+#$(eval $(call pkg_config_find_and_add,libdom,DOM))
+#$(eval $(call pkg_config_find_and_add,libnsutils,nsutils))
+#$(eval $(call pkg_config_find_and_add,libutf8proc,utf8proc))
+#$(eval $(call pkg_config_find_and_add,openssl,OpenSSL))
 # freemint does not support pkg-config for libcurl
 ifeq ($(HOST),mint)
     CFLAGS += $(shell curl-config --cflags)
     LDFLAGS += $(shell curl-config --libs)
 else
-    $(eval $(call pkg_config_find_and_add,libcurl,Curl))
+  #  $(eval $(call pkg_config_find_and_add,libcurl,Curl))
 endif
 
 # Common libraries without pkg-config support
-LDFLAGS += -lz
+LDFLAGS += #-lz
 
 # Optional libraries with pkgconfig
 
-# define additional CFLAGS and LDFLAGS requirements for pkg-configed libs
-NETSURF_FEATURE_PNG_CFLAGS := -DWITH_PNG
-NETSURF_FEATURE_BMP_CFLAGS := -DWITH_BMP
-NETSURF_FEATURE_GIF_CFLAGS := -DWITH_GIF
-NETSURF_FEATURE_NSSVG_CFLAGS := -DWITH_NS_SVG
-NETSURF_FEATURE_ROSPRITE_CFLAGS := -DWITH_NSSPRITE
 
-$(eval $(call pkg_config_find_and_add_enabled,PNG,libpng,PNG))
-$(eval $(call pkg_config_find_and_add_enabled,BMP,libnsbmp,BMP))
-$(eval $(call pkg_config_find_and_add_enabled,GIF,libnsgif,GIF))
-$(eval $(call pkg_config_find_and_add_enabled,NSSVG,libsvgtiny,SVG))
-$(eval $(call pkg_config_find_and_add_enabled,ROSPRITE,librosprite,Sprite))
+
+
+
+
+
+
+
 
 # List of directories in which headers are searched for
 INCLUDE_DIRS :=. include $(OBJROOT)
@@ -684,10 +682,10 @@ clean-target:
 	$(Q)$(RM) $(EXETARGET)
 CLEANS += clean-target
 
-clean-testament:
-	$(VQ)echo "   CLEAN: testament.h"
-	$(Q)$(RM) $(OBJROOT)/testament.h
-CLEANS += clean-testament
+#clean-testament:
+#	$(VQ)echo "   CLEAN: testament.h"
+#	$(Q)$(RM) $(OBJROOT)/testament.h
+#CLEANS += clean-testament
 
 clean-builddir:
 	$(VQ)echo "   CLEAN: $(OBJROOT)"
@@ -697,8 +695,8 @@ CLEANS += clean-builddir
 
 .PHONY: all-program testament
 
-testament $(OBJROOT)/testament.h:
-	$(Q)$(PERL) utils/git-testament.pl $(CURDIR) $(OBJROOT)/testament.h
+#testament:
+#	$(Q)cp frontends/amigaos3/testament.h $(CURDIR) $(OBJROOT)/
 
 all-program: $(EXETARGET) $(POSTEXES)
 

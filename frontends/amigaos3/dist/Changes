@@ -1,0 +1,441 @@
+   Core changelog :
+   ===============
+     http://download.netsurf-browser.org/netsurf/releases/ChangeLog.txt   
+
+   Amiga changelog :
+   ================
+    3.6 Dev
+    --------
+    * optimised dithering a bit (thanks matthey)
+    * optimised little to big endian conversion
+    * replaced buggy libiconv which disabled css on some sites
+    * added low dithering quality option
+    * fixed scale option bug
+    * fixed favourite modifiy bug
+    * youtube can be played as mp3 with preffered mp3 player in Prefs
+    * updated libsdl to 1.2.15 with optimised parts from sdl 2.0.4
+    * changed download and play mp3 instead of stream
+    * reduced binary size
+    * added Polish localization of Prefs using catalog file
+    * fixed copy text to clipboard realloc bug
+    * faster jpeg loading with libjpeg-turbo 1.5.0    
+    * up to 2 times faster png loading with optimised libz using miniz
+    * improved Polish localization (thanks HanSolo)
+    * updated sources
+    * reduced binary size by 400kb
+    * improved truetype/internal font change (fixed layout)
+    * added autoplay of SID modules
+    
+    3.5
+    ---
+    * added MUI Preferences
+    * merged bitmap fonts. Now it's possible to choose non ttf fonts in Prefs.
+    * created no FPU versions avilable at ami-soft.blogspot.com
+    * updated libs:  libpng 1.6.21; libcurl 7.48.0; libssl 1.0.1s
+    * fixed: downloads folder was missing
+    
+    3.4
+    ---
+    * added auto playback of modules from modarchive.org and modules.pl
+      Supported players Hipoplayer, Eagleplayer, DeliTracker2.    
+      If Hip is slow than switch to AHI.
+      Set module_player option to player path and 
+      module_autoplay:1 to enable.
+    * enabled javascript. Added new button to turn on/off
+    * added autodetect_depth option.
+    * changed youtube api
+    * added stop button
+    * added go back/forward mouse buttons support
+    * fixed restart action    
+    * fixed 100% CPU usage bug
+
+    3.4 dev 2
+    ---------
+    * 3 RTG + 3 AGA versions included: libnix, clib2 and ixemul
+    * added Messages translations support
+    * added pasting text into search bar
+    * added utf8 charset into bookmarks
+    * added scale_aga option to use own website scaling in aga mode
+    * implemended resource loading from OS4 version by Chris Young
+    * improved options opening and switching to Workbench in AGA version
+    * updated to newest sources
+    * added warp_mode for clib. Uses 100% cpu for more speed
+    * fixed OpenURL handling
+    * set default net_player to Ampilfier
+    * reenabled disc cache
+    * set default stack size  to 16kb
+    * created github repository at https://github.com/arczi84/NetSurf-68k
+    * set default disc cache size to 100MB (was 1GB)
+     
+    3.4 dev
+    -------
+    * compiled without ixemul. No external libraries needed
+    * uses 5mb less ram than ixemul version
+    * works after unpacking. No additional assings needed
+    * fixed youtube and media autoplay
+    * disabled disc cache. Hangs in this version.
+    * splited history and readme to separate files. Added more info to readme
+    * fixed files downloading
+    * fixed bookmarks deleting
+    * updated libs:  libpng 1.6.17; libcurl 7.42.0; libssl 1.0.1m; libft 2.5.5 
+    * updated to newest sources
+
+    3.3 dev 2
+    -----------
+    * updated libs: libpng 1.6.16; libcurl 7.38.0; libssl 1.0.1j
+    * new theme by Ken Lester        
+    * new cursor and throbber animation
+    * fixed dissappearing pointer
+    * fixed crash on muidev.de
+    * removed getvideo. Added download & play solution through mp4.ee.
+        Use youtube_autoplay:1 option to enable autoplay after download. 
+        Video is saved to ram:video.mp4.
+    * moved scroll*.png to theme/icons
+    * various bugs and memory leaks fixed
+
+    3.3 dev
+    --------
+    * fixed 100% CPU usage
+    * fixed restart button in AGA version
+    * return to wb by clicking on throbber (right upper corner) or 
+        with middle mouse button
+    * added all available options file (Resources/AllOptions)
+    * press key ctrl+backspace to go back
+    * assign of netsurf: to netsurf folder is required now
+        to avoid not finding of resource files
+
+    3.2
+    ----
+    * add resizable window
+    * internal font scaling
+    * mobile mode option
+    * disk cache function
+
+    3.1
+    ----
+    * added non-ttf version
+    * streaming video & audio now possible. Left click on link to play mp3 with
+      AmiNetRadio(can be changed in Options) or ffplay for videos and other
+      formats. Internet radio that uses .m3u playlists works too. 
+      Right click to download.
+    * updated : libcurl 7.36.0
+                libssl libcrypto 1.0.1g (fixes Heartbleed bug)
+                libexpat 2.0.1
+                libpng 1.6.10
+                libz 1.2.8
+    * updated cetificates file ca-bundle
+    * more amiga-like text-fields. Taken from AOS4 version by Chris Young
+    * favourite labels are now changed right after editing them in Options
+    * delete key works now
+    * improved clipboard handling
+    * faster getvideo script execution
+    * removed saving as png (doesn't work anymore)
+    * added link http://pici.picidae.net/ to bookmarks.
+      This allows to browse pages as image-maps with clickable urls.
+      It's useful for slower machines or pages that are not displayed correctly.
+    * added support for WallGet download manager by marcik.
+      Use option download_manager to choose between: 
+      wallget - best gui, many sites supported
+      httpresume - fast, simple gui, no secure and ftp support
+      wget - works with most sites including secure and ftp ie. Dropbox.
+    * simplify search of resource files = shorter loading times
+    * handle Amiga keys
+    * works 'out the box' now. No install script.
+    * default options values are hidden. To see them - open about:config
+        and add them manually to Options file.
+    * improved favourites labels display
+
+      Framebuffer-specific
+      --------------------
+
+       * Added key shortcuts for textarea undo and redo.
+       * LibNSFB library (NetSurf Framebuffer):
+          + Fixed various memory leaks.
+          + Added tiled bitmap rendering support.
+          + Improved dithering.    
+ 
+    3.0
+    ----
+    * replaced sdl_image  with libpng
+    * replaced dejavu fonts with older one
+       which are much smaller in size (~600 kb vs ~80kb) 
+       to speedup loading times one real amigas
+    * reduced exe size  to 5MB (was 7)
+    * small gui fix
+    * updated libs:
+        - libpng 1.6.0
+        - libfreetype2 2.4.11          
+
+    3.0 (Development)
+    ------------------
+     * selectable, copyable text
+     * scrollbar works in frames
+     * added caret  
+     * updated: - libpng 1.5.13
+                      - libsdl_image 1.2.12
+                      - libturbojpeg 1.2.1
+                      - libcurl 7.28
+     * updated getvideo 0.32
+     * works on Aros m68k now
+     * fixed closing of program
+     * 16 bit works again
+
+    2.9 (SVN r13518)
+   -----------------
+    * changed default theme (adjusted by James Stalham),
+       it can be changed back from Options file
+    * linked with libxml 2.7.8
+    * added saving pages as png
+    * added more search engines
+    
+   2.8 (SVN r13055)
+   -----------------
+    * improved loading times
+    * linked with libcurl 7.22.0
+    * fixed wikipedia search
+    * removed ffplay from archive
+
+   2.8 release (SVN r12759)
+   ------------------------
+    * natami favicon was missing
+    * better scrollbar buttons
+    * linked with libpng 1.2.46
+
+   Bug fix
+   -------
+    * bookmarks.htm was missing
+    * wrong information about 'Go to bookmarks' button
+    * revert Choices to Options
+
+    2.7 release (SVN r12139)
+    ------------------------
+    * added dropdown Url textbox showing recently entered addreses (beta;).
+    * information of each button function.
+    * linked with libpng 1.2.44.
+    * linked with libjpeg v8c.    
+    * cookie support for ppa.pl.
+    * restart by clicking on reload with RMB or F7.
+    * quick play multimedia using GetVideo with F4.
+    * proper display of scalled images (eg. amiga.org poll bars).
+    * possible speedup by setting incremental_reflow to 0
+      (needs experimenting).
+    * labels for bookmarks.
+    * compiled for 060.
+    * save page as pdf.
+    * ffplay with gui (port by Piotr Bandurski).
+    
+    Bug fix
+    -------
+    * Path to cookies and ca-bundle was wrong in previous version.
+    * Prefs icon was missing.
+    * With font_min_size option adjust url bar font size if previous 
+      was too big.
+        
+    2.7 development [21.01.2011]
+    -----------------------------
+    * Updated to SVN r11431 + frontend.    
+    * improved GUI new features:
+      + history tree. 
+      + better scroller.
+      + With new fb_toolbar_size option it is now possible to disable 
+        favourites panel by setting it to 30. 
+      + With fb_toolbar_layout option you can disable buttons which you 
+        don't want to use.
+      + You are able to set fonts path in Options. 
+        Try bitstream vera which may save some resources.
+      
+    New on Amiga part
+    * ability to set own favourites. To remove - press right mouse click .
+    * AmigaPL keymap support. You need to set accept_charset option
+      in Options file to AmigaPL in order to use it.
+    * fixed bug which was causing to self typing of letters.
+    * nicer buttons icons. Compatible with OS 4 themes by Samir Hawamdeh
+      http://www.os4depot.net/share/graphics/theme/firefox2like_theme_lha .
+    * F6 key to restart program.
+    * close button, press right mouse click to restart.
+    * open and edit options file from within browser.
+    * changed version numbering to offical.
+    
+    2.2 [5.01.2011]
+    ---------------
+
+    * Updated to latest SVN r11120.
+    * Changed download manager to HttpResume which has GUI.
+    * Added 'mailto:' protocol support. Installed OpenURL needed.
+    * Updated getvideo to 0.28 (by Juergen Lucas) which fixes YouTube again.
+
+    2.1 [25.08.2010]
+    ----------------
+
+    *Added cookies support
+     (Doesn't work on ppa.pl)
+
+    2.0 [10.07.2010]
+    ----------------
+
+    * Updated to latest SVN r10592.
+    * Updated OpenSSL to 1.0.0a and fixed cURL to 7.21.0 
+      which makes https:// secure sites work. 
+      Install of  OpenSSL 1.0.0a needed.
+    * Updated getvideo to 0.26 (by Juergen Lucas).
+    * Added option gv_action to simplify use of getvideo plugin,
+      optons are :  0 - ask , 1 - play  2 - saveplay , 3 - save.
+      Default is 0.      
+    * Created Bug Tracker on http://www.ppa.pl/bugtracker/index.php?id=4
+    * Added version information
+
+    1.9fix [11.06.2010]
+    -------------------
+
+    * Fixed hit
+
+    1.9 [02.06.2010]
+    ----------------
+
+    * Updated to latest SVN r10552. Fixes the always 100% CPU load on GIF image,
+      (eg. inablility to post comments on ppa.pl, a1k.org ).
+    * Small only Amiga code bug fixes.
+    * Updated libxml2 to 2.7.7.
+
+    1.8 [29.04.2010]
+    ----------------
+
+    * Updated to latest SVN r10518. Fixes bug in Amiga.org layout.
+    * Updated libz to 1.2.5.
+    * Updated ixemul.library to 63.1.
+
+    1.7 [27.04.2010]
+    ----------------
+
+    * Updated to NetSurf 2.5 release. All changes here:
+      http://source.netsurf-browser.org/branches/release/netsurf/2.5/ChangeLog.
+      In short: new cache makes NS two to three times faster.
+    * Updated libpng to 1.2.43.
+    * Updated libz to 1.2.4.
+    * Updated libsdl_image to 1.2.10.
+    * Updated getvideo to 0.25 (by Juergen Lucas).
+    * New option 'charset' - put here character set of your country for a proper
+      local text display. Default is ISO-8859-2.
+    
+
+    1.6 [28.03.2010]
+    ----------------
+
+    * added middle mouse button for scrolling,
+    * improvement - now installer makes backup of currently installed
+      ixemul libraries,
+    * new - use own images for buttons (amirul),
+    * fixed bug with links which wanted to open new window.
+      target_blank in options file need to be changed from 1 to 0
+      for this to work,
+    * added new button to download current page or whole website,
+    * updated ffplay to SVN-r22669 (port by Piotr Bandurski),
+    * improvment - ability to browse while downloading,
+    * updated libpng to 1.2.39,
+    * updated libsdl to 1.2.14,
+    * fixed - sometimes buttons stayed pushed,
+    * fixed - browsing site with left/right works again.
+
+    1.5 [03.03.2010]
+    ----------------
+
+    * delete links from bookmarks with Delete key,
+    * add go back and forward keys with alt+left/right,
+    * refresh with F5 key,
+    * more convinient resize of window - adjust screen size 
+      and press restart button (orange rectangle).    
+
+    1.4a [05.02.2010]
+    -----------------
+
+    * Fixed playing from youtube,
+    * Updated getvideo to ver. 0.24 (by Juergen Lucas).
+
+    1.4 [02.02.2010]
+    ----------------
+
+    * Updated to SVN-r9851,
+    * Support for more video modes,
+    * Added go to top/bottom of web page with Ctrl * Up/Down keys
+      (works with mouse wheel too),
+    * Scroll more with Shift * Up/Down keys (works with mouse wheel too),
+    * Updated ffplay (port by Piotr Bandurski),
+    * Changed navigation buttons.
+
+    1.3 [30.11.2009]
+    ----------------
+
+    * Added optimizations. NetSurf should work faster now,
+    * New, real installer (Alper Sönmez),
+    * Numpad keys handling,
+    * Updated getvideo to ver. 0.23.
+
+
+    1.2 [19.11.2009]
+    ----------------
+
+    * Updated getvideo to version 0.22,
+    * Updated ixemul to ver. 62.1,
+    * Special chars on title are working,
+    * Buttons act like real buttons,
+    * Paste text with Ctrl+V (length of text is limited by size of text area),
+    * Streaming of videos (install of new ixemul.library is needed),
+      (see here http://aminet.net/package/comm/www/getvideo for supported sites
+      (not tested with other than YouTube)),
+      Play, SavePlay, Save actions added,
+    * Support for Turkish and German unicode characters,
+    * Icons for search engines,
+    * Cursor (alike) in url and search fields,
+    * Bookmarks,
+    * 16 bit mode work again in window (32 bit is no longer
+      required for Netsurf to work).
+
+
+    1.1 [15.09.2009]
+    ----------------
+
+    * New nsfb and css rendering engine, 
+       that makes more pages work correctly
+    * Downloading,
+     * Scrollbar (to be improved in next releases),
+     * If screen depth is not 32bit than browser ,
+         opens in fullscreen in 32bit. On 16 and 24 bit screens
+         Netsurf work but 32bit +must* be supported by your card,
+     * Copy/paste url to/from clipboard,
+     * Change window size requester,
+     * Choose search engine requester,
+     * Set homepage feature, 
+     * Getvideo plugin implemented (click on You Tube button to
+         download and play video with ffplay), 
+     * Install script, 
+     * Polish and German characters support,
+     * Added Esc key to quit.
+
+    1.0 [5.07.2009]
+    ---------------
+
+     * Added Google searchbar,
+     * Updated to 3.7.2009 SVN, 
+         (More web pages work now f.ex. news.bbc.co.uk),
+     * Compiled with Gcc 4.3.2,
+     * Corrected window size when it's equal to Workbench screen,
+     * Added proxy server option.
+
+    0.9 [30.06.2009]
+    ----------------
+
+     * Added Window title caption,
+     * Added better pointer support,
+     * Added nicer toolbar icons,
+     * Added home page button,
+     * Added favourite sites panel.
+
+    0.8 [27.06.2009]
+    ----------------
+
+     * Fixed endianes problem with colors.
+
+    0.7 [06.2009]
+    ----------------
+
+    * Initial release

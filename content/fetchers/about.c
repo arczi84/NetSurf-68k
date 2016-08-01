@@ -31,7 +31,7 @@
 #include <stdio.h>
 #include <stdarg.h>
 
-#include "testament.h"
+#include "amigaos3/testament.h"
 #include "utils/corestrings.h"
 #include "utils/nsoption.h"
 #include "utils/utils.h"

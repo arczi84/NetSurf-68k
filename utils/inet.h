@@ -33,6 +33,8 @@
 
 #include "utils/config.h"
 
+#include <stdint.h>
+
 #ifdef HAVE_POSIX_INET_HEADERS
 
 #include <sys/socket.h>

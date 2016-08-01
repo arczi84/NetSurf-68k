@@ -1,0 +1,411 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="en">
+<head>
+<meta name="robots" content="noindex,follow" />
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1" />
+<meta name="generator" content="vBulletin 3.8.4" />
+
+<meta name="keywords" content="Amiga, Commodore, Amiga.org, computing, multimedia, gaming, games, desktop, video, Video Toaster, Flyer, PowerPC, ppc, Motorola, AmigaDE, Digital, Environment, AmigaOS, MorphOS, Pegasos, AROS, Barkanoid 2, No Gravity, Crimson Fields, c=, Jay Miner, Carl Sassenrath, 1985, 68k, 68000, 68010, 68020, 68030, 68040, 68050, 68060, Bill McEwen, Fleecy Moss, Gary Peake, Paula, Denise, Agnes, Eric Schwartz, Sabrina Online, music mod, mp3, ugn, user group, news, events, forum, tech support, eyetech, 600, 1000, 1200, 2000, 3000, 3000T, 4000, 4000T,500, emulator, UAE, Amiga Forever, E-UAE, P-UAE,cd32, demos, amigados. Amiga Anywhere, adf, aiab, mediator, miami, midi, modules, mouse, 3.5, 3.9, 4.0, samba, video, workbench, amigaone, amiga one, amigaone x-1000,x-1000,cannon fodder, dave haynie, fellow, hyperion, Bill Buck, jack tramiel, kickstart, lemmings, monkey island, moonstone, alan redhouse, ben hermans, Garry Hare, Hans-Joerg Frieden, Jim Collas, Medhi Ali, Petro Tyschtschenko, Thomas Frieden, buster, zorro I, zorro II, zorro III, Zorro IV, NewTek, guru meditation," />
+<meta name="description" content="The Internet's premier source of information regarding the Commodore Amiga computer, Amiga Virtual Machine (Amiga Forever), Amiga OS 4.x, MorphOS & AROS .  Get technical support, talk to fellow Amiga enthusiasts, get the latest news and rumors." />
+
+
+<!-- CSS Stylesheet -->
+<style type="text/css" id="vbulletin_css">
+/**
+* vBulletin 3.8.4 CSS
+* Style: 'Default Style'; Style ID: 1
+*/
+@import url("clientscript/vbulletin_css/style-581824cf-00001.css");
+</style>
+<link rel="stylesheet" type="text/css" href="clientscript/vbulletin_important.css?v=384" />
+
+
+<!-- / CSS Stylesheet -->
+
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/yui/2.9.0/build/yahoo-dom-event/yahoo-dom-event.js?v=384"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/yui/2.9.0/build/connection/connection-min.js?v=384"></script>
+<script type="text/javascript">
+<!--
+var SESSIONURL = "s=fff0c89da52a99bebc326a566cd0734c&";
+var SECURITYTOKEN = "guest";
+var IMGDIR_MISC = "http://www.amiga.org/forums/web/misc";
+var vb_disable_ajax = parseInt("0", 10);
+// -->
+</script>
+<script type="text/javascript" src="clientscript/vbulletin_global.js?v=384"></script>
+
+
+
+	<link rel="alternate" type="application/rss+xml" title="Amiga.org RSS Feed" href="external.php?type=RSS2" />
+	
+<script type="text/javascript" src="clientscript/vbam.js?v=2"></script>
+	<title>Amiga.org</title>
+
+</head>
+<body>
+<!-- logo -->
+
+<a name="top"></a>
+<table width="100%" border="0" cellpadding="0" cellspacing="0">
+  <tr>
+    <td background="/forums/images/headers/header_ao_bg.jpg">
+		<a href="/index.php"><img src="/forums/images/headers/header_ao_logo.jpg" border="0" alt="amiga.org" height="128" width="575"></a>
+	</td>
+    <td background="/forums/images/headers/header_ao_bg.jpg">
+	
+	<!-- This BEGINS the header, top-right TD where the login info is shown -->
+	
+        <div id="forms">
+          <form action="login.php?do=login" method="post" onSubmit="md5hash(vb_login_password, vb_login_md5password, vb_login_md5password_utf, 0)">
+            <script type="text/javascript" src="clientscript/vbulletin_md5.js?v=384"></script>
+            <input name="vb_login_username" id="navbar_username" accesskey="u" tabindex="101" value="User Name" onFocus="if (this.value == 'User Name') this.value = '';" type="text" class="form" />
+            <input name="vb_login_password" id="navbar_password" tabindex="102" type="password" class="form" />
+            <input name="" type="submit" class="login" value="" />
+            <input type="checkbox" name="cookieuser" value="1" tabindex="103" id="cb_cookieuser_navbar" accesskey="c" />
+            <input type="hidden" name="s" value="fff0c89da52a99bebc326a566cd0734c" />
+            <input type="hidden" name="securitytoken" value="guest" />
+            <input type="hidden" name="do" value="login" />
+            <input type="hidden" name="vb_login_md5password" />
+            <input type="hidden" name="vb_login_md5password_utf" />
+          </form>
+          <a href="register.php?s=fff0c89da52a99bebc326a566cd0734c" rel="nofollow">Register</a> or have you <a href="login.php?do=lostpw">forgotten your password</a>? 
+		</div>
+      
+      
+	  
+    </td>
+  </tr>
+</table>
+
+<div id="nav">
+  <ul>
+    <li><a href="http://www.amiga.org/index.php">Home</a></li>
+    <li><a href="/forums">Forums</a></li>
+    <li><a href="/gallery">Gallery</a></li>
+    <li><a href="/links">Links</a></li>
+    <li><a href="/index.php?pageid=buysell">Buy / Sell</a></li>
+    
+      <li><a href="/forums/blog.php">Blogs</a></li>
+        
+    
+    
+      <li><a href="register.php?s=fff0c89da52a99bebc326a566cd0734c" rel="nofollow">Register</a></li>
+    
+    
+    <li><a href="faq.php?s=fff0c89da52a99bebc326a566cd0734c" accesskey="5">FAQ</a></li>
+    
+      
+        <li><a href="memberlist.php?s=fff0c89da52a99bebc326a566cd0734c">Members List</a></li>
+      
+      
+        <li><a href="group.php?s=fff0c89da52a99bebc326a566cd0734c&amp;">Social Groups</a></li>
+      
+    
+    <li><a href="calendar.php?s=fff0c89da52a99bebc326a566cd0734c">Calendar</a></li>
+    
+	
+    	<li><a href="http://www.amiga.org/forums/misc.php?do=donate"><font color="#66ff00">Donate</font></li>
+   	
+	   	
+    <!-- <li><td class="vbmenu_control"><a href="misc.php?do=donate" style="color:#66ff00">Donate</a></td></li> -->
+    
+      
+      <li><a href="forumdisplay.php?s=fff0c89da52a99bebc326a566cd0734c&amp;do=markread" rel="nofollow">Mark Forums Read</a></li>
+
+      
+
+    
+    
+<!--    
+-->
+  </ul>
+</div>
+<table width="100%" border="0" cellspacing="0" cellpadding="0">
+  <tr>
+  
+
+    <td background="/forums/images/headers/bar_bg.gif">&nbsp;</td>
+    <td background="/forums/images/headers/bar_bg.gif">&nbsp;</td>
+    <td background="/forums/images/headers/bar_bg.gif">&nbsp;</td>
+    
+  </tr>
+</table>
+<div id="headlines"> <img src="http://www.amiga.org/forums/web/misc/icon.gif" alt="icon" width="8" height="8" />All times are GMT -6. The time now is <span class="time">10:26 AM</span>.
+  <span>|</span> Welcome to Forum, please <a href="register.php?s=fff0c89da52a99bebc326a566cd0734c" rel="nofollow">register</a> to access all of our features.
+</div>
+<!-- content table -->
+<table width="100%" cellspacing="2" cellpadding="0" bgcolor="#FFFFFF">
+<tr>
+<td bgcolor="#FFFFFF" align="center">
+	<center>
+	
+	<!-- <a href="/forums/payments.php">
+		<img border="0" src="/forums/images/subscriber_kitty.gif" alt="subscribe now to get cool stuff" height="90" width="728">
+	</a>-->
+	</center> 
+</td></tr>
+</table>
+<!-- open content container -->
+
+<div align="center">
+	<div class="page" style="width:100%; text-align:left">
+		<div style="padding:0px 18px 0px 18px" align="left">
+
+
+
+
+<!-- breadcrumb, login, pm info -->
+		<br />
+			<span class="navbar-alt">» </span><span class="navbar"><a href="index.php?s=fff0c89da52a99bebc326a566cd0734c" accesskey="1">Amiga.org</a>  <strong>» 
+	vBulletin Message
+
+</strong></span>
+		<br /><br />
+<!-- / breadcrumb, login, pm info -->
+
+ 
+
+
+
+
+
+
+
+
+
+
+<table class="tborder" cellpadding="8" cellspacing="0" border="0" width="70%" align="center">
+<tr>
+	<td class="tcat">vBulletin Message</td>
+</tr>
+<tr>
+	<td class="panelsurround" align="center">
+	<div class="panel">
+		<div align="left">
+
+		
+			<script type="text/javascript" src="clientscript/vbulletin_md5.js?v=384"></script>
+			<form action="login.php?do=login" method="post" onsubmit="md5hash(vb_login_password, vb_login_md5password, vb_login_md5password_utf, 0)">
+			<input type="hidden" name="do" value="login" />
+			<input type="hidden" name="url" value="/forums/attachment.php?attachmentid=4908&amp;d=1457967171" />
+			<input type="hidden" name="vb_login_md5password" />
+			<input type="hidden" name="vb_login_md5password_utf" />
+			
+
+			<input type="hidden" name="s" value="fff0c89da52a99bebc326a566cd0734c" />
+			<input type="hidden" name="securitytoken" value="guest" />
+
+			<!-- permission error message - user not logged in -->
+
+
+			<div class="smallfont">You are not logged in or you do not have permission to access this page. This could be due to one of several reasons:</div>
+
+			<ol>
+				<li class="smallfont">You are not logged in. Fill in the form at the bottom of this page and try again.</li>
+				<li class="smallfont">You may not have sufficient privileges to access this page. Are you trying to edit someone else's post, access administrative features or some other privileged system?</li>
+				<li class="smallfont">If you are trying to post, the administrator may have disabled your account, or it may be awaiting activation.</li>
+			</ol>
+
+			<fieldset class="fieldset">
+				<legend>Log in</legend>
+				<table cellpadding="0" cellspacing="3" border="0" align="center">
+				<tr>
+					<td>User Name:<br /><input type="text" class="bginput" name="vb_login_username" size="50" accesskey="u" tabindex="1" /></td>
+				</tr>
+				<tr>
+					<td>Password:<br /><input type="password" class="bginput" name="vb_login_password" size="50" tabindex="1" /></td>
+				</tr>
+				<tr>
+					<td>
+						<span style="float:right"><a href="login.php?s=fff0c89da52a99bebc326a566cd0734c&amp;do=lostpw">Forgotten Your Password?</a></span>
+						<label for="cb_cookieuser"><input type="checkbox" name="cookieuser" value="1" id="cb_cookieuser" tabindex="1" />Remember Me?</label>
+					</td>
+				</tr>
+				<tr>
+					<td align="right">
+						<input type="submit" class="button" value="Log in" accesskey="s" tabindex="1" />
+						<input type="reset" class="button" value="Reset Fields" accesskey="r" tabindex="1" />
+					</td>
+				</tr>
+				</table>
+			</fieldset>
+
+			<div class="smallfont">The administrator may have required you to <a href="register.php?s=fff0c89da52a99bebc326a566cd0734c&amp;do=signup" rel="nofollow">register</a> before you can view this page.</div>
+			</form>
+
+			<!-- / permission error message - user not logged in -->
+		
+
+		</div>
+	</div>
+	<!--
+	<div style="margin-top:8px">
+		<input type="submit" class="button" value="Go Back" accesskey="s" onclick="history.back(1); return false" />
+	</div>
+	-->
+	</td>
+</tr>
+</table>
+
+<br />
+
+
+<!-- forum jump -->
+<table cellpadding="0" cellspacing="0" border="0" align="center">
+<tr>
+	<td><div class="smallfont" style="text-align:left; white-space:nowrap">
+	<form action="forumdisplay.php" method="get">
+	<input type="hidden" name="s" value="fff0c89da52a99bebc326a566cd0734c" />
+	<input type="hidden" name="daysprune" value="" />
+	<strong>Forum Jump</strong><br />
+	<select name="f" onchange="this.form.submit();">
+		<optgroup label="Site Areas">
+			<option value="cp" >User Control Panel</option>
+			<option value="pm" >Private Messages</option>
+			<option value="subs" >Subscriptions</option>
+			<option value="wol" >Who's Online</option>
+			<option value="search" >Search Forums</option>
+			<option value="home" >Forums Home</option>
+		</optgroup>
+		
+		<optgroup label="Forums">
+		<option value="3" class="fjdpth0" > Amiga computer related discussion</option>
+<option value="72" class="fjdpth1" >&nbsp; &nbsp;  Amiga/MorphOS/AROS Programmers Forum</option>
+<option value="2" class="fjdpth1" >&nbsp; &nbsp;  Amiga News and Community Announcements</option>
+<option value="35" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga Events</option>
+<option value="16" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga.org site announcements</option>
+<option value="36" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  General Internet News</option>
+<option value="37" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga Retail News / Sales</option>
+<option value="38" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga Software News</option>
+<option value="39" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga Hardware News</option>
+<option value="40" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga User Group News</option>
+<option value="41" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Announcements and Press Releases</option>
+<option value="42" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Miscellaneous</option>
+<option value="43" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga Editorials</option>
+<option value="44" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga Programming and Development</option>
+<option value="45" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga Magazines</option>
+<option value="29" class="fjdpth1" >&nbsp; &nbsp;  Amiga community support ideas</option>
+<option value="30" class="fjdpth1" >&nbsp; &nbsp;  Amiga Desktop Audio and Video</option>
+<option value="18" class="fjdpth1" >&nbsp; &nbsp;  General chat about Amiga topics</option>
+<option value="17" class="fjdpth1" >&nbsp; &nbsp;  Amiga Marketplace</option>
+<option value="12" class="fjdpth1" >&nbsp; &nbsp;  Amiga Gaming</option>
+<option value="13" class="fjdpth1" >&nbsp; &nbsp;  Amiga Hardware Issues and discussion</option>
+<option value="28" class="fjdpth1" >&nbsp; &nbsp;  Recommended Amiga Dealers</option>
+<option value="14" class="fjdpth1" >&nbsp; &nbsp;  Amiga Software Issues and Discussion</option>
+<option value="15" class="fjdpth1" >&nbsp; &nbsp;  Amiga Tutorials</option>
+<option value="57" class="fjdpth0" > Aladdin 4D Forums</option>
+<option value="64" class="fjdpth1" >&nbsp; &nbsp;  Aladdin 4D General Discussion</option>
+<option value="59" class="fjdpth1" >&nbsp; &nbsp;  Aladdin 4D Announcements</option>
+<option value="61" class="fjdpth1" >&nbsp; &nbsp;  Tutorials</option>
+<option value="62" class="fjdpth1" >&nbsp; &nbsp;  Scenes &amp; Objects</option>
+<option value="63" class="fjdpth1" >&nbsp; &nbsp;  Support</option>
+<option value="76" class="fjdpth0" > Usergroups</option>
+<option value="77" class="fjdpth1" >&nbsp; &nbsp;  Sacramento Amiga Computer Club</option>
+<option value="7" class="fjdpth0" > Amiga.org specific forums</option>
+<option value="32" class="fjdpth1" >&nbsp; &nbsp;  Bug Reports, Feature Requests, and our to-do list</option>
+<option value="21" class="fjdpth1" >&nbsp; &nbsp;  Amiga.org Discussion and Site Feedback</option>
+<option value="22" class="fjdpth1" >&nbsp; &nbsp;  New User Introductions</option>
+<option value="47" class="fjdpth0" > Operating System Specific Discussions</option>
+<option value="69" class="fjdpth1" >&nbsp; &nbsp;  CommodoreUSA Amiga</option>
+<option value="48" class="fjdpth1" >&nbsp; &nbsp;  Amiga OS</option>
+<option value="50" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga OS -- Application questions and support</option>
+<option value="9" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga OS -- Development</option>
+<option value="55" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  Amiga OS 4.x (future) Hardware Compatibility Discussions</option>
+<option value="51" class="fjdpth1" >&nbsp; &nbsp;  Amiga UNIX</option>
+<option value="20" class="fjdpth1" >&nbsp; &nbsp;  AROS Research Operating System</option>
+<option value="19" class="fjdpth1" >&nbsp; &nbsp;  Linux PPC discussion</option>
+<option value="49" class="fjdpth1" >&nbsp; &nbsp;  MorphOS</option>
+<option value="52" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  MorphOS -- Application questions and support</option>
+<option value="53" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  MorphOS -- Development Support</option>
+<option value="56" class="fjdpth2" >&nbsp; &nbsp; &nbsp; &nbsp;  MorphOS -- Hardware requirements and availability discussion</option>
+<option value="54" class="fjdpth1" >&nbsp; &nbsp;  Other Operating Systems</option>
+<option value="5" class="fjdpth0" > The &quot;Not Quite Amiga but still computer related category&quot;</option>
+<option value="10" class="fjdpth1" >&nbsp; &nbsp;  Alternative Operating Systems</option>
+<option value="11" class="fjdpth1" >&nbsp; &nbsp;  Amiga Emulation</option>
+<option value="8" class="fjdpth0" > Coffee House</option>
+<option value="73" class="fjdpth1" >&nbsp; &nbsp;  CH  / Electric Cars</option>
+<option value="74" class="fjdpth1" >&nbsp; &nbsp;  CH / Immortality</option>
+<option value="75" class="fjdpth1" >&nbsp; &nbsp;  CH / Quantum Computing</option>
+<option value="23" class="fjdpth1" >&nbsp; &nbsp;  CH / Politics</option>
+<option value="24" class="fjdpth1" >&nbsp; &nbsp;  CH / Philosophy and Religion</option>
+<option value="25" class="fjdpth1" >&nbsp; &nbsp;  CH / Entertainment</option>
+<option value="26" class="fjdpth1" >&nbsp; &nbsp;  CH / General</option>
+<option value="27" class="fjdpth1" >&nbsp; &nbsp;  CH / Science and Technology</option>
+<option value="66" class="fjdpth1" >&nbsp; &nbsp;  CH / The Amiga.org Sock Drawer</option>
+
+		</optgroup>
+		
+	</select><input type="submit" class="button" value="Go"  />
+	</form>
+</div></td>
+</tr>
+</table>
+<!-- / forum jump -->
+
+
+<br />
+
+
+<br />
+
+		</div>
+	</div>
+</div>
+
+<!-- / close content container -->
+<!-- /content area table -->
+<div id="footer">
+
+<div style="float: right;">
+	Powered by vBulletin&reg; Version 3.8.4<br />Copyright &copy;2000 - 2016, Jelsoft Enterprises Ltd.
+	<!-- Do not remove this copyright notice -->
+</div>
+
+<div style="float:left;text-align:left;">
+	<!-- Do not remove <img src="http://www.amiga.org/forums/cron.php?s=fff0c89da52a99bebc326a566cd0734c&amp;rand=1457972808" alt="" width="1" height="1" border="0" /> or your scheduled tasks will cease to function -->
+	<img src="http://www.amiga.org/forums/cron.php?s=fff0c89da52a99bebc326a566cd0734c&amp;rand=1457972808" alt="" width="1" height="1" border="0" />
+	<!-- Do not remove <img src="http://www.amiga.org/forums/cron.php?s=fff0c89da52a99bebc326a566cd0734c&amp;rand=1457972808" alt="" width="1" height="1" border="0" /> or your scheduled tasks will cease to function -->
+	<table cellpadding=0 cellspacing=0><tr><td valign=middle align=center rowspan=2 width=144><a href="http://www.a-eon.com"><img src="http://amiga.org/forums/images/AEON_LOGO_SM.PNG" border=0></a></td><td valign=middle>Amiga.org &amp; logo copyright &copy; 2015 A-EON Technology Ltd</td></tr><td>The forums were originally created by Wayne Hunt</td></tr></table>
+</div>
+		<div class="smallfont">
+			<strong>
+			    <a href="http://www.amiga.org/index.php?pageid=siteinfo">About & Policies</a> -
+				<a href="http://www.a-eon.com/?s=fff0c89da52a99bebc326a566cd0734c&amp;page=contact&subject=amiga.org" rel="nofollow" accesskey="9">Contact Us</a> -
+				
+				
+				
+				<a href="archive/index.php">Archive</a> -
+                                
+				
+                                
+				<a href="#top" onclick="self.scrollTo(0, 0); return false;">Top</a>
+			</strong>
+        
+
+			<select name="styleid" onchange="switch_id(this, 'style')">
+				<optgroup label="Quick Style Chooser">
+					<option value="1" class="" selected="selected">-- Default Style</option>
+<option value="3" class="" >-- mobile</option>
+
+				</optgroup>
+			</select>
+	
+	
+		</div>
+<!-- end footer div -->
+	</div>
+<!--end main div -->
+</div>
+
+
+
+
+<script type="text/javascript">
+<!--
+	// Main vBulletin Javascript Initialization
+	vBulletin_init();
+//-->
+</script>
+
+</body>
+</html>

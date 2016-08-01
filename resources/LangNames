@@ -1,0 +1,53 @@
+# Language names file for NetSurf
+#
+# IMPORTANT! - If you add/remove a language from this file, the 
+# languages menu definition in menus.c _must_ be updated correspondingly.
+#
+lang_af:Afrikaans
+lang_bm:Bamanankan
+lang_ca:Català
+lang_cs:Cestina
+lang_cy:Cymraeg
+lang_da:Dansk
+deutsch:de
+english:en
+lang_es:Español
+lang_et:Eesti
+lang_eu:euskera
+lang_ff:Fulfulde
+lang_fi:suomi
+fran�ais:fr
+lang_ga:Gaeilge
+lang_gl:Galego
+lang_ha:Hausa
+lang_hr:Hrvatski
+japan:jp
+lang_hu:Magyar
+lang_id:Bahasa indonesia
+lang_is:íslenska
+italiano:it
+lang_lt:Lietuviskai
+lang_lv:Latviesu
+lang_ms:Bahasa melayu
+lang_mt:Malti
+nederlands:nl
+lang_no:Norsk
+polski:pl
+lang_pt:português
+lang_rn:Kirundi
+lang_ro:Româna
+lang_rw:Kinyarwanda
+slovencina:sk
+lang_sl:Slovenscina
+lang_so:Somali
+lang_sq:shqip
+lang_sr:Srpski
+lang_sv:svenska
+lang_sw:Kiswahili
+lang_tr:Türkçe
+lang_uz:o'zbek
+lang_vi:Tiêng Viêêt
+lang_wo:Wolof
+lang_xs:isiXhosa
+lang_yo:Yorùbá
+lang_zu:isiZulu

@@ -16,7 +16,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "testament.h"
+#include "amigaos3/testament.h"
 
 #include "desktop/version.h"
 
